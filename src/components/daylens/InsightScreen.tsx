@@ -22,6 +22,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
   const [loadingAI, setLoadingAI] = useState(false);
 
   const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
+  const weeklyReports = useMemo(() => generateWeeklyReports(entries), [entries]);
   const biometricCorrelations = useMemo(() => {
     if (recent.length < 7) return [];
     const scores = recent.map(computeDayScore);
