@@ -85,12 +85,21 @@ const DayLensApp = () => {
             note={note} setNote={setNote}
             onSubmit={handleSubmit} onViewInsights={() => setScreen("insights")}
             yesterdayEntry={yesterdayEntry}
+            profile={profile}
           />
         )}
         {screen === "insights" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
         {screen === "perfect" && <PerfectDayScreen entries={entries} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
-        {screen === "account" && <AccountScreen entries={entries} plan={plan} onShowPricing={() => setShowPricing(true)} onReset={() => { if (confirm("Reset all data?")) { setEntries(buildSampleData()); setGoals(DEFAULT_GOALS); } }} />}
+        {screen === "account" && (
+          <AccountScreen
+            entries={entries} plan={plan}
+            onShowPricing={() => setShowPricing(true)}
+            onReset={() => { if (confirm("Reset all data?")) { setEntries(buildSampleData()); setGoals(DEFAULT_GOALS); } }}
+            profile={profile}
+            setProfile={(p) => { setProfile(p); save("dl_profile", p); }}
+          />
+        )}
       </main>
 
       {/* Bottom nav */}
