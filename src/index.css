@@ -6,43 +6,44 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 4%;
 
-    --card: 240 6% 10%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 97%;
+    --card-foreground: 0 0% 4%;
 
-    --popover: 240 6% 8%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 4%;
 
-    --primary: 239 84% 67%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 78 100% 68%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 240 6% 15%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 240 4% 16%;
-    --muted-foreground: 240 5% 50%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 240 6% 15%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 78 100% 68%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 100% / 0.08;
-    --input: 0 0% 100% / 0.08;
-    --ring: 239 84% 67%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 78 100% 68%;
 
     --radius: 1.25rem;
 
     /* DayLens custom tokens */
-    --glass-bg: rgba(28, 28, 30, 0.65);
-    --glass-border: rgba(255, 255, 255, 0.08);
+    --lime: 78 100% 68%;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(0, 0, 0, 0.06);
     --glass-blur: 20px;
 
-    --nav-bg: rgba(10, 10, 10, 0.9);
-    --header-bg: rgba(0, 0, 0, 0.85);
+    --nav-bg: 0 0% 4%;
+    --header-bg: 78 100% 68%;
 
     --color-indigo: 239 84% 67%;
     --color-emerald: 160 84% 39%;
@@ -57,14 +58,14 @@
     --color-lime: 84 81% 44%;
     --color-sky: 199 89% 48%;
 
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 240 5% 65%;
-    --sidebar-primary: 239 84% 67%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4% 16%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100% / 0.07;
-    --sidebar-ring: 239 84% 67%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5% 35%;
+    --sidebar-primary: 78 100% 68%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 0% / 0.07;
+    --sidebar-ring: 78 100% 68%;
   }
 }
 
@@ -95,17 +96,13 @@
   }
 
   .nav-blur {
-    background: var(--nav-bg);
+    background: hsl(var(--nav-bg));
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
   }
 
-  .header-blur {
-    background: var(--header-bg);
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  .header-lime {
+    background: hsl(var(--header-bg));
   }
 }
 
@@ -122,7 +119,7 @@
     -webkit-appearance: none;
     height: 3px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
     outline: none;
     cursor: pointer;
   }
@@ -131,15 +128,15 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #fff;
+    background: #000;
     cursor: pointer;
   }
 
   input[type=time] {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    color: #fff;
+    color: #000;
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     padding: 8px 12px;

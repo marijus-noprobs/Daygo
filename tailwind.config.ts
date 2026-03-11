@@ -75,6 +75,9 @@ export default {
           lime: "hsl(var(--color-lime))",
           sky: "hsl(var(--color-sky))",
         },
+        lime: {
+          DEFAULT: "hsl(var(--lime))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
