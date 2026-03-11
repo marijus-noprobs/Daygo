@@ -288,3 +288,129 @@ export const calcCalorieRecommendation = (profile: UserProfile, wearable: Wearab
 
   return { bmr: Math.round(bmr), tdee, baseTarget, exerciseBonus, adjustedTarget, proteinG };
 };
+
+// ─── STREAKS & BADGES ────────────────────────────────────────────────────────
+
+export const calcStreak = (entries: DayEntry[], metric: string, target: number, op: "gte" | "lte"): { current: number; best: number } => {
+  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
+  let current = 0;
+  let best = 0;
+  let streak = 0;
+  let foundBreak = false;
+
+  for (const e of sorted) {
+    const val = getMetricVal(e, metric);
+    const hit = op === "gte" ? val >= target : val <= target;
+    if (hit) {
+      streak++;
+      if (!foundBreak) current = streak;
+    } else {
+      foundBreak = true;
+      best = Math.max(best, streak);
+      streak = 0;
+    }
+  }
+  best = Math.max(best, streak);
+  return { current, best };
+};
+
+export interface Badge {
+  id: string;
+  emoji: string;
+  title: string;
+  description: string;
+  earned: boolean;
+}
+
+export const computeBadges = (entries: DayEntry[]): Badge[] => {
+  const totalDays = entries.length;
+  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
+
+  const sleepStreaks = calcStreak(entries, "sleep_hrs", 7, "gte");
+  const stepStreaks = calcStreak(entries, "steps", 8000, "gte");
+  const moodStreaks = calcStreak(entries, "mood", 4, "gte");
+
+  const perfectDays = entries.filter(e => computeDayScore(e) >= 4).length;
+  const workoutDays = entries.filter(e => e.wearable.activity.workouts?.length > 0).length;
+  const waterDays = entries.filter(e => e.nutrition.waterLiters >= 2.5).length;
+
+  return [
+    { id: "first_log", emoji: "🌱", title: "First Step", description: "Log your first day", earned: totalDays >= 1 },
+    { id: "week_streak", emoji: "🔥", title: "On Fire", description: "7-day logging streak", earned: totalDays >= 7 },
+    { id: "month_streak", emoji: "💎", title: "Diamond Habit", description: "30-day logging streak", earned: totalDays >= 30 },
+    { id: "sleep_7", emoji: "😴", title: "Sleep Champion", description: "7+ hrs sleep for 7 days straight", earned: sleepStreaks.best >= 7 },
+    { id: "steps_7", emoji: "🏃", title: "Step Master", description: "8K+ steps for 7 days straight", earned: stepStreaks.best >= 7 },
+    { id: "mood_5", emoji: "😊", title: "Good Vibes", description: "Mood 4+ for 5 days straight", earned: moodStreaks.best >= 5 },
+    { id: "perfect_5", emoji: "⭐", title: "Star Performer", description: "5 days with score ≥ 4.0", earned: perfectDays >= 5 },
+    { id: "workout_10", emoji: "💪", title: "Gym Rat", description: "10 days with workouts logged", earned: workoutDays >= 10 },
+    { id: "hydrated_7", emoji: "💧", title: "Hydration Hero", description: "2.5L+ water for 7 days", earned: waterDays >= 7 },
+    { id: "perfect_10", emoji: "👑", title: "Royalty", description: "10 days with score ≥ 4.0", earned: perfectDays >= 10 },
+  ];
+};
+
+// ─── REPORT GENERATION ───────────────────────────────────────────────────────
+
+export interface WeeklyReport {
+  period: string;
+  startDate: string;
+  endDate: string;
+  daysLogged: number;
+  avgScore: number;
+  avgSleep: number;
+  avgSteps: number;
+  avgHRV: number;
+  avgMood: number;
+  avgCalories: number;
+  avgProtein: number;
+  avgWater: number;
+  workoutDays: number;
+  lateNightDays: number;
+  topActivity: { label: string; emoji: string; count: number } | null;
+  scoreChange: number | null; // vs previous period
+}
+
+export const generateWeeklyReports = (entries: DayEntry[]): WeeklyReport[] => {
+  const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
+  if (sorted.length < 3) return [];
+
+  const weeks: DayEntry[][] = [];
+  let currentWeek: DayEntry[] = [];
+
+  sorted.forEach((e, i) => {
+    currentWeek.push(e);
+    if (currentWeek.length === 7 || i === sorted.length - 1) {
+      if (currentWeek.length >= 3) weeks.push([...currentWeek]);
+      currentWeek = [];
+    }
+  });
+
+  return weeks.map((week, idx) => {
+    const prevWeek = idx > 0 ? weeks[idx - 1] : null;
+    const scores = week.map(computeDayScore);
+
+    // Count activities
+    const actCounts: Record<string, number> = {};
+    week.forEach(e => e.activities?.forEach(a => { actCounts[a.type] = (actCounts[a.type] || 0) + 1; }));
+    const topActKey = Object.entries(actCounts).sort((a, b) => b[1] - a[1])[0];
+    const actType = topActKey ? ACTIVITY_TYPES.find(a => a.key === topActKey[0]) : null;
+
+    return {
+      period: `Week ${idx + 1}`,
+      startDate: week[0].date,
+      endDate: week[week.length - 1].date,
+      daysLogged: week.length,
+      avgScore: +avg(scores).toFixed(2),
+      avgSleep: +avg(week.map(e => e.wearable.sleep.totalHours)).toFixed(1),
+      avgSteps: Math.round(avg(week.map(e => e.wearable.activity.steps))),
+      avgHRV: Math.round(avg(week.map(e => e.wearable.body.hrv))),
+      avgMood: +avg(week.map(e => e.mood.overallMood)).toFixed(1),
+      avgCalories: Math.round(avg(week.map(e => e.nutrition.calories))),
+      avgProtein: Math.round(avg(week.map(e => e.nutrition.proteinG))),
+      avgWater: +avg(week.map(e => e.nutrition.waterLiters)).toFixed(1),
+      workoutDays: week.filter(e => e.wearable.activity.workouts?.length > 0).length,
+      lateNightDays: week.filter(e => e.activities?.some(a => isLateNight(a.startTime))).length,
+      topActivity: actType && topActKey ? { label: actType.label, emoji: actType.emoji, count: topActKey[1] } : null,
+      scoreChange: prevWeek ? +(avg(scores) - avg(prevWeek.map(computeDayScore))).toFixed(2) : null,
+    };
+  }).reverse(); // most recent first
+};
