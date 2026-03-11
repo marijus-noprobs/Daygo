@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Home, Search, ClipboardList, Clock, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
+import { Home, Search, ClipboardList, Sparkles, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
