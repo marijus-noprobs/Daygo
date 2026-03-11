@@ -27,6 +27,7 @@ interface CheckInScreenProps {
   onSubmit: () => void;
   onViewInsights: () => void;
   yesterdayEntry: DayEntry | undefined;
+  profile: UserProfile;
 }
 
 export const CheckInScreen = ({
