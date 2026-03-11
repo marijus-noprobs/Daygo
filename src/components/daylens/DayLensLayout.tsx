@@ -54,6 +54,17 @@ const DayLensApp = () => {
     { id: "account", icon: User, label: "Me" },
   ];
 
+  const handleOnboardingComplete = (p: UserProfile) => {
+    setProfile(p);
+    save("dl_profile", p);
+    setOnboarded(true);
+    save("dl_onboarded", true);
+  };
+
+  if (!onboarded) {
+    return <OnboardingScreen onComplete={handleOnboardingComplete} />;
+  }
+
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-background">
       {/* Header */}
