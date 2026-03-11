@@ -12,6 +12,7 @@ import { save, load, buildSampleData, computeDayScore, defaultNutrition, default
 const DayLensApp = () => {
   const [entries, setEntries] = useState<DayEntry[]>(() => load("dl_entries", buildSampleData()));
   const [goals, setGoals] = useState<Goal[]>(() => load("dl_goals", DEFAULT_GOALS));
+  const [profile, setProfile] = useState<UserProfile>(() => load("dl_profile", DEFAULT_PROFILE));
   const [plan, setPlan] = useState<string>(() => load("dl_plan", "free"));
   const [screen, setScreen] = useState("checkin");
   const [wearable, setWearable] = useState<WearableData | null>(null);
