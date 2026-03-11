@@ -34,7 +34,7 @@ export const CheckInScreen = ({
   submitted, hasToday, todayScore, wearable, setWearable, setWearableRaw,
   nutrition, setNutrition, mood, setMood,
   todayActivities, setTodayActivities, note, setNote,
-  onSubmit, onViewInsights, yesterdayEntry,
+  onSubmit, onViewInsights, yesterdayEntry, profile,
 }: CheckInScreenProps) => {
   const [section, setSection] = useState("sleep");
   const [syncing, setSyncing] = useState(false);
