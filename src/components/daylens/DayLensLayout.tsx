@@ -6,10 +6,12 @@ import { InsightScreen } from "./InsightScreen";
 import { GoalsScreen } from "./GoalsScreen";
 import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
+import { OnboardingScreen } from "./OnboardingScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
 const DayLensApp = () => {
+  const [onboarded, setOnboarded] = useState<boolean>(() => load("dl_onboarded", false));
   const [entries, setEntries] = useState<DayEntry[]>(() => load("dl_entries", buildSampleData()));
   const [goals, setGoals] = useState<Goal[]>(() => load("dl_goals", DEFAULT_GOALS));
   const [profile, setProfile] = useState<UserProfile>(() => load("dl_profile", DEFAULT_PROFILE));
@@ -51,6 +53,17 @@ const DayLensApp = () => {
     { id: "perfect", icon: Sparkles, label: "Perfect" },
     { id: "account", icon: User, label: "Me" },
   ];
+
+  const handleOnboardingComplete = (p: UserProfile) => {
+    setProfile(p);
+    save("dl_profile", p);
+    setOnboarded(true);
+    save("dl_onboarded", true);
+  };
+
+  if (!onboarded) {
+    return <OnboardingScreen onComplete={handleOnboardingComplete} />;
+  }
 
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-background">
