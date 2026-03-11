@@ -114,6 +114,38 @@ export interface DayEntry {
   note: string;
 }
 
+export interface UserProfile {
+  heightCm: number;
+  weightKg: number;
+  age: number;
+  sex: "male" | "female";
+  activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
+  goal: "lose" | "maintain" | "gain";
+}
+
+export const DEFAULT_PROFILE: UserProfile = {
+  heightCm: 175,
+  weightKg: 75,
+  age: 30,
+  sex: "male",
+  activityLevel: "moderate",
+  goal: "maintain",
+};
+
+export const ACTIVITY_LEVEL_LABELS: Record<string, string> = {
+  sedentary: "Sedentary (desk job)",
+  light: "Lightly active (1-2x/wk)",
+  moderate: "Moderate (3-5x/wk)",
+  active: "Active (6-7x/wk)",
+  very_active: "Very active (2x/day)",
+};
+
+export const GOAL_LABELS: Record<string, string> = {
+  lose: "Lose weight",
+  maintain: "Maintain weight",
+  gain: "Gain weight",
+};
+
 export interface FoodDBEntry {
   name: string;
   unit: string;

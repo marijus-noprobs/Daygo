@@ -1,4 +1,4 @@
-import { ACTIVITY_TYPES, SAMPLE_ACTIVITIES, type DayEntry, type NutritionData, type MoodData, type Activity } from "./daylens-constants";
+import { ACTIVITY_TYPES, SAMPLE_ACTIVITIES, type DayEntry, type NutritionData, type MoodData, type Activity, type UserProfile, type WearableData } from "./daylens-constants";
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 export const save = (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
