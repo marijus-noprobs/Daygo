@@ -6,8 +6,8 @@ import { InsightScreen } from "./InsightScreen";
 import { GoalsScreen } from "./GoalsScreen";
 import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
-import { PLAN_OPTIONS, DEFAULT_GOALS, type Goal, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
-import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting } from "@/lib/daylens-utils";
+import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
+import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
 const DayLensApp = () => {
   const [entries, setEntries] = useState<DayEntry[]>(() => load("dl_entries", buildSampleData()));
