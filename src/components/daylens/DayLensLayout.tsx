@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Home, Search, ClipboardList, Clock, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
+import { Home, Search, ClipboardList, Sparkles, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
@@ -49,7 +49,7 @@ const DayLensApp = () => {
     { id: "checkin", icon: Home, label: "Home" },
     { id: "insights", icon: Search, label: "Search" },
     { id: "goals", icon: ClipboardList, label: "Goals" },
-    { id: "perfect", icon: Clock, label: "History" },
+    { id: "perfect", icon: Sparkles, label: "Perfect" },
   ];
 
   const handleOnboardingComplete = (p: UserProfile) => {
