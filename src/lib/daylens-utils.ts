@@ -1,4 +1,4 @@
-import { ACTIVITY_TYPES, SAMPLE_ACTIVITIES, type DayEntry, type NutritionData, type MoodData, type Activity } from "./daylens-constants";
+import { ACTIVITY_TYPES, SAMPLE_ACTIVITIES, type DayEntry, type NutritionData, type MoodData, type Activity, type UserProfile, type WearableData } from "./daylens-constants";
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 export const save = (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
@@ -234,4 +234,57 @@ export const newActivityBlank = (): Activity => ({
 export const getGreeting = () => {
   const h = new Date().getHours();
   return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+};
+
+// ─── CALORIE RECOMMENDATION ENGINE ───────────────────────────────────────────
+
+/** Mifflin-St Jeor BMR */
+export const calcBMR = (profile: UserProfile): number => {
+  const { weightKg, heightCm, age, sex } = profile;
+  if (sex === "male") return 10 * weightKg + 6.25 * heightCm - 5 * age + 5;
+  return 10 * weightKg + 6.25 * heightCm - 5 * age - 161;
+};
+
+const ACTIVITY_MULTIPLIERS: Record<string, number> = {
+  sedentary: 1.2,
+  light: 1.375,
+  moderate: 1.55,
+  active: 1.725,
+  very_active: 1.9,
+};
+
+const GOAL_OFFSETS: Record<string, number> = {
+  lose: -500,
+  maintain: 0,
+  gain: 400,
+};
+
+/** Base TDEE from profile (without today's exercise) */
+export const calcTDEE = (profile: UserProfile): number => {
+  const bmr = calcBMR(profile);
+  const multiplier = ACTIVITY_MULTIPLIERS[profile.activityLevel] || 1.55;
+  return Math.round(bmr * multiplier);
+};
+
+/** Goal-adjusted daily target (without exercise bonus) */
+export const calcDailyTarget = (profile: UserProfile): number => {
+  return calcTDEE(profile) + (GOAL_OFFSETS[profile.goal] || 0);
+};
+
+/** Estimate extra kcal burned from today's logged workouts */
+export const calcExerciseBonus = (wearable: WearableData | null): number => {
+  if (!wearable) return 0;
+  return wearable.activity.activeKcal;
+};
+
+/** Full recommendation including exercise adjustment */
+export const calcCalorieRecommendation = (profile: UserProfile, wearable: WearableData | null) => {
+  const bmr = calcBMR(profile);
+  const tdee = calcTDEE(profile);
+  const baseTarget = calcDailyTarget(profile);
+  const exerciseBonus = calcExerciseBonus(wearable);
+  const adjustedTarget = baseTarget + exerciseBonus;
+  const proteinG = Math.round(profile.weightKg * (profile.goal === "gain" ? 2.0 : profile.goal === "lose" ? 1.8 : 1.6));
+
+  return { bmr: Math.round(bmr), tdee, baseTarget, exerciseBonus, adjustedTarget, proteinG };
 };

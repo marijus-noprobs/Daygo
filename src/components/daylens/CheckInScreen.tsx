@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Moon, Star, Zap, Activity as ActivityIcon, Heart, Wind, BatteryCharging, Footprints, Flame, CheckCircle, Plus, Trash2, Calendar, X } from "lucide-react";
+import { Moon, Star, Zap, Activity as ActivityIcon, Heart, Wind, BatteryCharging, Footprints, Flame, CheckCircle, Plus, Trash2, Calendar, X, UtensilsCrossed } from "lucide-react";
 import { GlassCard, SectionHeader, ScoreRing, StatTile, ListInput, MoodRow, BottomSheet } from "./DayLensUI";
 import { ActivityCard, ActivityTypePicker, AddFoodItem } from "./ActivityComponents";
-import type { WearableData, NutritionData, MoodData, Activity, DayEntry } from "@/lib/daylens-constants";
+import type { WearableData, NutritionData, MoodData, Activity, DayEntry, UserProfile } from "@/lib/daylens-constants";
 import { ACTIVITY_TYPES } from "@/lib/daylens-constants";
 import {
   simulateWearable, durationHours, formatDuration, isLateNight,
-  computeDayScore, scoreGradient, newActivityBlank,
+  computeDayScore, scoreGradient, newActivityBlank, calcCalorieRecommendation,
 } from "@/lib/daylens-utils";
 
 interface CheckInScreenProps {
@@ -27,13 +27,14 @@ interface CheckInScreenProps {
   onSubmit: () => void;
   onViewInsights: () => void;
   yesterdayEntry: DayEntry | undefined;
+  profile: UserProfile;
 }
 
 export const CheckInScreen = ({
   submitted, hasToday, todayScore, wearable, setWearable, setWearableRaw,
   nutrition, setNutrition, mood, setMood,
   todayActivities, setTodayActivities, note, setNote,
-  onSubmit, onViewInsights, yesterdayEntry,
+  onSubmit, onViewInsights, yesterdayEntry, profile,
 }: CheckInScreenProps) => {
   const [section, setSection] = useState("sleep");
   const [syncing, setSyncing] = useState(false);
@@ -181,6 +182,61 @@ export const CheckInScreen = ({
       {/* NUTRITION */}
       {section === "nutrition" && (
         <div className="space-y-3 slide-in">
+          {/* Calorie Recommendation */}
+          {(() => {
+            const rec = calcCalorieRecommendation(profile, wearable);
+            const allItems = nutrition.meals.flatMap(m => m.items || []);
+            const eaten = allItems.reduce((s, i) => s + (i.kcal || 0), 0) || nutrition.calories;
+            const remaining = rec.adjustedTarget - eaten;
+            const pct = Math.min(100, Math.round((eaten / rec.adjustedTarget) * 100));
+            return (
+              <GlassCard className="border-dl-emerald/20 bg-dl-emerald/[0.03]">
+                <div className="flex items-center gap-2 mb-3">
+                  <UtensilsCrossed className="w-4 h-4 text-dl-emerald" />
+                  <h3 className="text-sm font-semibold">Daily Calorie Target</h3>
+                </div>
+                <div className="flex justify-between items-baseline mb-2">
+                  <span className="text-3xl font-bold text-dl-emerald">{rec.adjustedTarget.toLocaleString()}</span>
+                  <span className="text-xs text-muted-foreground">kcal recommended</span>
+                </div>
+                {/* Progress bar */}
+                <div className="w-full h-2 bg-secondary rounded-full mb-3 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${pct}%`,
+                      background: remaining >= 0
+                        ? "linear-gradient(90deg, hsl(var(--dl-emerald)), hsl(var(--dl-blue)))"
+                        : "linear-gradient(90deg, hsl(var(--dl-orange)), hsl(var(--dl-red)))",
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs mb-3">
+                  <span className="text-muted-foreground">Eaten: <span className="text-foreground font-semibold">{eaten.toLocaleString()}</span></span>
+                  <span className={remaining >= 0 ? "text-dl-emerald font-semibold" : "text-dl-red font-semibold"}>
+                    {remaining >= 0 ? `${remaining.toLocaleString()} left` : `${Math.abs(remaining).toLocaleString()} over`}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-secondary/50 rounded-xl py-2">
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider">BMR</div>
+                    <div className="text-sm font-semibold">{rec.bmr}</div>
+                  </div>
+                  <div className="bg-secondary/50 rounded-xl py-2">
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Exercise</div>
+                    <div className="text-sm font-semibold text-dl-orange">+{rec.exerciseBonus}</div>
+                  </div>
+                  <div className="bg-secondary/50 rounded-xl py-2">
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Protein</div>
+                    <div className="text-sm font-semibold text-dl-blue">{rec.proteinG}g</div>
+                  </div>
+                </div>
+                <p className="text-[10px] text-muted-foreground/60 mt-2.5 leading-relaxed">
+                  Based on your profile ({profile.heightCm}cm, {profile.weightKg}kg, {profile.age}y, {profile.goal} goal). Exercise bonus from today's active calories.
+                </p>
+              </GlassCard>
+            );
+          })()}
           {nutrition.meals.map((m, mi) => (
             <GlassCard key={mi}>
               <div className="flex justify-between items-center mb-4">

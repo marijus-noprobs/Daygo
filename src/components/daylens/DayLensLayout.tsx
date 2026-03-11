@@ -6,12 +6,13 @@ import { InsightScreen } from "./InsightScreen";
 import { GoalsScreen } from "./GoalsScreen";
 import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
-import { PLAN_OPTIONS, DEFAULT_GOALS, type Goal, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
-import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting } from "@/lib/daylens-utils";
+import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
+import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
 const DayLensApp = () => {
   const [entries, setEntries] = useState<DayEntry[]>(() => load("dl_entries", buildSampleData()));
   const [goals, setGoals] = useState<Goal[]>(() => load("dl_goals", DEFAULT_GOALS));
+  const [profile, setProfile] = useState<UserProfile>(() => load("dl_profile", DEFAULT_PROFILE));
   const [plan, setPlan] = useState<string>(() => load("dl_plan", "free"));
   const [screen, setScreen] = useState("checkin");
   const [wearable, setWearable] = useState<WearableData | null>(null);
@@ -84,12 +85,21 @@ const DayLensApp = () => {
             note={note} setNote={setNote}
             onSubmit={handleSubmit} onViewInsights={() => setScreen("insights")}
             yesterdayEntry={yesterdayEntry}
+            profile={profile}
           />
         )}
         {screen === "insights" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
         {screen === "perfect" && <PerfectDayScreen entries={entries} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
-        {screen === "account" && <AccountScreen entries={entries} plan={plan} onShowPricing={() => setShowPricing(true)} onReset={() => { if (confirm("Reset all data?")) { setEntries(buildSampleData()); setGoals(DEFAULT_GOALS); } }} />}
+        {screen === "account" && (
+          <AccountScreen
+            entries={entries} plan={plan}
+            onShowPricing={() => setShowPricing(true)}
+            onReset={() => { if (confirm("Reset all data?")) { setEntries(buildSampleData()); setGoals(DEFAULT_GOALS); } }}
+            profile={profile}
+            setProfile={(p) => { setProfile(p); save("dl_profile", p); }}
+          />
+        )}
       </main>
 
       {/* Bottom nav */}
