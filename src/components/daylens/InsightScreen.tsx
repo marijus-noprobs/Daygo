@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { Moon, Heart, Footprints, Smile, Info, Sparkles, ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
+import { Moon, Heart, Footprints, Smile, Info, Sparkles, ArrowRight, TrendingUp, TrendingDown, FileText, Utensils, Droplets, Dumbbell } from "lucide-react";
 import { GlassCard, SectionHeader, ScoreRing } from "./DayLensUI";
 import type { DayEntry } from "@/lib/daylens-constants";
 import {
   avg, pearson, computeDayScore, scoreGradient, formatDuration,
   isLateNight, computeActivityCorrelations, detectAnomalies,
-  type ActivityCorrelation, type Anomaly,
+  generateWeeklyReports,
+  type ActivityCorrelation, type Anomaly, type WeeklyReport,
 } from "@/lib/daylens-utils";
 
 interface InsightScreenProps {
