@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Moon, Star, Zap, Activity as ActivityIcon, Heart, Wind, BatteryCharging, Footprints, Flame, CheckCircle, Plus, Trash2, Calendar, X } from "lucide-react";
+import { Moon, Star, Zap, Activity as ActivityIcon, Heart, Wind, BatteryCharging, Footprints, Flame, CheckCircle, Plus, Trash2, Calendar, X, UtensilsCrossed } from "lucide-react";
 import { GlassCard, SectionHeader, ScoreRing, StatTile, ListInput, MoodRow, BottomSheet } from "./DayLensUI";
 import { ActivityCard, ActivityTypePicker, AddFoodItem } from "./ActivityComponents";
-import type { WearableData, NutritionData, MoodData, Activity, DayEntry } from "@/lib/daylens-constants";
+import type { WearableData, NutritionData, MoodData, Activity, DayEntry, UserProfile } from "@/lib/daylens-constants";
 import { ACTIVITY_TYPES } from "@/lib/daylens-constants";
 import {
   simulateWearable, durationHours, formatDuration, isLateNight,
-  computeDayScore, scoreGradient, newActivityBlank,
+  computeDayScore, scoreGradient, newActivityBlank, calcCalorieRecommendation,
 } from "@/lib/daylens-utils";
 
 interface CheckInScreenProps {
