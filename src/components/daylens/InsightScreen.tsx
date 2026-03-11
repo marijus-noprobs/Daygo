@@ -52,7 +52,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
   );
 
   const last7 = [...recent].slice(0, 7).reverse();
-  const tabs = ["overview", "activity", "correlations", "anomalies", "weekly"];
+  const tabs = ["overview", "activity", "correlations", "anomalies", "weekly", "reports"];
 
   return (
     <div className="space-y-5 pb-28 fade-up">
