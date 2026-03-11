@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { Moon, Heart, Footprints, Smile, Info, Sparkles, ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
+import { Moon, Heart, Footprints, Smile, Info, Sparkles, ArrowRight, TrendingUp, TrendingDown, FileText, Utensils, Droplets, Dumbbell } from "lucide-react";
 import { GlassCard, SectionHeader, ScoreRing } from "./DayLensUI";
 import type { DayEntry } from "@/lib/daylens-constants";
 import {
   avg, pearson, computeDayScore, scoreGradient, formatDuration,
   isLateNight, computeActivityCorrelations, detectAnomalies,
-  type ActivityCorrelation, type Anomaly,
+  generateWeeklyReports,
+  type ActivityCorrelation, type Anomaly, type WeeklyReport,
 } from "@/lib/daylens-utils";
 
 interface InsightScreenProps {
@@ -21,6 +22,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
   const [loadingAI, setLoadingAI] = useState(false);
 
   const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
+  const weeklyReports = useMemo(() => generateWeeklyReports(entries), [entries]);
   const biometricCorrelations = useMemo(() => {
     if (recent.length < 7) return [];
     const scores = recent.map(computeDayScore);
@@ -50,7 +52,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
   );
 
   const last7 = [...recent].slice(0, 7).reverse();
-  const tabs = ["overview", "activity", "correlations", "anomalies", "weekly"];
+  const tabs = ["overview", "activity", "correlations", "anomalies", "weekly", "reports"];
 
   return (
     <div className="space-y-5 pb-28 fade-up">
@@ -291,6 +293,78 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
           </>
         );
       })()}
+
+      {/* REPORTS */}
+      {insightTab === "reports" && (
+        <>
+          <SectionHeader title="Weekly Reports" subtitle="Auto-generated summaries of your progress" />
+          {weeklyReports.length === 0 ? (
+            <GlassCard className="text-center py-8">
+              <FileText className="text-muted-foreground mx-auto mb-3 w-8 h-8" />
+              <p className="text-sm text-muted-foreground">Log at least 3 days to generate your first report.</p>
+            </GlassCard>
+          ) : weeklyReports.map((report, idx) => {
+            const [c1] = scoreGradient(report.avgScore);
+            return (
+              <GlassCard key={idx}>
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-base font-semibold">{report.period}</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {new Date(report.startDate + "T12:00").toLocaleDateString("en", { month: "short", day: "numeric" })} — {new Date(report.endDate + "T12:00").toLocaleDateString("en", { month: "short", day: "numeric" })}
+                      {" · "}{report.daysLogged} days
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold" style={{ color: c1 }}>{report.avgScore}</div>
+                    {report.scoreChange !== null && (
+                      <div className={`text-[11px] font-semibold flex items-center gap-0.5 justify-end ${report.scoreChange >= 0 ? "text-dl-emerald" : "text-dl-red"}`}>
+                        {report.scoreChange >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                        {report.scoreChange >= 0 ? "+" : ""}{report.scoreChange} vs prev
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 mb-4">
+                  {[
+                    { icon: Moon, label: "Sleep", value: `${report.avgSleep}h`, color: "text-dl-indigo" },
+                    { icon: Heart, label: "HRV", value: `${report.avgHRV}ms`, color: "text-dl-blue" },
+                    { icon: Footprints, label: "Steps", value: report.avgSteps.toLocaleString(), color: "text-dl-orange" },
+                    { icon: Smile, label: "Mood", value: `${report.avgMood}/5`, color: "text-dl-yellow" },
+                    { icon: Utensils, label: "Calories", value: report.avgCalories.toLocaleString(), color: "text-dl-pink" },
+                    { icon: Droplets, label: "Water", value: `${report.avgWater}L`, color: "text-dl-cyan" },
+                  ].map(r => (
+                    <div key={r.label} className="flex items-center gap-2 py-1">
+                      <r.icon size={13} className={r.color} />
+                      <span className="text-xs text-muted-foreground flex-1">{r.label}</span>
+                      <span className={`text-xs font-semibold ${r.color}`}>{r.value}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-3 text-xs">
+                  {report.workoutDays > 0 && (
+                    <span className="bg-dl-emerald/10 text-dl-emerald px-2.5 py-1 rounded-lg border border-dl-emerald/20">
+                      💪 {report.workoutDays} workout{report.workoutDays !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                  {report.lateNightDays > 0 && (
+                    <span className="bg-dl-orange/10 text-dl-orange px-2.5 py-1 rounded-lg border border-dl-orange/20">
+                      🌙 {report.lateNightDays} late night{report.lateNightDays !== 1 ? "s" : ""}
+                    </span>
+                  )}
+                  {report.topActivity && (
+                    <span className="bg-secondary px-2.5 py-1 rounded-lg text-muted-foreground">
+                      {report.topActivity.emoji} {report.topActivity.label} ×{report.topActivity.count}
+                    </span>
+                  )}
+                </div>
+              </GlassCard>
+            );
+          })}
+        </>
+      )}
     </div>
   );
 };
