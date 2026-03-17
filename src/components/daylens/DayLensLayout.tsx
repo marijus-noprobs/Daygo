@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { format } from "date-fns";
 import { Home, Search, ClipboardList, Sparkles, User, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { MoodCalendar } from "./MoodCalendar";
@@ -10,8 +9,6 @@ import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
 import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
