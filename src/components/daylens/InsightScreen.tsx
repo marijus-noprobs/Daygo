@@ -172,7 +172,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0 ml-2">
-                    <div className={`text-lg font-bold ${positive ? "text-dl-emerald" : "text-dl-red"}`}>
+                    <div className={`text-lg font-bold ${positive ? "text-dl-lime" : "text-dl-pink"}`}>
                       {positive ? "+" : ""}{c.diff.toFixed(2)}
                     </div>
                     <div className="text-[10px] text-muted-foreground">next-day score</div>
