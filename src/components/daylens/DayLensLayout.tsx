@@ -69,8 +69,8 @@ const DayLensApp = () => {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
   }
 
-  const handleSentimentSubmit = (moodValue: number, sentimentNote: string) => {
-    setMood(m => ({ ...m, overallMood: moodValue }));
+  const handleSentimentSubmit = (moodData: MoodData, sentimentNote: string) => {
+    setMood(() => moodData);
     if (sentimentNote) setNote(sentimentNote);
     const todayKey = new Date().toISOString().split("T")[0];
     save(`dl_sentiment_done_${todayKey}`, true);
