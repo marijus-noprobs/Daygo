@@ -140,7 +140,7 @@ const DayLensApp = () => {
             onShowPricing={() => setShowPricing(true)}
           />
         )}
-        {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} />}
+        {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
         {screen === "insights" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
         {screen === "account" && (
