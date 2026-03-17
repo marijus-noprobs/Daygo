@@ -41,7 +41,7 @@ export const ScoreRing = ({ score, max = 5, size = 140, thick = 10 }: { score: n
             <stop offset="100%" stopColor={c2} />
           </linearGradient>
         </defs>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth={thick} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={thick} />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={`url(#${id})`} strokeWidth={thick} strokeLinecap="round"
           strokeDasharray={`${pct * circ} ${circ}`} style={{ transition: "stroke-dasharray .8s cubic-bezier(.34,1.56,.64,1)" }} />
       </svg>

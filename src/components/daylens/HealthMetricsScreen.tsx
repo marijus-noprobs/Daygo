@@ -107,7 +107,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
         <div className="text-5xl font-bold mb-1" style={{ color: scoreGradient(body.bodyBattery / 20)[0] }}>
           {body.bodyBattery}
         </div>
-        <div className="w-full h-3 bg-secondary/60 rounded-full overflow-hidden mb-2">
+        <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden mb-2">
           <div
             className="h-full rounded-full transition-all duration-1000"
             style={{
