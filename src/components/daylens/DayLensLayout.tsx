@@ -312,8 +312,8 @@ const HomeScreen = ({
         </div>
 
         {/* Horizontal scroll activity cards */}
-        <div className="overflow-x-auto -mx-3 px-3 pt-4 pb-6">
-          <div className="flex gap-4 min-w-max">
+        <div className="overflow-x-auto px-6 pt-4 pb-10">
+          <div className="flex gap-4 min-w-max pr-6">
             {/* Running card */}
             <ActivityFigmaCard
               iconBg="bg-purple-100"
