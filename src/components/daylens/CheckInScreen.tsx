@@ -99,7 +99,7 @@ export const CheckInScreen = ({
       </div>
 
       {/* Section tabs */}
-      <div className="flex p-1 glass-card-apple rounded-xl overflow-x-auto">
+      <div className="flex p-1 glass-card-apple rounded-2xl overflow-x-auto">
         {sections.map(s => (
           <button key={s} onClick={() => setSection(s)}
             className={`flex-1 py-2 text-xs font-medium rounded-lg capitalize whitespace-nowrap transition-all px-2 ${section === s ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground/70"}`}>
