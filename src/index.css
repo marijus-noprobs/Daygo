@@ -6,23 +6,23 @@
 
 @layer base {
   :root {
-    --background: 160 20% 5%;
-    --foreground: 100 20% 92%;
+    --background: 232 40% 8%;
+    --foreground: 220 20% 92%;
 
-    --card: 160 15% 8%;
-    --card-foreground: 100 20% 92%;
+    --card: 232 35% 10%;
+    --card-foreground: 220 20% 92%;
 
-    --popover: 160 15% 7%;
-    --popover-foreground: 100 20% 92%;
+    --popover: 232 35% 9%;
+    --popover-foreground: 220 20% 92%;
 
     --primary: 78 100% 68%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 140 20% 20%;
-    --secondary-foreground: 100 15% 85%;
+    --secondary: 232 25% 16%;
+    --secondary-foreground: 220 15% 85%;
 
-    --muted: 140 18% 22%;
-    --muted-foreground: 100 12% 60%;
+    --muted: 232 22% 18%;
+    --muted-foreground: 220 12% 55%;
 
     --accent: 78 100% 68%;
     --accent-foreground: 0 0% 0%;
@@ -30,8 +30,8 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 140 20% 25%;
-    --input: 140 18% 22%;
+    --border: 232 20% 20%;
+    --input: 232 22% 18%;
     --ring: 78 100% 68%;
 
     --radius: 1.25rem;
@@ -43,8 +43,8 @@
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     --glass-blur: 40px;
 
-    --nav-bg: 140 20% 6%;
-    --header-bg: 140 25% 8%;
+    --nav-bg: 232 35% 7%;
+    --header-bg: 232 30% 10%;
 
     --color-indigo: 239 84% 67%;
     --color-emerald: 160 84% 39%;
@@ -59,13 +59,13 @@
     --color-lime: 84 81% 44%;
     --color-sky: 199 89% 48%;
 
-    --sidebar-background: 140 20% 8%;
-    --sidebar-foreground: 100 15% 70%;
+    --sidebar-background: 232 35% 9%;
+    --sidebar-foreground: 220 15% 65%;
     --sidebar-primary: 78 100% 68%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 140 12% 14%;
-    --sidebar-accent-foreground: 100 15% 80%;
-    --sidebar-border: 140 15% 18%;
+    --sidebar-accent: 232 20% 14%;
+    --sidebar-accent-foreground: 220 15% 80%;
+    --sidebar-border: 232 20% 16%;
     --sidebar-ring: 78 100% 68%;
   }
 }
@@ -85,7 +85,7 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: hsl(160 20% 3%);
+    background: hsl(232 40% 5%);
     min-height: 100vh;
   }
   body::before {
@@ -109,13 +109,25 @@
   }
 
   .glass-card-apple {
-    background: rgba(180, 220, 80, 0.08);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
-    border: 1px solid rgba(180, 220, 80, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15),
-                inset 0 0.5px 0 rgba(255, 255, 255, 0.12),
-                inset 0 0 20px rgba(180, 220, 80, 0.03);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25),
+                0 4px 16px rgba(0, 0, 0, 0.15),
+                inset 0 0.5px 0 rgba(255, 255, 255, 0.10),
+                inset 0 0 30px rgba(120, 130, 200, 0.04);
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-card-apple::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    border-radius: inherit;
   }
 
   .nav-blur {
