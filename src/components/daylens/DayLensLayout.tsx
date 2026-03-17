@@ -87,19 +87,18 @@ const DayLensApp = () => {
   return (
     <div className="max-w-md mx-auto min-h-screen relative">
       {/* Status Bar + Header Section */}
-      <div className="header-lime rounded-b-[40px] px-6 pt-10 pb-6">
-        {/* Header content */}
+      <div className="header-lime px-6 pt-10 pb-6">
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-primary-foreground flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                 <Zap className="w-6 h-6 text-primary" strokeWidth={2} />
               </div>
               {isPro && (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-dl-blue text-white uppercase">Pro</span>
               )}
             </div>
-            <span className="text-xs text-primary-foreground/60 font-medium">Welcome Back, Jacob</span>
+            <span className="text-xs text-foreground/50 font-medium">Welcome Back, Jacob</span>
           </div>
           <div className="flex items-center gap-2">
             <MoodCalendar
