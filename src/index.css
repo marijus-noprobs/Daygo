@@ -59,13 +59,13 @@
     --color-lime: 84 81% 44%;
     --color-sky: 199 89% 48%;
 
-    --sidebar-background: 140 20% 8%;
-    --sidebar-foreground: 100 15% 70%;
+    --sidebar-background: 232 35% 9%;
+    --sidebar-foreground: 220 15% 65%;
     --sidebar-primary: 78 100% 68%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 140 12% 14%;
-    --sidebar-accent-foreground: 100 15% 80%;
-    --sidebar-border: 140 15% 18%;
+    --sidebar-accent: 232 20% 14%;
+    --sidebar-accent-foreground: 220 15% 80%;
+    --sidebar-border: 232 20% 16%;
     --sidebar-ring: 78 100% 68%;
   }
 }
