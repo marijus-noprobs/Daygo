@@ -72,9 +72,9 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
                     <span className="text-[10px] text-muted-foreground/60">current</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Trophy size={12} className="text-dl-amber" />
+                    <Trophy size={12} className="text-dl-lime" />
                     <span className="text-xs text-muted-foreground">
-                      Best: <span className="font-semibold text-dl-amber">{streak.best}</span>
+                      Best: <span className="font-semibold text-dl-lime">{streak.best}</span>
                     </span>
                   </div>
                 </div>

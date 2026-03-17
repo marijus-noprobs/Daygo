@@ -250,7 +250,7 @@ export const CheckInScreen = ({
                   </div>
                   <div className="bg-secondary/50 rounded-xl py-2">
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Protein</div>
-                    <div className="text-sm font-semibold text-dl-blue">{rec.proteinG}g</div>
+                    <div className="text-sm font-semibold text-dl-indigo">{rec.proteinG}g</div>
                   </div>
                 </div>
                 <p className="text-[10px] text-muted-foreground/60 mt-2.5 leading-relaxed">
