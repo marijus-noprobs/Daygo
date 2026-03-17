@@ -114,10 +114,11 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col transition-colors duration-500"
-      style={{ background: colors.bg }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+      <div
+        className="relative w-full max-w-md h-full max-h-[900px] flex flex-col transition-colors duration-500 rounded-none sm:rounded-[40px] overflow-hidden"
+        style={{ background: colors.bg }}
+      >
       {/* Top bar */}
       <div className="flex justify-between items-center px-6 pt-12 pb-4">
         <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full transition-colors" style={{ color: colors.fg }}>
