@@ -312,29 +312,31 @@ const HomeScreen = ({
         </div>
 
         {/* Horizontal scroll activity cards */}
-        <div className="flex gap-4 overflow-x-auto py-4 -mx-1 px-1 -my-4">
-          {/* Running card */}
-          <ActivityFigmaCard
-            iconBg="bg-purple-100"
-            iconColor="text-dl-purple"
-            barColor="#D4FF5E"
-            label="Running"
-            value="5.20 KM"
-            subtext="34:12 mins"
-            change="+12%"
-            changePositive
-          />
-          {/* Cycling card */}
-          <ActivityFigmaCard
-            iconBg="bg-blue-100"
-            iconColor="text-dl-blue"
-            barColor="#F87171"
-            label="Cycling"
-            value="12.8 KM"
-            subtext="45:00 mins"
-            change="-3.4%"
-            changePositive={false}
-          />
+        <div className="overflow-x-auto -mx-3 px-3 pt-4 pb-6">
+          <div className="flex gap-4 min-w-max">
+            {/* Running card */}
+            <ActivityFigmaCard
+              iconBg="bg-purple-100"
+              iconColor="text-dl-purple"
+              barColor="#D4FF5E"
+              label="Running"
+              value="5.20 KM"
+              subtext="34:12 mins"
+              change="+12%"
+              changePositive
+            />
+            {/* Cycling card */}
+            <ActivityFigmaCard
+              iconBg="bg-blue-100"
+              iconColor="text-dl-blue"
+              barColor="#F87171"
+              label="Cycling"
+              value="12.8 KM"
+              subtext="45:00 mins"
+              change="-3.4%"
+              changePositive={false}
+            />
+          </div>
         </div>
       </div>
 
