@@ -211,6 +211,13 @@ export const HealthMetricsScreen = ({ entries, recent, suggestions, detectedLeve
           <div className="flex justify-between"><span>Stress</span><span>0–25 low, 26–50 moderate</span></div>
         </div>
       </GlassCard>
+
+      {/* AI Suggestions */}
+      <HealthSuggestions
+        suggestions={suggestions}
+        detectedLevel={detectedLevel}
+        detectedLevelLabel={detectedLevelLabel}
+      />
     </div>
   );
 };
