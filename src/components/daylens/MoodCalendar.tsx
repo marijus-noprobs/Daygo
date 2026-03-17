@@ -60,9 +60,9 @@ export const MoodCalendar = ({ entries, selectedDate, onSelectDate }: MoodCalend
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 hover:bg-black/70 transition-colors">
-          <CalendarIcon className="w-4 h-4 text-primary-foreground/70" />
-          <span className="text-xs font-bold text-primary-foreground">{format(selectedDate, "MMM d")}</span>
+        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors">
+          <CalendarIcon className="w-4 h-4 text-white/70" />
+          <span className="text-xs font-bold text-white">{format(selectedDate, "MMM d")}</span>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="end" sideOffset={8}>
