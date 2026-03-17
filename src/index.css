@@ -6,23 +6,23 @@
 
 @layer base {
   :root {
-    --background: 100 40% 96%;
-    --foreground: 0 0% 4%;
+    --background: 140 20% 6%;
+    --foreground: 100 20% 92%;
 
-    --card: 0 0% 100% / 0.45;
-    --card-foreground: 0 0% 4%;
+    --card: 140 15% 12%;
+    --card-foreground: 100 20% 92%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
+    --popover: 140 20% 10%;
+    --popover-foreground: 100 20% 92%;
 
     --primary: 78 100% 68%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 100 20% 92%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 140 12% 14%;
+    --secondary-foreground: 100 15% 80%;
 
-    --muted: 100 15% 92%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 140 10% 16%;
+    --muted-foreground: 100 10% 55%;
 
     --accent: 78 100% 68%;
     --accent-foreground: 0 0% 0%;
@@ -30,21 +30,21 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 100 20% 85%;
-    --input: 100 15% 88%;
+    --border: 140 15% 18%;
+    --input: 140 12% 18%;
     --ring: 78 100% 68%;
 
     --radius: 1.25rem;
 
     /* DayLens custom tokens */
     --lime: 78 100% 68%;
-    --glass-bg: rgba(255, 255, 255, 0.55);
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-    --glass-blur: 24px;
+    --glass-bg: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    --glass-blur: 40px;
 
-    --nav-bg: 0 0% 4%;
-    --header-bg: 78 100% 68%;
+    --nav-bg: 140 20% 6%;
+    --header-bg: 140 25% 8%;
 
     --color-indigo: 239 84% 67%;
     --color-emerald: 160 84% 39%;
@@ -59,13 +59,13 @@
     --color-lime: 84 81% 44%;
     --color-sky: 199 89% 48%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5% 35%;
+    --sidebar-background: 140 20% 8%;
+    --sidebar-foreground: 100 15% 70%;
     --sidebar-primary: 78 100% 68%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 9%;
-    --sidebar-border: 0 0% 0% / 0.07;
+    --sidebar-accent: 140 12% 14%;
+    --sidebar-accent-foreground: 100 15% 80%;
+    --sidebar-border: 140 15% 18%;
     --sidebar-ring: 78 100% 68%;
   }
 }
@@ -86,11 +86,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: linear-gradient(160deg, 
-      hsl(90 40% 94%) 0%, 
-      hsl(100 35% 90%) 25%,
-      hsl(78 45% 88%) 50%, 
-      hsl(95 30% 92%) 75%,
-      hsl(105 25% 95%) 100%);
+      hsl(140 30% 5%) 0%, 
+      hsl(150 25% 7%) 30%,
+      hsl(130 20% 6%) 60%, 
+      hsl(160 15% 5%) 100%);
     min-height: 100vh;
     background-attachment: fixed;
   }
@@ -99,30 +98,31 @@
 @layer components {
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .glass-card-apple {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.07);
     backdrop-filter: blur(40px) saturate(180%);
     -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.04), 
-                0 1px 3px rgba(0, 0, 0, 0.03),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15), 
+                0 1px 3px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   .nav-blur {
-    background: hsl(var(--nav-bg));
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
+    background: rgba(10, 20, 12, 0.85);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .header-lime {
-    background: hsl(var(--header-bg));
+    background: linear-gradient(180deg, hsl(140 30% 8%) 0%, hsl(140 20% 6%) 100%);
   }
 }
 
@@ -139,7 +139,7 @@
     -webkit-appearance: none;
     height: 3px;
     border-radius: 2px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     outline: none;
     cursor: pointer;
   }
@@ -148,15 +148,15 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #000;
+    background: hsl(78 100% 68%);
     cursor: pointer;
   }
 
   input[type=time] {
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 10px;
-    color: #000;
+    color: hsl(100 20% 92%);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     padding: 8px 12px;
