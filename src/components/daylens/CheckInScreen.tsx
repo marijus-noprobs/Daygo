@@ -212,9 +212,9 @@ export const CheckInScreen = ({
             const remaining = rec.adjustedTarget - eaten;
             const pct = Math.min(100, Math.round((eaten / rec.adjustedTarget) * 100));
             return (
-              <GlassCard className="border-dl-emerald/20 bg-dl-emerald/[0.03]">
+              <GlassCard className="border-dl-lime/20 bg-dl-lime/[0.03]">
                 <div className="flex items-center gap-2 mb-3">
-                  <UtensilsCrossed className="w-4 h-4 text-dl-emerald" />
+                  <UtensilsCrossed className="w-4 h-4 text-dl-lime" />
                   <h3 className="text-sm font-semibold">Daily Calorie Target</h3>
                 </div>
                 <div className="flex justify-between items-baseline mb-2">
