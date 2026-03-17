@@ -85,7 +85,7 @@ const DayLensApp = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto min-h-screen relative bg-background">
+    <div className="max-w-md mx-auto min-h-screen relative">
       {/* Status Bar + Header Section */}
       <div className="header-lime rounded-b-[40px] px-6 pt-10 pb-6">
         {/* Header content */}
