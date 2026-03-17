@@ -55,9 +55,9 @@ const DayLensApp = () => {
 
   const NAV = [
     { id: "checkin", icon: Home, label: "Home" },
+    { id: "health", icon: Heart, label: "Health" },
     { id: "insights", icon: Search, label: "Search" },
     { id: "goals", icon: ClipboardList, label: "Goals" },
-    { id: "perfect", icon: Sparkles, label: "Perfect" },
     { id: "account", icon: User, label: "Me" },
   ];
 
