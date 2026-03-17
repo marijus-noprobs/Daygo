@@ -6,13 +6,13 @@
 
 @layer base {
   :root {
-    --background: 140 30% 12%;
+    --background: 160 20% 5%;
     --foreground: 100 20% 92%;
 
-    --card: 140 25% 18%;
+    --card: 160 15% 8%;
     --card-foreground: 100 20% 92%;
 
-    --popover: 140 25% 15%;
+    --popover: 160 15% 7%;
     --popover-foreground: 100 20% 92%;
 
     --primary: 78 100% 68%;
@@ -85,7 +85,7 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: hsl(80 10% 5%);
+    background: hsl(160 20% 3%);
     min-height: 100vh;
   }
   body::before {
