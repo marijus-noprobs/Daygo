@@ -252,25 +252,25 @@ const HomeScreen = ({
   return (
     <div className="space-y-8 fade-up">
       {/* Summary Card - Dark */}
-      <div className="bg-foreground rounded-[32px] p-6 text-background shadow-xl shadow-black/10 relative overflow-hidden">
+      <div className="glass-card-apple rounded-[32px] p-6 relative overflow-hidden">
         <div className="flex justify-between items-start mb-2">
           <div>
-            <p className="text-xs font-medium text-background/50 mb-1">Activity Summary</p>
+            <p className="text-xs font-medium text-foreground/50 mb-1">Activity Summary</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold">{steps.toLocaleString()}</span>
-              <span className="text-xs text-background/40 font-medium">Steps</span>
+              <span className="text-3xl font-bold text-foreground">{steps.toLocaleString()}</span>
+              <span className="text-xs text-foreground/40 font-medium">Steps</span>
             </div>
             <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-[10px] text-background/50">🔥 {kcal} kcal</span>
+              <span className="text-[10px] text-foreground/50">🔥 {kcal} kcal</span>
               <span className="text-[10px] font-bold text-primary bg-primary/20 px-2 py-0.5 rounded-full">{goalPct}%</span>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="w-8 h-8 rounded-full bg-background/10 flex items-center justify-center">
-              <Download className="w-4 h-4 text-background/70" />
+            <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+              <Download className="w-4 h-4 text-foreground/70" />
             </button>
-            <button className="w-8 h-8 rounded-full bg-background flex items-center justify-center">
-              <RefreshCw className="w-4 h-4 text-foreground" />
+            <button className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <RefreshCw className="w-4 h-4 text-primary" />
             </button>
           </div>
         </div>
@@ -278,28 +278,25 @@ const HomeScreen = ({
         {/* Arc Visualization */}
         <div className="flex flex-col items-center mt-4">
           <div className="relative w-[220px] h-[110px] overflow-hidden">
-            {/* Background arc */}
             <svg width="220" height="110" viewBox="0 0 220 110" className="absolute top-0 left-0">
-              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#262626" strokeWidth="20" strokeLinecap="round" />
+              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="20" strokeLinecap="round" />
               <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="hsl(78, 100%, 68%)" strokeWidth="20" strokeLinecap="round"
                 strokeDasharray={`${(goalPct / 100) * 283} 283`} />
             </svg>
-            {/* Center label */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full border border-background/20 bg-background/10">
-              <span className="text-[10px] font-bold text-background">Active Goals</span>
-              <ChevronRight className="w-3 h-3 text-background" />
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5">
+              <span className="text-[10px] font-bold text-foreground">Active Goals</span>
+              <ChevronRight className="w-3 h-3 text-foreground/60" />
             </div>
           </div>
-          {/* Category icons */}
           <div className="flex justify-between w-[180px] -mt-1">
             <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
               <span className="text-[10px] font-bold text-primary-foreground">S</span>
             </div>
             <div className="w-6 h-6 rounded-full bg-dl-blue flex items-center justify-center">
-              <span className="text-[10px] font-bold text-primary-foreground">C</span>
+              <span className="text-[10px] font-bold text-white">C</span>
             </div>
             <div className="w-6 h-6 rounded-full bg-dl-purple flex items-center justify-center">
-              <span className="text-[10px] font-bold text-primary-foreground">R</span>
+              <span className="text-[10px] font-bold text-white">R</span>
             </div>
           </div>
         </div>
