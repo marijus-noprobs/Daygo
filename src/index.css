@@ -81,10 +81,18 @@
     display: none;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: linear-gradient(160deg, 
+      hsl(90 40% 94%) 0%, 
+      hsl(100 35% 90%) 25%,
+      hsl(78 45% 88%) 50%, 
+      hsl(95 30% 92%) 75%,
+      hsl(105 25% 95%) 100%);
+    min-height: 100vh;
+    background-attachment: fixed;
   }
 }
 
