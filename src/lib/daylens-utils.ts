@@ -58,7 +58,7 @@ export const simulateWearable = (seed = 0) => {
   return {
     sleep: { totalHours: +(6 + r(0, 3)).toFixed(1), deepHours: +(0.6 + r(0, 1.2)).toFixed(1), remHours: +(1 + r(0, 1.4)).toFixed(1), score: Math.floor(58 + r(0, 42)), bedtime: "23:00", wakeTime: "07:00" },
     activity: { steps: Math.floor(3000 + r(0, 10000)), activeKcal: Math.floor(180 + r(0, 520)), standHours: Math.floor(7 + r(0, 7)), workouts: r(0, 1) > 0.45 ? [{ type: workoutTypes[Math.floor(r(0, 5))], durationMin: Math.floor(20 + r(0, 60)), intensity: intensities[Math.floor(r(0, 3))], avgHR: Math.floor(100 + r(0, 70)) }] : [] },
-    body: { hrv: Math.floor(25 + r(0, 75)), restingHR: Math.floor(46 + r(0, 28)), spo2: +(95.5 + r(0, 3.5)).toFixed(1), bodyBattery: Math.floor(15 + r(0, 85)) },
+    body: { hrv: Math.floor(25 + r(0, 75)), restingHR: Math.floor(46 + r(0, 28)), spo2: +(95.5 + r(0, 3.5)).toFixed(1), bodyBattery: Math.floor(15 + r(0, 85)), stressLevel: Math.floor(10 + r(0, 80)), bloodPressureSys: Math.floor(105 + r(0, 35)), bloodPressureDia: Math.floor(65 + r(0, 25)) },
   };
 };
 

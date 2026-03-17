@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Home, Search, ClipboardList, Sparkles, User, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
+import { Home, Search, ClipboardList, Heart, User, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
@@ -9,6 +9,7 @@ import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
 import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
+import { HealthMetricsScreen } from "./HealthMetricsScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
@@ -54,9 +55,9 @@ const DayLensApp = () => {
 
   const NAV = [
     { id: "checkin", icon: Home, label: "Home" },
+    { id: "health", icon: Heart, label: "Health" },
     { id: "insights", icon: Search, label: "Search" },
     { id: "goals", icon: ClipboardList, label: "Goals" },
-    { id: "perfect", icon: Sparkles, label: "Perfect" },
     { id: "account", icon: User, label: "Me" },
   ];
 
@@ -139,9 +140,9 @@ const DayLensApp = () => {
             onShowPricing={() => setShowPricing(true)}
           />
         )}
+        {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} />}
         {screen === "insights" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
-        {screen === "perfect" && <PerfectDayScreen entries={entries} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
         {screen === "account" && (
           <AccountScreen
             entries={entries} plan={plan}
