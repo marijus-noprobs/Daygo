@@ -139,7 +139,7 @@
     -webkit-appearance: none;
     height: 3px;
     border-radius: 2px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     outline: none;
     cursor: pointer;
   }
@@ -148,15 +148,15 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #000;
+    background: hsl(78 100% 68%);
     cursor: pointer;
   }
 
   input[type=time] {
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 10px;
-    color: #000;
+    color: hsl(100 20% 92%);
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     padding: 8px 12px;
