@@ -65,8 +65,8 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
                 {/* Streak display */}
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5">
-                    <Flame size={14} className={streak.current >= 3 ? "text-dl-orange" : "text-muted-foreground"} />
-                    <span className={`text-xs font-semibold ${streak.current >= 3 ? "text-dl-orange" : "text-muted-foreground"}`}>
+                    <Flame size={14} className={streak.current >= 3 ? "text-dl-pink" : "text-muted-foreground"} />
+                    <span className={`text-xs font-semibold ${streak.current >= 3 ? "text-dl-pink" : "text-muted-foreground"}`}>
                       {streak.current} day{streak.current !== 1 ? "s" : ""}
                     </span>
                     <span className="text-[10px] text-muted-foreground/60">current</span>
