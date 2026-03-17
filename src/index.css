@@ -85,14 +85,16 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: linear-gradient(160deg, 
-      hsl(140 35% 12%) 0%, 
-      hsl(150 30% 15%) 25%,
-      hsl(130 25% 13%) 50%, 
-      hsl(145 30% 14%) 75%,
-      hsl(160 25% 11%) 100%);
+    background: hsl(80 10% 5%);
     min-height: 100vh;
-    background-attachment: fixed;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: url('/images/bg-gradient.png') center center / cover no-repeat;
+    z-index: -1;
+    pointer-events: none;
   }
 }
 
