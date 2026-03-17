@@ -108,10 +108,10 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
           <GlassCard>
             <SectionHeader title="14-Day Averages" />
             {[
-              { label: "Sleep", val: avg(recent.map(e => e.wearable.sleep.totalHours)).toFixed(1), unit: "hrs", colorClass: "text-dl-indigo", icon: Moon },
-              { label: "HRV", val: Math.round(avg(recent.map(e => e.wearable.body.hrv))), unit: "ms", colorClass: "text-dl-blue", icon: Heart },
-              { label: "Steps", val: Math.round(avg(recent.map(e => e.wearable.activity.steps))).toLocaleString(), unit: "", colorClass: "text-dl-orange", icon: Footprints },
-              { label: "Mood", val: avg(recent.map(e => e.mood.overallMood)).toFixed(1), unit: "/5", colorClass: "text-dl-yellow", icon: Smile },
+              { label: "Sleep", val: avg(recent.map(e => e.wearable.sleep.totalHours)).toFixed(1), unit: "hrs", colorClass: "text-dl-lime", icon: Moon },
+              { label: "HRV", val: Math.round(avg(recent.map(e => e.wearable.body.hrv))), unit: "ms", colorClass: "text-dl-indigo", icon: Heart },
+              { label: "Steps", val: Math.round(avg(recent.map(e => e.wearable.activity.steps))).toLocaleString(), unit: "", colorClass: "text-dl-pink", icon: Footprints },
+              { label: "Mood", val: avg(recent.map(e => e.mood.overallMood)).toFixed(1), unit: "/5", colorClass: "text-dl-lime", icon: Smile },
             ].map((r, i, arr) => (
               <div key={r.label} className={`flex items-center justify-between py-3.5 ${i < arr.length - 1 ? "border-b border-secondary/60" : ""}`}>
                 <div className="flex items-center gap-2.5">
@@ -156,7 +156,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
             </GlassCard>
           ) : activityCorrelations.map((c) => {
             const positive = c.diff > 0;
-            const [g1, g2] = positive ? ["#30D158", "#34C759"] : ["#FF453A", "#FF3B30"];
+            const [g1, g2] = positive ? ["#D4FF5E", "#C5F467"] : ["#F06B9E", "#E05B8E"];
             return (
               <GlassCard key={c.type}>
                 <div className="flex items-start justify-between mb-4">
@@ -172,7 +172,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0 ml-2">
-                    <div className={`text-lg font-bold ${positive ? "text-dl-emerald" : "text-dl-red"}`}>
+                    <div className={`text-lg font-bold ${positive ? "text-dl-lime" : "text-dl-pink"}`}>
                       {positive ? "+" : ""}{c.diff.toFixed(2)}
                     </div>
                     <div className="text-[10px] text-muted-foreground">next-day score</div>
@@ -181,7 +181,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                 <div className="mb-3">
                   <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                     <span>Days with {c.label.toLowerCase()}</span>
-                    <span className={`font-semibold ${positive ? "text-dl-emerald" : "text-dl-red"}`}>{c.avgWith} avg</span>
+                    <span className={`font-semibold ${positive ? "text-dl-lime" : "text-dl-pink"}`}>{c.avgWith} avg</span>
                   </div>
                   <div className="w-full h-2 bg-secondary/60 rounded-full overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: (c.avgWith / 5 * 100) + "%", background: `linear-gradient(90deg,${g1},${g2})`, transition: "width .7s ease" }} />
@@ -196,7 +196,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     <div className="h-full rounded-full bg-muted-foreground/40" style={{ width: (c.avgWithout / 5 * 100) + "%", transition: "width .7s ease" }} />
                   </div>
                 </div>
-                <div className={`mt-4 rounded-xl px-3 py-2.5 text-xs leading-relaxed border ${positive ? "bg-dl-emerald/[0.08] border-dl-emerald/20 text-dl-emerald" : "bg-dl-red/[0.08] border-dl-red/20 text-dl-red"}`}>
+                <div className={`mt-4 rounded-xl px-3 py-2.5 text-xs leading-relaxed border ${positive ? "bg-dl-lime/[0.08] border-dl-lime/20 text-dl-lime" : "bg-dl-pink/[0.08] border-dl-pink/20 text-dl-pink"}`}>
                   {positive
                     ? `Days after ${c.label.toLowerCase()} your score is ${c.diff.toFixed(2)} points higher on average.`
                     : `Days after ${c.label.toLowerCase()} your score drops by ${Math.abs(c.diff).toFixed(2)} points on average.`}
@@ -214,7 +214,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
           {biometricCorrelations.map((c, i) => {
             const isPos = c.r >= 0;
             const strength = Math.abs(c.r);
-            const clr = strength > 0.5 ? (isPos ? "#30D158" : "#FF453A") : strength > 0.25 ? "#FFD60A" : "rgba(255,255,255,0.2)";
+            const clr = strength > 0.5 ? (isPos ? "#D4FF5E" : "#F06B9E") : strength > 0.25 ? "#7B7BF7" : "rgba(255,255,255,0.2)";
             return (
               <div key={c.label} className={`flex items-center gap-3 py-3.5 ${i < biometricCorrelations.length - 1 ? "border-b border-secondary/60" : ""}`}>
                 <span className="text-sm text-foreground/70 flex-1">{c.label}</span>
@@ -276,7 +276,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-muted-foreground/60">{r.lw}{r.unit}</span>
                       <ArrowRight className="text-muted-foreground/30 w-2.5 h-2.5" />
-                      <span className={`text-sm font-semibold ${up ? "text-dl-emerald" : "text-dl-red"}`}>{r.tw}{r.unit}</span>
+                      <span className={`text-sm font-semibold ${up ? "text-dl-lime" : "text-dl-pink"}`}>{r.tw}{r.unit}</span>
                       <span className="text-xs">{up ? "↑" : "↓"}</span>
                     </div>
                   </div>

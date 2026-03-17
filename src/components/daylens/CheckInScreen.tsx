@@ -88,7 +88,7 @@ export const CheckInScreen = ({
       {/* Synced banner */}
       <div className="flex items-center justify-between glass-card-apple px-4 py-3 rounded-2xl">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-dl-emerald/10 flex items-center justify-center text-dl-emerald">
+          <div className="w-8 h-8 rounded-full bg-dl-lime/10 flex items-center justify-center text-dl-lime">
             <CheckCircle size={18} />
           </div>
           <div>
@@ -118,7 +118,7 @@ export const CheckInScreen = ({
                 <circle cx="72" cy="72" r="62" fill="none" stroke="hsl(var(--secondary))" strokeWidth="10" />
                 <circle
                   cx="72" cy="72" r="62" fill="none"
-                  stroke="hsl(var(--color-indigo))"
+                  stroke="hsl(239, 84%, 67%)"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={`${(wearable.sleep.score / 100) * 2 * Math.PI * 62} ${2 * Math.PI * 62}`}
@@ -135,9 +135,9 @@ export const CheckInScreen = ({
           </div>
 
           <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Total" value={wearable.sleep.totalHours} unit="hrs" colorClass="text-dl-indigo" icon={Moon} />
-            <StatTile label="Deep" value={wearable.sleep.deepHours} unit="hrs" colorClass="text-dl-purple" icon={Moon} />
-            <StatTile label="REM" value={wearable.sleep.remHours} unit="hrs" colorClass="text-dl-blue" icon={Moon} />
+            <StatTile label="Total" value={wearable.sleep.totalHours} unit="hrs" colorClass="text-dl-lime" icon={Moon} />
+            <StatTile label="Deep" value={wearable.sleep.deepHours} unit="hrs" colorClass="text-dl-indigo" icon={Moon} />
+            <StatTile label="REM" value={wearable.sleep.remHours} unit="hrs" colorClass="text-dl-pink" icon={Moon} />
           </div>
           <GlassCard>
             <SectionHeader title="Adjust Values" subtitle="Edit if needed" />
@@ -154,14 +154,14 @@ export const CheckInScreen = ({
       {section === "activity" && (
         <div className="space-y-3 slide-in">
           <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Steps" value={wearable.activity.steps.toLocaleString()} unit="" colorClass="text-dl-orange" icon={Footprints} />
-            <StatTile label="Active kcal" value={wearable.activity.activeKcal} unit="" colorClass="text-dl-red" icon={Flame} />
-            <StatTile label="HRV" value={wearable.body.hrv} unit="ms" colorClass="text-dl-blue" icon={Heart} />
+            <StatTile label="Steps" value={wearable.activity.steps.toLocaleString()} unit="" colorClass="text-dl-lime" icon={Footprints} />
+            <StatTile label="Active kcal" value={wearable.activity.activeKcal} unit="" colorClass="text-dl-indigo" icon={Flame} />
+            <StatTile label="HRV" value={wearable.body.hrv} unit="ms" colorClass="text-dl-pink" icon={Heart} />
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Resting HR" value={wearable.body.restingHR} unit="bpm" colorClass="text-dl-pink" icon={Heart} />
-            <StatTile label="SpO₂" value={wearable.body.spo2} unit="%" colorClass="text-dl-emerald" icon={Wind} />
-            <StatTile label="Body Batt." value={wearable.body.bodyBattery} unit="" colorClass="text-dl-yellow" icon={BatteryCharging} />
+            <StatTile label="Resting HR" value={wearable.body.restingHR} unit="bpm" colorClass="text-dl-lime" icon={Heart} />
+            <StatTile label="SpO₂" value={wearable.body.spo2} unit="%" colorClass="text-dl-indigo" icon={Wind} />
+            <StatTile label="Body Batt." value={wearable.body.bodyBattery} unit="" colorClass="text-dl-pink" icon={BatteryCharging} />
           </div>
           <GlassCard>
             <div className="flex justify-between items-center mb-4">
@@ -212,13 +212,13 @@ export const CheckInScreen = ({
             const remaining = rec.adjustedTarget - eaten;
             const pct = Math.min(100, Math.round((eaten / rec.adjustedTarget) * 100));
             return (
-              <GlassCard className="border-dl-emerald/20 bg-dl-emerald/[0.03]">
+              <GlassCard className="border-dl-lime/20 bg-dl-lime/[0.03]">
                 <div className="flex items-center gap-2 mb-3">
-                  <UtensilsCrossed className="w-4 h-4 text-dl-emerald" />
+                  <UtensilsCrossed className="w-4 h-4 text-dl-lime" />
                   <h3 className="text-sm font-semibold">Daily Calorie Target</h3>
                 </div>
                 <div className="flex justify-between items-baseline mb-2">
-                  <span className="text-3xl font-bold text-dl-emerald">{rec.adjustedTarget.toLocaleString()}</span>
+                  <span className="text-3xl font-bold text-dl-lime">{rec.adjustedTarget.toLocaleString()}</span>
                   <span className="text-xs text-muted-foreground">kcal recommended</span>
                 </div>
                 {/* Progress bar */}
@@ -235,8 +235,8 @@ export const CheckInScreen = ({
                 </div>
                 <div className="flex justify-between text-xs mb-3">
                   <span className="text-muted-foreground">Eaten: <span className="text-foreground font-semibold">{eaten.toLocaleString()}</span></span>
-                  <span className={remaining >= 0 ? "text-dl-emerald font-semibold" : "text-dl-red font-semibold"}>
-                    {remaining >= 0 ? `${remaining.toLocaleString()} left` : `${Math.abs(remaining).toLocaleString()} over`}
+                   <span className={remaining >= 0 ? "text-dl-lime font-semibold" : "text-dl-pink font-semibold"}>
+                     {remaining >= 0 ? `${remaining.toLocaleString()} left` : `${Math.abs(remaining).toLocaleString()} over`}
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
@@ -246,11 +246,11 @@ export const CheckInScreen = ({
                   </div>
                   <div className="bg-secondary/50 rounded-xl py-2">
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Exercise</div>
-                    <div className="text-sm font-semibold text-dl-orange">+{rec.exerciseBonus}</div>
+                    <div className="text-sm font-semibold text-dl-pink">+{rec.exerciseBonus}</div>
                   </div>
                   <div className="bg-secondary/50 rounded-xl py-2">
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Protein</div>
-                    <div className="text-sm font-semibold text-dl-blue">{rec.proteinG}g</div>
+                    <div className="text-sm font-semibold text-dl-indigo">{rec.proteinG}g</div>
                   </div>
                 </div>
                 <p className="text-[10px] text-muted-foreground/60 mt-2.5 leading-relaxed">

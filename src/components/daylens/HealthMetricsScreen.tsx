@@ -85,9 +85,9 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
     );
   }
 
-  const stressColor = body.stressLevel <= 25 ? "#30D158" : body.stressLevel <= 50 ? "#FFD60A" : body.stressLevel <= 75 ? "#FF9F0A" : "#FF453A";
+  const stressColor = body.stressLevel <= 40 ? "#D4FF5E" : body.stressLevel <= 70 ? "#7B7BF7" : "#F06B9E";
   const bpLabel = getBPLabel(body.bloodPressureSys, body.bloodPressureDia);
-  const bpColor = bpLabel === "Normal" ? "#30D158" : bpLabel === "Elevated" ? "#FFD60A" : "#FF453A";
+  const bpColor = bpLabel === "Normal" ? "#D4FF5E" : bpLabel === "Elevated" ? "#7B7BF7" : "#F06B9E";
 
   // Trend: compare to average of last 7 days
   const recentBodies = recent.slice(0, 7).map(e => e.wearable?.body).filter(Boolean);
@@ -135,7 +135,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
           label="Resting HR"
           value={body.restingHR}
           unit="bpm"
-          color="#FF6B6B"
+          color="#F06B9E"
           min={40} max={100} current={body.restingHR}
           subtitle={avgHR ? `7-day avg: ${avgHR} bpm` : undefined}
         />
@@ -144,7 +144,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
           label="HRV"
           value={body.hrv}
           unit="ms"
-          color="#5E8BFF"
+          color="#7B7BF7"
           min={15} max={100} current={body.hrv}
           subtitle={avgHRV ? `7-day avg: ${avgHRV} ms` : undefined}
         />
@@ -153,7 +153,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
           label="SpO₂"
           value={body.spo2}
           unit="%"
-          color="#30D158"
+          color="#D4FF5E"
           min={90} max={100} current={body.spo2}
           subtitle={body.spo2 >= 95 ? "Normal range" : "Below normal"}
         />
