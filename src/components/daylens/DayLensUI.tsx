@@ -9,7 +9,7 @@ export const GlassCard = ({
   children: ReactNode; className?: string; onClick?: () => void; style?: React.CSSProperties;
 }) => (
   <div onClick={onClick} style={style}
-    className={`glass rounded-3xl p-5 ${onClick ? "cursor-pointer hover:border-foreground/15 transition-colors" : ""} ${className}`}>
+    className={`glass-card-apple rounded-3xl p-5 ${onClick ? "cursor-pointer hover:bg-white/60 transition-all" : ""} ${className}`}>
     {children}
   </div>
 );
