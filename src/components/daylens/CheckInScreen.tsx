@@ -118,7 +118,7 @@ export const CheckInScreen = ({
                 <circle cx="72" cy="72" r="62" fill="none" stroke="hsl(var(--secondary))" strokeWidth="10" />
                 <circle
                   cx="72" cy="72" r="62" fill="none"
-                  stroke="hsl(var(--color-indigo))"
+                  stroke="hsl(239, 84%, 67%)"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={`${(wearable.sleep.score / 100) * 2 * Math.PI * 62} ${2 * Math.PI * 62}`}

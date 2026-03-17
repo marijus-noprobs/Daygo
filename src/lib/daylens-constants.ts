@@ -8,15 +8,15 @@ export interface ActivityType {
 }
 
 export const ACTIVITY_TYPES: ActivityType[] = [
-  { key: "gaming",     label: "Gaming",       emoji: "🎮", colorClass: "text-dl-purple",  bgClass: "bg-dl-purple/10",  borderClass: "border-dl-purple/20" },
-  { key: "work",       label: "Work",         emoji: "💻", colorClass: "text-dl-blue",    bgClass: "bg-dl-blue/10",    borderClass: "border-dl-blue/20" },
-  { key: "social",     label: "Social",       emoji: "👥", colorClass: "text-dl-yellow",  bgClass: "bg-dl-yellow/10",  borderClass: "border-dl-yellow/20" },
-  { key: "exercise",   label: "Exercise",     emoji: "🏋️", colorClass: "text-dl-emerald", bgClass: "bg-dl-emerald/10", borderClass: "border-dl-emerald/20" },
-  { key: "reading",    label: "Reading",      emoji: "📚", colorClass: "text-dl-cyan",    bgClass: "bg-dl-cyan/10",    borderClass: "border-dl-cyan/20" },
-  { key: "tv",         label: "TV/Streaming", emoji: "📺", colorClass: "text-dl-orange",  bgClass: "bg-dl-orange/10",  borderClass: "border-dl-orange/20" },
-  { key: "drinking",   label: "Drinking",     emoji: "🍺", colorClass: "text-dl-amber",   bgClass: "bg-dl-amber/10",   borderClass: "border-dl-amber/20" },
+  { key: "gaming",     label: "Gaming",       emoji: "🎮", colorClass: "text-dl-indigo",  bgClass: "bg-dl-indigo/10",  borderClass: "border-dl-indigo/20" },
+  { key: "work",       label: "Work",         emoji: "💻", colorClass: "text-dl-pink",    bgClass: "bg-dl-pink/10",    borderClass: "border-dl-pink/20" },
+  { key: "social",     label: "Social",       emoji: "👥", colorClass: "text-dl-lime",    bgClass: "bg-dl-lime/10",    borderClass: "border-dl-lime/20" },
+  { key: "exercise",   label: "Exercise",     emoji: "🏋️", colorClass: "text-dl-lime",    bgClass: "bg-dl-lime/10",    borderClass: "border-dl-lime/20" },
+  { key: "reading",    label: "Reading",      emoji: "📚", colorClass: "text-dl-indigo",  bgClass: "bg-dl-indigo/10",  borderClass: "border-dl-indigo/20" },
+  { key: "tv",         label: "TV/Streaming", emoji: "📺", colorClass: "text-dl-pink",    bgClass: "bg-dl-pink/10",    borderClass: "border-dl-pink/20" },
+  { key: "drinking",   label: "Drinking",     emoji: "🍺", colorClass: "text-dl-pink",    bgClass: "bg-dl-pink/10",    borderClass: "border-dl-pink/20" },
   { key: "meditation", label: "Meditation",   emoji: "🧘", colorClass: "text-dl-indigo",  bgClass: "bg-dl-indigo/10",  borderClass: "border-dl-indigo/20" },
-  { key: "outdoor",    label: "Outdoors",     emoji: "🌿", colorClass: "text-dl-emerald", bgClass: "bg-dl-emerald/10", borderClass: "border-dl-emerald/20" },
+  { key: "outdoor",    label: "Outdoors",     emoji: "🌿", colorClass: "text-dl-lime",    bgClass: "bg-dl-lime/10",    borderClass: "border-dl-lime/20" },
   { key: "other",      label: "Other",        emoji: "⭐", colorClass: "text-muted-foreground", bgClass: "bg-muted/50", borderClass: "border-muted" },
 ];
 
