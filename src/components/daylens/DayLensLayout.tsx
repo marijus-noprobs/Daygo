@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { format } from "date-fns";
-import { Home, Search, ClipboardList, Sparkles, User, Plus, Zap, Download, RefreshCw, ChevronRight, CalendarIcon } from "lucide-react";
+import { Home, Search, ClipboardList, Sparkles, User, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
+import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
 import { GoalsScreen } from "./GoalsScreen";
@@ -9,8 +9,6 @@ import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
 import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
@@ -103,22 +101,11 @@ const DayLensApp = () => {
             <span className="text-xs text-primary-foreground/60 font-medium">Welcome Back, Jacob</span>
           </div>
           <div className="flex items-center gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
-                  <CalendarIcon className="w-4 h-4 text-primary-foreground" />
-                  <span className="text-xs font-bold text-primary-foreground">{format(selectedDate, "MMM d")}</span>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="end">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={(d) => d && setSelectedDate(d)}
-                  className="p-3 pointer-events-auto"
-                />
-              </PopoverContent>
-            </Popover>
+            <MoodCalendar
+              entries={entries}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+            />
             <button onClick={() => setScreen("account")} className="w-9 h-9 rounded-full overflow-hidden border-2 border-primary-foreground/30">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/0440ec97d35cfb90d5c4e49072ca29ffe4dbce91?width=64"
