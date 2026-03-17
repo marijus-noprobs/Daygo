@@ -1,11 +1,17 @@
 import { Heart, BatteryCharging, Activity, Wind, Gauge, Thermometer } from "lucide-react";
 import { GlassCard } from "./DayLensUI";
+import { HealthSuggestions } from "./HealthSuggestions";
 import type { DayEntry } from "@/lib/daylens-constants";
+import type { UserProfile } from "@/lib/daylens-constants";
+import type { HealthSuggestion } from "@/lib/daylens-utils";
 import { scoreGradient } from "@/lib/daylens-utils";
 
 interface HealthMetricsScreenProps {
   entries: DayEntry[];
   recent: DayEntry[];
+  suggestions: HealthSuggestion[];
+  detectedLevel: string | null;
+  detectedLevelLabel: string | null;
 }
 
 const MetricCard = ({
