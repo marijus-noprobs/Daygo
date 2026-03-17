@@ -9,11 +9,11 @@
     --background: 232 40% 8%;
     --foreground: 220 20% 92%;
 
-    --card: 160 15% 8%;
-    --card-foreground: 100 20% 92%;
+    --card: 232 35% 10%;
+    --card-foreground: 220 20% 92%;
 
-    --popover: 160 15% 7%;
-    --popover-foreground: 100 20% 92%;
+    --popover: 232 35% 9%;
+    --popover-foreground: 220 20% 92%;
 
     --primary: 78 100% 68%;
     --primary-foreground: 0 0% 0%;
