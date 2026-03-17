@@ -76,7 +76,7 @@ const getBatteryLabel = (val: number) => {
   return "Depleted — Rest urgently";
 };
 
-export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProps) => {
+export const HealthMetricsScreen = ({ entries, recent, suggestions, detectedLevel, detectedLevelLabel }: HealthMetricsScreenProps) => {
   const latestEntry = recent[0];
   const body = latestEntry?.wearable?.body;
 
