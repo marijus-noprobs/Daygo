@@ -7,6 +7,7 @@ import { GoalsScreen } from "./GoalsScreen";
 import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
 import { OnboardingScreen } from "./OnboardingScreen";
+import { SentimentScreen } from "./SentimentScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
@@ -24,6 +25,10 @@ const DayLensApp = () => {
   const [note, setNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
+  const [showSentiment, setShowSentiment] = useState<boolean>(() => {
+    const todayKey = new Date().toISOString().split("T")[0];
+    return !load(`dl_sentiment_done_${todayKey}`, false);
+  });
 
   useState(() => { save("dl_entries", entries); });
 
@@ -62,6 +67,18 @@ const DayLensApp = () => {
 
   if (!onboarded) {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
+  }
+
+  const handleSentimentSubmit = (moodValue: number, sentimentNote: string) => {
+    setMood(m => ({ ...m, overallMood: moodValue }));
+    if (sentimentNote) setNote(sentimentNote);
+    const todayKey = new Date().toISOString().split("T")[0];
+    save(`dl_sentiment_done_${todayKey}`, true);
+    setShowSentiment(false);
+  };
+
+  if (showSentiment) {
+    return <SentimentScreen onSubmit={handleSentimentSubmit} onClose={() => setShowSentiment(false)} />;
   }
 
   return (
