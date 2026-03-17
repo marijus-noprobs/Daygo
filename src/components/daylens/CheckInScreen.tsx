@@ -135,9 +135,9 @@ export const CheckInScreen = ({
           </div>
 
           <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Total" value={wearable.sleep.totalHours} unit="hrs" colorClass="text-dl-indigo" icon={Moon} />
-            <StatTile label="Deep" value={wearable.sleep.deepHours} unit="hrs" colorClass="text-dl-purple" icon={Moon} />
-            <StatTile label="REM" value={wearable.sleep.remHours} unit="hrs" colorClass="text-dl-blue" icon={Moon} />
+            <StatTile label="Total" value={wearable.sleep.totalHours} unit="hrs" colorClass="text-dl-lime" icon={Moon} />
+            <StatTile label="Deep" value={wearable.sleep.deepHours} unit="hrs" colorClass="text-dl-indigo" icon={Moon} />
+            <StatTile label="REM" value={wearable.sleep.remHours} unit="hrs" colorClass="text-dl-pink" icon={Moon} />
           </div>
           <GlassCard>
             <SectionHeader title="Adjust Values" subtitle="Edit if needed" />
