@@ -127,7 +127,7 @@
   }
 
   .header-lime {
-    background: linear-gradient(180deg, hsl(140 30% 14%) 0%, hsl(140 25% 12%) 100%);
+    background: transparent;
   }
 }
 
