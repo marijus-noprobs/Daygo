@@ -88,19 +88,6 @@ const DayLensApp = () => {
     <div className="max-w-md mx-auto min-h-screen relative bg-background">
       {/* Status Bar + Header Section */}
       <div className="header-lime rounded-b-[40px] px-6 pt-10 pb-6">
-        {/* Status bar row */}
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-bold text-primary-foreground">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-4 h-4 rounded-full bg-primary-foreground flex items-center justify-center">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-            </div>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M1.6 9.2C1.6 8.98 1.78 8.8 2 8.8H14C14.22 8.8 14.4 8.98 14.4 9.2C14.4 9.42 14.22 9.6 14 9.6H2C1.78 9.6 1.6 9.42 1.6 9.2M1.6 6C1.6 5.78 1.78 5.6 2 5.6H14C14.22 5.6 14.4 5.78 14.4 6C14.4 6.22 14.22 6.4 14 6.4H2C1.78 6.4 1.6 6.22 1.6 6M1.6 2.8C1.6 2.58 1.78 2.4 2 2.4H14C14.22 2.4 14.4 2.58 14.4 2.8C14.4 3.02 14.22 3.2 14 3.2H2C1.78 3.2 1.6 3.02 1.6 2.8" fill="black"/>
-            </svg>
-          </div>
-        </div>
-
         {/* Header content */}
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-1">
@@ -115,16 +102,28 @@ const DayLensApp = () => {
             <span className="text-xs text-primary-foreground/60 font-medium">Welcome Back, Jacob</span>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => setScreen("account")} className="flex items-center gap-2 px-1 pr-3 py-1 rounded-full bg-primary-foreground/10">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-2 px-3 py-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
+                  <CalendarIcon className="w-4 h-4 text-primary-foreground" />
+                  <span className="text-xs font-bold text-primary-foreground">{format(selectedDate, "MMM d")}</span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(d) => d && setSelectedDate(d)}
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+            <button onClick={() => setScreen("account")} className="w-9 h-9 rounded-full overflow-hidden border-2 border-primary-foreground/30">
               <img
                 src="https://api.builder.io/api/v1/image/assets/TEMP/0440ec97d35cfb90d5c4e49072ca29ffe4dbce91?width=64"
                 alt="Profile"
-                className="w-8 h-8 rounded-full border-2 border-primary object-cover"
+                className="w-full h-full object-cover"
               />
-              <span className="text-xs font-bold text-primary-foreground">4</span>
-            </button>
-            <button onClick={() => setScreen("checkin")} className="w-8 h-8 rounded-full bg-primary-foreground flex items-center justify-center">
-              <Plus className="w-4 h-4 text-white" strokeWidth={2} />
             </button>
           </div>
         </div>
