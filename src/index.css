@@ -6,23 +6,23 @@
 
 @layer base {
   :root {
-    --background: 140 20% 6%;
+    --background: 140 30% 12%;
     --foreground: 100 20% 92%;
 
-    --card: 140 15% 12%;
+    --card: 140 25% 18%;
     --card-foreground: 100 20% 92%;
 
-    --popover: 140 20% 10%;
+    --popover: 140 25% 15%;
     --popover-foreground: 100 20% 92%;
 
     --primary: 78 100% 68%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 140 12% 14%;
-    --secondary-foreground: 100 15% 80%;
+    --secondary: 140 20% 20%;
+    --secondary-foreground: 100 15% 85%;
 
-    --muted: 140 10% 16%;
-    --muted-foreground: 100 10% 55%;
+    --muted: 140 18% 22%;
+    --muted-foreground: 100 12% 60%;
 
     --accent: 78 100% 68%;
     --accent-foreground: 0 0% 0%;
@@ -30,17 +30,17 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 140 15% 18%;
-    --input: 140 12% 18%;
+    --border: 140 20% 25%;
+    --input: 140 18% 22%;
     --ring: 78 100% 68%;
 
     --radius: 1.25rem;
 
     /* DayLens custom tokens */
     --lime: 78 100% 68%;
-    --glass-bg: rgba(255, 255, 255, 0.06);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
     --glass-blur: 40px;
 
     --nav-bg: 140 20% 6%;
@@ -86,10 +86,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: linear-gradient(160deg, 
-      hsl(140 30% 5%) 0%, 
-      hsl(150 25% 7%) 30%,
-      hsl(130 20% 6%) 60%, 
-      hsl(160 15% 5%) 100%);
+      hsl(140 35% 12%) 0%, 
+      hsl(150 30% 15%) 25%,
+      hsl(130 25% 13%) 50%, 
+      hsl(145 30% 14%) 75%,
+      hsl(160 25% 11%) 100%);
     min-height: 100vh;
     background-attachment: fixed;
   }
@@ -105,24 +106,24 @@
   }
 
   .glass-card-apple {
-    background: rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15), 
-                0 1px 3px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12), 
+                0 1px 3px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 
   .nav-blur {
-    background: rgba(10, 20, 12, 0.85);
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(20, 40, 25, 0.8);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .header-lime {
-    background: linear-gradient(180deg, hsl(140 30% 8%) 0%, hsl(140 20% 6%) 100%);
+    background: linear-gradient(180deg, hsl(140 30% 14%) 0%, hsl(140 25% 12%) 100%);
   }
 }
 
