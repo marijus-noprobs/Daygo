@@ -64,7 +64,7 @@ const SentimentFace = ({ value, fg }: { value: number; fg: string }) => {
   // Mouth curve
   const mouthY = 170;
   const mouthWidth = 30;
-  const mouthCurve = value <= 25 ? 15 : value <= 65 ? 8 : -2;
+  const mouthCurve = value <= 25 ? -15 : value <= 65 ? -5 : 12;
 
   return (
     <svg width="200" height="220" viewBox="0 0 260 220" className="transition-all duration-500">
@@ -114,10 +114,11 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col transition-colors duration-500"
-      style={{ background: colors.bg }}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+      <div
+        className="relative w-full max-w-md h-full max-h-[900px] flex flex-col transition-colors duration-500 rounded-none sm:rounded-[40px] overflow-hidden"
+        style={{ background: colors.bg }}
+      >
       {/* Top bar */}
       <div className="flex justify-between items-center px-6 pt-12 pb-4">
         <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full transition-colors" style={{ color: colors.fg }}>
@@ -217,6 +218,7 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
 
       {/* Bottom safe area */}
       <div className="h-8" />
+    </div>
     </div>
   );
 };
