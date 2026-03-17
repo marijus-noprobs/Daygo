@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Home, Search, ClipboardList, Heart, User, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Plus, Zap, Download, RefreshCw, ChevronRight } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
@@ -56,7 +56,7 @@ const DayLensApp = () => {
   const NAV = [
     { id: "checkin", icon: Home, label: "Home" },
     { id: "health", icon: Heart, label: "Health" },
-    { id: "insights", icon: Search, label: "Search" },
+    { id: "insights", icon: TrendingUp, label: "Trends" },
     { id: "goals", icon: ClipboardList, label: "Goals" },
     { id: "account", icon: User, label: "Me" },
   ];
