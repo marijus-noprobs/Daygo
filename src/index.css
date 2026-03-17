@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Helvetica Neue / Neue Haas Grotesk system font stack */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {

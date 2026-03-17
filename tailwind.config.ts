@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Helvetica Neue"', 'Helvetica', 'Arial', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['"Orbitron"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
