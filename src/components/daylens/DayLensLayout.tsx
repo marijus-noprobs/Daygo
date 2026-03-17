@@ -69,6 +69,18 @@ const DayLensApp = () => {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
   }
 
+  const handleSentimentSubmit = (moodValue: number, sentimentNote: string) => {
+    setMood(m => ({ ...m, overallMood: moodValue }));
+    if (sentimentNote) setNote(sentimentNote);
+    const todayKey = new Date().toISOString().split("T")[0];
+    save(`dl_sentiment_done_${todayKey}`, true);
+    setShowSentiment(false);
+  };
+
+  if (showSentiment) {
+    return <SentimentScreen onSubmit={handleSentimentSubmit} onClose={() => setShowSentiment(false)} />;
+  }
+
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-background">
       {/* Status Bar + Header Section */}
