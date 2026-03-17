@@ -246,7 +246,7 @@ export const CheckInScreen = ({
                   </div>
                   <div className="bg-secondary/50 rounded-xl py-2">
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Exercise</div>
-                    <div className="text-sm font-semibold text-dl-orange">+{rec.exerciseBonus}</div>
+                    <div className="text-sm font-semibold text-dl-pink">+{rec.exerciseBonus}</div>
                   </div>
                   <div className="bg-secondary/50 rounded-xl py-2">
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Protein</div>
