@@ -88,7 +88,7 @@ export const CheckInScreen = ({
       {/* Synced banner */}
       <div className="flex items-center justify-between glass-card-apple px-4 py-3 rounded-2xl">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-dl-emerald/10 flex items-center justify-center text-dl-emerald">
+          <div className="w-8 h-8 rounded-full bg-dl-lime/10 flex items-center justify-center text-dl-lime">
             <CheckCircle size={18} />
           </div>
           <div>
