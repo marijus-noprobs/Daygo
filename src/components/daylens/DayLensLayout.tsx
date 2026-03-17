@@ -364,7 +364,7 @@ const ActivityFigmaCard = ({
   iconBg: string; iconColor: string; barColor: string;
   label: string; value: string; subtext: string; change: string; changePositive: boolean;
 }) => (
-  <div className="min-w-[160px] w-[160px] p-4 rounded-[32px] glass-card-apple flex flex-col justify-between h-[155px] flex-shrink-0">
+  <div className="min-w-[160px] w-[160px] p-4 glass-card-apple !rounded-[28px] flex flex-col justify-between h-[155px] flex-shrink-0">
     <div className="flex justify-between items-start">
       <div className={`w-10 h-10 rounded-2xl ${iconBg} flex items-center justify-center`}>
         <Zap className={`w-6 h-6 ${iconColor}`} />
