@@ -412,3 +412,202 @@ export const generateWeeklyReports = (entries: DayEntry[]): WeeklyReport[] => {
     };
   }).reverse(); // most recent first
 };
+
+// ─── AUTO ACTIVITY LEVEL DETECTION ───────────────────────────────────────────
+
+export const detectActivityLevel = (entries: DayEntry[]): UserProfile["activityLevel"] | null => {
+  if (entries.length < 3) return null;
+  const recent = [...entries].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 7);
+  const avgSteps = avg(recent.map(e => e.wearable.activity.steps));
+  const workoutDays = recent.filter(e => e.wearable.activity.workouts?.length > 0).length;
+  const avgActiveKcal = avg(recent.map(e => e.wearable.activity.activeKcal));
+  const workoutsPerWeek = (workoutDays / recent.length) * 7;
+
+  if (avgSteps >= 14000 && workoutsPerWeek >= 6) return "very_active";
+  if (avgSteps >= 10000 || workoutsPerWeek >= 5) return "active";
+  if (avgSteps >= 7000 || workoutsPerWeek >= 3) return "moderate";
+  if (avgSteps >= 4000 || workoutsPerWeek >= 1) return "light";
+  return "sedentary";
+};
+
+// ─── HEALTH SUGGESTIONS ENGINE ───────────────────────────────────────────────
+
+export interface HealthSuggestion {
+  id: string;
+  icon: string;
+  title: string;
+  description: string;
+  priority: "high" | "medium" | "low";
+  category: "activity" | "sleep" | "heart" | "nutrition" | "stress";
+}
+
+export const generateHealthSuggestions = (entries: DayEntry[], profile: UserProfile): HealthSuggestion[] => {
+  if (entries.length < 5) return [];
+  const suggestions: HealthSuggestion[] = [];
+  const recent = [...entries].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 7);
+  const older = [...entries].sort((a, b) => b.date.localeCompare(a.date)).slice(7, 14);
+
+  const avgSteps = avg(recent.map(e => e.wearable.activity.steps));
+  const avgRestingHR = avg(recent.map(e => e.wearable.body.restingHR));
+  const avgHRV = avg(recent.map(e => e.wearable.body.hrv));
+  const avgSleep = avg(recent.map(e => e.wearable.sleep.totalHours));
+  const avgStress = avg(recent.map(e => e.wearable.body.stressLevel));
+  const avgBPSys = avg(recent.map(e => e.wearable.body.bloodPressureSys));
+  const avgBodyBattery = avg(recent.map(e => e.wearable.body.bodyBattery));
+  const workoutDays = recent.filter(e => e.wearable.activity.workouts?.length > 0).length;
+  const avgWater = avg(recent.map(e => e.nutrition.waterLiters));
+  const avgMood = avg(recent.map(e => e.mood.overallMood));
+
+  const prevSteps = older.length >= 3 ? avg(older.map(e => e.wearable.activity.steps)) : null;
+  const prevRestingHR = older.length >= 3 ? avg(older.map(e => e.wearable.body.restingHR)) : null;
+  const prevHRV = older.length >= 3 ? avg(older.map(e => e.wearable.body.hrv)) : null;
+
+  // Low activity + elevated resting HR
+  if (avgSteps < 6000 && avgRestingHR > 65) {
+    suggestions.push({
+      id: "low_activity_high_hr",
+      icon: "🚶",
+      title: "Move more to lower heart rate",
+      description: `Your avg steps (${Math.round(avgSteps).toLocaleString()}) are low and resting HR is elevated (${Math.round(avgRestingHR)} bpm). Try adding a 20-min walk daily — even light walking can reduce resting HR by 5-10 bpm over weeks.`,
+      priority: "high",
+      category: "activity",
+    });
+  }
+
+  // Steps declining week over week
+  if (prevSteps && avgSteps < prevSteps * 0.8) {
+    suggestions.push({
+      id: "steps_declining",
+      icon: "📉",
+      title: "Activity is declining",
+      description: `Your steps dropped ${Math.round(((prevSteps - avgSteps) / prevSteps) * 100)}% this week. Less movement can raise stress and blood pressure. Try setting a minimum of ${Math.round(prevSteps / 1000)}K steps daily.`,
+      priority: "medium",
+      category: "activity",
+    });
+  }
+
+  // High resting HR trending up
+  if (prevRestingHR && avgRestingHR > prevRestingHR + 3) {
+    suggestions.push({
+      id: "resting_hr_rising",
+      icon: "❤️‍🔥",
+      title: "Resting heart rate is rising",
+      description: `Your resting HR went from ${Math.round(prevRestingHR)} to ${Math.round(avgRestingHR)} bpm. This often signals low activity, poor sleep, or high stress. Prioritize recovery and gentle cardio.`,
+      priority: "high",
+      category: "heart",
+    });
+  }
+
+  // Low HRV
+  if (avgHRV < 40) {
+    suggestions.push({
+      id: "low_hrv",
+      icon: "💓",
+      title: "HRV is low — focus on recovery",
+      description: `Your HRV (${Math.round(avgHRV)} ms) suggests your body is under stress. Try deep breathing exercises, reduce alcohol, and aim for 7.5+ hrs of sleep.`,
+      priority: "high",
+      category: "heart",
+    });
+  }
+
+  // HRV dropping
+  if (prevHRV && avgHRV < prevHRV * 0.85) {
+    suggestions.push({
+      id: "hrv_dropping",
+      icon: "⚠️",
+      title: "HRV dropped significantly",
+      description: `HRV fell from ${Math.round(prevHRV)} to ${Math.round(avgHRV)} ms. Consider a lighter workout day and prioritize sleep quality.`,
+      priority: "medium",
+      category: "heart",
+    });
+  }
+
+  // High blood pressure + sedentary
+  if (avgBPSys > 130 && avgSteps < 7000) {
+    suggestions.push({
+      id: "bp_high_sedentary",
+      icon: "🩺",
+      title: "Blood pressure elevated",
+      description: `Avg systolic BP is ${Math.round(avgBPSys)} mmHg with low activity. Regular aerobic exercise (brisk walking, cycling) can lower systolic BP by 5-8 mmHg.`,
+      priority: "high",
+      category: "heart",
+    });
+  }
+
+  // Poor sleep
+  if (avgSleep < 6.5) {
+    suggestions.push({
+      id: "low_sleep",
+      icon: "😴",
+      title: "You're not sleeping enough",
+      description: `Averaging ${avgSleep.toFixed(1)} hrs of sleep. Aim for 7-9 hrs. Poor sleep raises cortisol, increases resting HR, and lowers HRV. Try setting a consistent bedtime.`,
+      priority: "high",
+      category: "sleep",
+    });
+  }
+
+  // High stress + no workouts
+  if (avgStress > 50 && workoutDays < 2) {
+    suggestions.push({
+      id: "high_stress_no_exercise",
+      icon: "🧘",
+      title: "Exercise to reduce stress",
+      description: `Your stress level is high (${Math.round(avgStress)}%) and you only worked out ${workoutDays}x this week. Even 15 minutes of yoga or walking can significantly reduce stress hormones.`,
+      priority: "medium",
+      category: "stress",
+    });
+  }
+
+  // Low body battery
+  if (avgBodyBattery < 35) {
+    suggestions.push({
+      id: "low_body_battery",
+      icon: "🔋",
+      title: "Body battery is running low",
+      description: `Avg body battery is ${Math.round(avgBodyBattery)}%. You may be overtraining or under-recovering. Take a rest day, hydrate well, and sleep earlier.`,
+      priority: "medium",
+      category: "stress",
+    });
+  }
+
+  // Dehydration
+  if (avgWater < 2.0) {
+    suggestions.push({
+      id: "low_water",
+      icon: "💧",
+      title: "Drink more water",
+      description: `You're averaging ${avgWater.toFixed(1)}L/day. Aim for at least 2.5L. Dehydration can impair focus, increase stress, and affect heart rate.`,
+      priority: "low",
+      category: "nutrition",
+    });
+  }
+
+  // No workouts at all
+  if (workoutDays === 0) {
+    suggestions.push({
+      id: "no_workouts",
+      icon: "🏃",
+      title: "No workouts this week",
+      description: "You haven't logged any workouts. Start with something small — a 20-min walk or bodyweight session. Consistency matters more than intensity.",
+      priority: "medium",
+      category: "activity",
+    });
+  }
+
+  // Good trend — positive reinforcement
+  if (avgSteps > 10000 && avgHRV > 55 && avgSleep > 7) {
+    suggestions.push({
+      id: "great_week",
+      icon: "🌟",
+      title: "You're doing great!",
+      description: "Your activity, sleep, and HRV are all in a healthy range. Keep this up — your body is recovering well and performing at a good level.",
+      priority: "low",
+      category: "activity",
+    });
+  }
+
+  return suggestions.sort((a, b) => {
+    const p = { high: 0, medium: 1, low: 2 };
+    return p[a.priority] - p[b.priority];
+  });
+};
