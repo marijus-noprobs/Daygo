@@ -214,7 +214,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
           {biometricCorrelations.map((c, i) => {
             const isPos = c.r >= 0;
             const strength = Math.abs(c.r);
-            const clr = strength > 0.5 ? (isPos ? "#30D158" : "#FF453A") : strength > 0.25 ? "#FFD60A" : "rgba(255,255,255,0.2)";
+            const clr = strength > 0.5 ? (isPos ? "#D4FF5E" : "#F06B9E") : strength > 0.25 ? "#7B7BF7" : "rgba(255,255,255,0.2)";
             return (
               <div key={c.label} className={`flex items-center gap-3 py-3.5 ${i < biometricCorrelations.length - 1 ? "border-b border-secondary/60" : ""}`}>
                 <span className="text-sm text-foreground/70 flex-1">{c.label}</span>
