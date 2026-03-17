@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { Home, Search, ClipboardList, Sparkles, User, Plus, Zap, Download, RefreshCw, ChevronRight, CalendarIcon } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
+import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
 import { GoalsScreen } from "./GoalsScreen";
