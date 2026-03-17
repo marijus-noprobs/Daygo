@@ -44,11 +44,9 @@ const DayLensApp = () => {
   const todayEntry = entries.find(e => e.date === today);
   const todayScore = todayEntry ? computeDayScore(todayEntry) : null;
 
-  // Auto-detect activity level from wearable data
   const detectedLevel = useMemo(() => detectActivityLevel(entries), [entries]);
   const detectedLevelLabel = detectedLevel ? ACTIVITY_LEVEL_LABELS[detectedLevel] || null : null;
 
-  // Auto-update profile when detected level changes
   useMemo(() => {
     if (detectedLevel && detectedLevel !== profile.activityLevel) {
       const updated = { ...profile, activityLevel: detectedLevel };
@@ -57,7 +55,6 @@ const DayLensApp = () => {
     }
   }, [detectedLevel]);
 
-  // Generate health suggestions
   const healthSuggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
 
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
@@ -103,19 +100,19 @@ const DayLensApp = () => {
 
   return (
     <div className="max-w-md mx-auto min-h-screen relative">
-      {/* Status Bar + Header Section */}
+      {/* Header */}
       <div className="header-lime px-6 pt-10 pb-6">
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
+              <div className="w-10 h-10 bg-primary-foreground flex items-center justify-center">
                 <Zap className="w-6 h-6 text-primary" strokeWidth={2} />
               </div>
               {isPro && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-dl-blue text-white uppercase">Pro</span>
+                <span className="font-mono-label px-2 py-0.5 bg-primary-foreground text-primary">Pro</span>
               )}
             </div>
-            <span className="text-xs text-primary-foreground/70 font-medium">Welcome Back, Jacob</span>
+            <span className="font-mono-label text-primary-foreground/70">Welcome Back, Jacob</span>
           </div>
           <div className="flex items-center gap-2">
             <MoodCalendar
@@ -170,16 +167,16 @@ const DayLensApp = () => {
         )}
       </main>
 
-      {/* Floating pill bottom nav */}
+      {/* Bottom nav */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-        <nav className="flex items-center gap-0 px-4 h-16 rounded-full nav-blur shadow-2xl shadow-black/25">
+        <nav className="flex items-center gap-0 px-3 h-14 nav-blur">
           {NAV.map(item => {
             const active = screen === item.id;
             return (
               <button key={item.id} onClick={() => setScreen(item.id)}
-                className={`flex items-center gap-2 h-10 px-4 rounded-full transition-all ${active ? "bg-primary" : ""}`}>
-                <item.icon className={`w-5 h-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
-                {active && <span className="text-xs font-bold text-primary-foreground">{item.label}</span>}
+                className={`flex items-center gap-2 h-9 px-4 transition-all ${active ? "bg-primary" : ""}`}>
+                <item.icon className={`w-4 h-4 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                {active && <span className="font-mono-label text-primary-foreground">{item.label}</span>}
               </button>
             );
           })}
@@ -192,30 +189,32 @@ const DayLensApp = () => {
         <div className="space-y-3 mb-5">
           {PLAN_OPTIONS.map(p => (
             <div key={p.id} onClick={() => { setPlan(p.id); save("dl_plan", p.id); setShowPricing(false); }}
-              className={`relative p-4 rounded-2xl border cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-transform ${
-                p.id === plan ? "border-primary bg-primary/10" : "border-border bg-card"
+              className={`relative p-4 border cursor-pointer hover:bg-white/[0.02] active:scale-[0.99] transition-all ${
+                p.id === plan ? "border-primary bg-primary/5" : "border-border bg-card"
               }`}>
-              {p.highlight && <span className="absolute -top-2 right-4 text-[10px] font-bold bg-dl-blue text-white px-2 py-0.5 rounded-full">Popular</span>}
-              {plan === p.id && <span className="absolute top-4 right-4 text-foreground">✓</span>}
+              {p.highlight && <span className="absolute -top-2 right-4 font-mono-label bg-primary text-primary-foreground px-2 py-0.5">Popular</span>}
+              {plan === p.id && <span className="absolute top-4 right-4 text-primary">✓</span>}
               <div className="flex justify-between items-baseline mb-3">
-                <span className="font-semibold text-base">{p.label}</span>
-                <span className="text-xl font-bold">{p.price}<span className="text-xs text-muted-foreground font-normal">{p.period}</span></span>
+                <span className="font-display text-lg tracking-wider">{p.label}</span>
+                <span className="font-display text-2xl text-primary">{p.price}<span className="font-mono-label text-muted-foreground ml-1">{p.period}</span></span>
               </div>
               <ul className="space-y-1.5">
                 {p.features.map(f => (
-                  <li key={f} className="flex items-center gap-2 text-xs text-muted-foreground">✓ {f}</li>
+                  <li key={f} className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="text-primary font-mono">—</span> {f}
+                  </li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <button onClick={() => setShowPricing(false)} className="w-full py-3 text-sm text-muted-foreground hover:text-foreground transition-colors">Maybe Later</button>
+        <button onClick={() => setShowPricing(false)} className="w-full py-3 font-mono-label text-muted-foreground hover:text-foreground transition-colors">Maybe Later</button>
       </BottomSheet>
     </div>
   );
 };
 
-/* ─── Home Screen (Figma Design) ──────────────────────────────────────────── */
+/* ─── Home Screen ──────────────────────────────────────────── */
 
 const HomeScreen = ({
   entries, recent, todayScore, wearable, submitted, hasToday,
@@ -223,32 +222,12 @@ const HomeScreen = ({
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
   onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin,
 }: any) => {
-  // Get some data for display
   const latestEntry = recent[0];
   const steps = latestEntry?.wearable?.activity?.steps || 12482;
   const kcal = latestEntry?.wearable?.activity?.activeKcal || 482;
   const goalPct = latestEntry ? Math.min(100, Math.round((steps / 15000) * 100)) : 83;
 
-  // If user needs to do check-in (no wearable synced), show the check-in flow
-  if (!submitted && !hasToday && !wearable) {
-    return (
-      <CheckInScreen
-        submitted={submitted} hasToday={hasToday} todayScore={todayScore}
-        wearable={wearable}
-        setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)}
-        setWearableRaw={setWearableRaw}
-        nutrition={nutrition} setNutrition={setNutrition}
-        mood={mood} setMood={setMood}
-        todayActivities={todayActivities} setTodayActivities={setTodayActivities}
-        note={note} setNote={setNote}
-        onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry}
-        profile={profile}
-      />
-    );
-  }
-
-  if (!submitted && !hasToday && wearable) {
+  if (!submitted && !hasToday) {
     return (
       <CheckInScreen
         submitted={submitted} hasToday={hasToday} todayScore={todayScore}
@@ -268,83 +247,80 @@ const HomeScreen = ({
 
   return (
     <div className="space-y-8 fade-up">
-      {/* Summary Card - Dark */}
-      <div className="glass-card-apple rounded-[32px] p-6 relative overflow-hidden">
+      {/* Summary Card */}
+      <div className="glass-card-apple p-6 relative overflow-hidden">
         <div className="flex justify-between items-start mb-2">
           <div>
-            <p className="text-xs font-medium text-foreground/50 mb-1">Activity Summary</p>
+            <p className="font-mono-label text-muted-foreground mb-2">Activity Summary</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-foreground">{steps.toLocaleString()}</span>
-              <span className="text-xs text-foreground/40 font-medium">Steps</span>
+              <span className="font-display text-5xl text-foreground">{steps.toLocaleString()}</span>
+              <span className="font-mono-label text-muted-foreground">Steps</span>
             </div>
-            <div className="flex items-center gap-2 mt-1.5">
-              <span className="text-[10px] text-foreground/50">🔥 {kcal} kcal</span>
-              <span className="text-[10px] font-bold text-primary bg-primary/20 px-2 py-0.5 rounded-full">{goalPct}%</span>
+            <div className="flex items-center gap-3 mt-2">
+              <span className="font-mono-label text-muted-foreground">🔥 {kcal} kcal</span>
+              <span className="font-mono-label bg-primary text-primary-foreground px-2 py-0.5">{goalPct}%</span>
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-              <Download className="w-4 h-4 text-foreground/70" />
+            <button className="w-8 h-8 border border-border flex items-center justify-center hover:border-foreground/30 transition-colors">
+              <Download className="w-4 h-4 text-muted-foreground" />
             </button>
-            <button className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+            <button className="w-8 h-8 border border-primary/30 flex items-center justify-center hover:bg-primary/10 transition-colors">
               <RefreshCw className="w-4 h-4 text-primary" />
             </button>
           </div>
         </div>
 
-        {/* Arc Visualization */}
+        {/* Arc */}
         <div className="flex flex-col items-center mt-4">
           <div className="relative w-[220px] h-[110px] overflow-hidden">
             <svg width="220" height="110" viewBox="0 0 220 110" className="absolute top-0 left-0">
-              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="20" strokeLinecap="round" />
-              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="hsl(78, 100%, 68%)" strokeWidth="20" strokeLinecap="round"
+              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(240,237,232,0.06)" strokeWidth="20" strokeLinecap="butt" />
+              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="hsl(72, 100%, 50%)" strokeWidth="20" strokeLinecap="butt"
                 strokeDasharray={`${(goalPct / 100) * 283} 283`} />
             </svg>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5">
-              <span className="text-[10px] font-bold text-foreground">Active Goals</span>
-              <ChevronRight className="w-3 h-3 text-foreground/60" />
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 border border-border bg-card">
+              <span className="font-mono-label text-foreground">Active Goals</span>
+              <ChevronRight className="w-3 h-3 text-muted-foreground" />
             </div>
           </div>
           <div className="flex justify-between w-[180px] -mt-1">
-            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-              <span className="text-[10px] font-bold text-primary-foreground">S</span>
+            <div className="w-6 h-6 bg-primary flex items-center justify-center">
+              <span className="font-mono text-[9px] font-bold text-primary-foreground">S</span>
             </div>
-            <div className="w-6 h-6 rounded-full bg-dl-indigo flex items-center justify-center">
-              <span className="text-[10px] font-bold text-white">C</span>
+            <div className="w-6 h-6 bg-dl-indigo flex items-center justify-center">
+              <span className="font-mono text-[9px] font-bold text-foreground">C</span>
             </div>
-            <div className="w-6 h-6 rounded-full bg-dl-pink flex items-center justify-center">
-              <span className="text-[10px] font-bold text-white">R</span>
+            <div className="w-6 h-6 bg-dl-pink flex items-center justify-center">
+              <span className="font-mono text-[9px] font-bold text-foreground">R</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* My Activity Section */}
+      {/* My Activity */}
       <div>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-foreground">My Activity</h2>
-          <button className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+          <h2 className="font-display text-2xl tracking-wider text-foreground">My Activity</h2>
+          <button className="font-mono-label px-4 py-1.5 bg-primary text-primary-foreground hover:opacity-80 transition-opacity">
             + Add
           </button>
         </div>
 
-        {/* Horizontal scroll activity cards */}
         <div className="overflow-x-auto pl-8 pr-8 pt-4 pb-10">
-          <div className="flex w-fit min-w-max gap-4 mx-auto pr-2">
-            {/* Running card */}
+          <div className="flex w-fit min-w-max gap-3 mx-auto pr-2">
             <ActivityFigmaCard
-              iconBg="bg-purple-100"
+              iconBg="bg-dl-purple/10"
               iconColor="text-dl-purple"
-              barColor="#D4FF5E"
+              barColor="#c8ff00"
               label="Running"
               value="5.20 KM"
               subtext="34:12 mins"
               change="+12%"
               changePositive
             />
-            {/* Cycling card */}
             <ActivityFigmaCard
-              iconBg="bg-blue-100"
+              iconBg="bg-dl-blue/10"
               iconColor="text-dl-blue"
               barColor="#F87171"
               label="Cycling"
@@ -357,17 +333,17 @@ const HomeScreen = ({
         </div>
       </div>
 
-      {/* Quick action to log today */}
+      {/* Action buttons */}
       {!hasToday && (
         <button onClick={onGoToCheckin}
-          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm active:scale-95 transition-transform">
+          className="w-full py-4 bg-primary text-primary-foreground font-mono-label active:scale-95 transition-transform">
           Log Today's Check-in →
         </button>
       )}
 
       {hasToday && (
         <button onClick={onViewInsights}
-          className="w-full py-4 rounded-2xl glass-card-apple text-foreground font-semibold text-sm active:scale-95 transition-transform">
+          className="w-full py-4 glass-card-apple text-foreground font-mono-label active:scale-95 transition-transform border border-border">
           View Insights →
         </button>
       )}
@@ -375,7 +351,7 @@ const HomeScreen = ({
   );
 };
 
-/* ─── Activity Card (Figma Style) ─────────────────────────────────────────── */
+/* ─── Activity Card ─────────────────────────────────────────── */
 
 const ActivityFigmaCard = ({
   iconBg, iconColor, barColor, label, value, subtext, change, changePositive,
@@ -383,26 +359,26 @@ const ActivityFigmaCard = ({
   iconBg: string; iconColor: string; barColor: string;
   label: string; value: string; subtext: string; change: string; changePositive: boolean;
 }) => (
-  <div className="min-w-[160px] w-[160px] p-4 glass-card-apple !rounded-[28px] flex flex-col justify-between h-[155px] flex-shrink-0">
+  <div className="min-w-[160px] w-[160px] p-4 glass-card-apple flex flex-col justify-between h-[155px] flex-shrink-0">
     <div className="flex justify-between items-start">
-      <div className={`w-10 h-10 rounded-2xl ${iconBg} flex items-center justify-center`}>
+      <div className={`w-10 h-10 ${iconBg} flex items-center justify-center`}>
         <Zap className={`w-6 h-6 ${iconColor}`} />
       </div>
       <div className="flex items-end gap-0.5 h-6">
         {[8, 16, 12, 20].map((h, i) => (
-          <div key={i} className="w-1 rounded-sm" style={{ height: h, background: barColor }} />
+          <div key={i} className="w-1" style={{ height: h, background: barColor }} />
         ))}
       </div>
     </div>
     <div className="mt-6">
       <div className="flex items-center gap-1">
-        <span className="text-[10px] font-medium text-muted-foreground">{label}</span>
-        <span className={`text-[10px] font-bold px-1.5 rounded-full ${
-          changePositive ? "bg-primary text-primary-foreground" : "bg-red-100 text-dl-red"
+        <span className="font-mono-label text-muted-foreground">{label}</span>
+        <span className={`font-mono-label px-1.5 ${
+          changePositive ? "bg-primary text-primary-foreground" : "bg-destructive/20 text-destructive"
         }`}>{change}</span>
       </div>
-      <div className="text-lg font-bold text-foreground mt-0.5">{value}</div>
-      <div className="text-[10px] text-muted-foreground">{subtext}</div>
+      <div className="font-display text-2xl text-foreground mt-0.5">{value}</div>
+      <div className="font-mono-label text-muted-foreground">{subtext}</div>
     </div>
   </div>
 );
