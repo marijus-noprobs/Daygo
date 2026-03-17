@@ -9,7 +9,7 @@ export const GlassCard = ({
   children: ReactNode; className?: string; onClick?: () => void; style?: React.CSSProperties;
 }) => (
   <div onClick={onClick} style={style}
-    className={`glass rounded-3xl p-5 ${onClick ? "cursor-pointer hover:border-foreground/15 transition-colors" : ""} ${className}`}>
+    className={`glass-card-apple rounded-3xl p-5 ${onClick ? "cursor-pointer hover:bg-white/60 transition-all" : ""} ${className}`}>
     {children}
   </div>
 );
@@ -102,7 +102,7 @@ export const StatTile = ({ label, value, unit, colorClass, icon: Icon }: {
   label: string; value: string | number; unit: string; colorClass: string;
   icon: React.ComponentType<any>;
 }) => (
-  <div className="bg-secondary/60 rounded-2xl p-4">
+  <div className="glass-card-apple rounded-2xl p-4">
     <div className="flex items-center gap-1.5 mb-1.5">
       <Icon className={`w-3.5 h-3.5 ${colorClass}`} size={14} />
       <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{label}</span>
@@ -120,7 +120,7 @@ export const BottomSheet = ({ open, onClose, children, title }: {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-foreground/50 backdrop-blur-sm fade-in" onClick={onClose}>
-      <div className="w-full max-w-md bg-background border border-border rounded-t-3xl shadow-2xl scale-in" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-md glass-card-apple border-t border-white/40 rounded-t-3xl shadow-2xl scale-in" onClick={e => e.stopPropagation()}>
         <div className="w-10 h-1 bg-muted rounded-full mx-auto mt-4 mb-5" />
         {title && <div className="px-6 pb-3"><h3 className="text-lg font-semibold text-foreground">{title}</h3></div>}
         <div className="px-6 pb-10 overflow-y-auto" style={{ maxHeight: "82vh" }}>{children}</div>
