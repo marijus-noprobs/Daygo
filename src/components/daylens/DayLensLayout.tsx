@@ -11,7 +11,8 @@ import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
 import { HealthMetricsScreen } from "./HealthMetricsScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
-import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
+import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions } from "@/lib/daylens-utils";
+import { ACTIVITY_LEVEL_LABELS } from "@/lib/daylens-constants";
 
 const DayLensApp = () => {
   const [onboarded, setOnboarded] = useState<boolean>(() => load("dl_onboarded", false));
