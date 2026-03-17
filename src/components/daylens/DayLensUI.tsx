@@ -102,7 +102,7 @@ export const StatTile = ({ label, value, unit, colorClass, icon: Icon }: {
   label: string; value: string | number; unit: string; colorClass: string;
   icon: React.ComponentType<any>;
 }) => (
-  <div className="bg-secondary/60 rounded-2xl p-4">
+  <div className="glass-card-apple rounded-2xl p-4">
     <div className="flex items-center gap-1.5 mb-1.5">
       <Icon className={`w-3.5 h-3.5 ${colorClass}`} size={14} />
       <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{label}</span>
