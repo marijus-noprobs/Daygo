@@ -11,7 +11,8 @@ import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
 import { HealthMetricsScreen } from "./HealthMetricsScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
-import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
+import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions } from "@/lib/daylens-utils";
+import { ACTIVITY_LEVEL_LABELS } from "@/lib/daylens-constants";
 
 const DayLensApp = () => {
   const [onboarded, setOnboarded] = useState<boolean>(() => load("dl_onboarded", false));
@@ -42,6 +43,22 @@ const DayLensApp = () => {
   const recent = useMemo(() => [...entries].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14), [entries]);
   const todayEntry = entries.find(e => e.date === today);
   const todayScore = todayEntry ? computeDayScore(todayEntry) : null;
+
+  // Auto-detect activity level from wearable data
+  const detectedLevel = useMemo(() => detectActivityLevel(entries), [entries]);
+  const detectedLevelLabel = detectedLevel ? ACTIVITY_LEVEL_LABELS[detectedLevel] || null : null;
+
+  // Auto-update profile when detected level changes
+  useMemo(() => {
+    if (detectedLevel && detectedLevel !== profile.activityLevel) {
+      const updated = { ...profile, activityLevel: detectedLevel };
+      setProfile(updated);
+      save("dl_profile", updated);
+    }
+  }, [detectedLevel]);
+
+  // Generate health suggestions
+  const healthSuggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
 
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayEntry = entries.find(e => e.date === yesterday.toISOString().split("T")[0]);
@@ -139,7 +156,7 @@ const DayLensApp = () => {
             onShowPricing={() => setShowPricing(true)}
           />
         )}
-        {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} />}
+        {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
         {screen === "insights" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
         {screen === "account" && (

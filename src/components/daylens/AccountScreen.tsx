@@ -51,21 +51,16 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
         </div>
       </GlassCard>
 
-      {/* Activity Level */}
+      {/* Activity Level - Auto-detected */}
       <GlassCard>
-        <SectionHeader title="Activity Level" />
-        <div className="space-y-2">
-          {(Object.keys(ACTIVITY_LEVEL_LABELS) as UserProfile["activityLevel"][]).map(level => (
-            <button key={level} onClick={() => setProfile({ ...profile, activityLevel: level })}
-              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                profile.activityLevel === level
-                  ? "bg-dl-indigo/15 text-dl-indigo border border-dl-indigo/25"
-                  : "bg-secondary/50 text-muted-foreground hover:text-foreground/70 border border-transparent"
-              }`}>
-              {ACTIVITY_LEVEL_LABELS[level]}
-            </button>
-          ))}
+        <SectionHeader title="Activity Level" subtitle="Auto-detected from your wearable data" />
+        <div className="flex items-center justify-between py-3">
+          <span className="text-sm font-semibold text-foreground">{ACTIVITY_LEVEL_LABELS[profile.activityLevel]}</span>
+          <span className="text-[10px] px-2.5 py-1 rounded-full bg-dl-indigo/15 text-dl-indigo font-bold uppercase tracking-wider">Auto</span>
         </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Updated weekly based on your steps, workouts, and active calories.
+        </p>
       </GlassCard>
 
       {/* Goal */}

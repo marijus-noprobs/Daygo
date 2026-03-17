@@ -1,11 +1,17 @@
 import { Heart, BatteryCharging, Activity, Wind, Gauge, Thermometer } from "lucide-react";
 import { GlassCard } from "./DayLensUI";
+import { HealthSuggestions } from "./HealthSuggestions";
 import type { DayEntry } from "@/lib/daylens-constants";
+import type { UserProfile } from "@/lib/daylens-constants";
+import type { HealthSuggestion } from "@/lib/daylens-utils";
 import { scoreGradient } from "@/lib/daylens-utils";
 
 interface HealthMetricsScreenProps {
   entries: DayEntry[];
   recent: DayEntry[];
+  suggestions: HealthSuggestion[];
+  detectedLevel: string | null;
+  detectedLevelLabel: string | null;
 }
 
 const MetricCard = ({
@@ -70,7 +76,7 @@ const getBatteryLabel = (val: number) => {
   return "Depleted — Rest urgently";
 };
 
-export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProps) => {
+export const HealthMetricsScreen = ({ entries, recent, suggestions, detectedLevel, detectedLevelLabel }: HealthMetricsScreenProps) => {
   const latestEntry = recent[0];
   const body = latestEntry?.wearable?.body;
 
@@ -205,6 +211,13 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
           <div className="flex justify-between"><span>Stress</span><span>0–25 low, 26–50 moderate</span></div>
         </div>
       </GlassCard>
+
+      {/* AI Suggestions */}
+      <HealthSuggestions
+        suggestions={suggestions}
+        detectedLevel={detectedLevel}
+        detectedLevelLabel={detectedLevelLabel}
+      />
     </div>
   );
 };

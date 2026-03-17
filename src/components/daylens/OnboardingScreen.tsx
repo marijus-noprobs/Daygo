@@ -138,20 +138,12 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                     ))}
                   </div>
 
-                  {/* Activity Level */}
+                  {/* Activity Level - Auto-detected */}
                   <div>
                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Activity Level</label>
-                    <div className="space-y-2">
-                      {Object.entries(ACTIVITY_LEVEL_LABELS).map(([key, label]) => (
-                        <button key={key} onClick={() => setProfile(p => ({ ...p, activityLevel: key as UserProfile["activityLevel"] }))}
-                          className={`w-full text-left px-4 py-3 rounded-2xl text-sm transition-all ${
-                            profile.activityLevel === key
-                              ? "bg-dl-indigo/20 text-dl-indigo border border-dl-indigo/30 font-semibold"
-                              : "bg-secondary text-muted-foreground border border-transparent hover:border-muted"
-                          }`}>
-                          {label}
-                        </button>
-                      ))}
+                    <div className="glass rounded-2xl px-4 py-3 flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Auto-detected from your wearable</span>
+                      <span className="text-xs px-2 py-1 rounded-lg bg-dl-indigo/15 text-dl-indigo font-medium">Smart</span>
                     </div>
                   </div>
 
