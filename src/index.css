@@ -86,10 +86,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: linear-gradient(160deg, 
-      hsl(140 30% 5%) 0%, 
-      hsl(150 25% 7%) 30%,
-      hsl(130 20% 6%) 60%, 
-      hsl(160 15% 5%) 100%);
+      hsl(140 35% 12%) 0%, 
+      hsl(150 30% 15%) 25%,
+      hsl(130 25% 13%) 50%, 
+      hsl(145 30% 14%) 75%,
+      hsl(160 25% 11%) 100%);
     min-height: 100vh;
     background-attachment: fixed;
   }
