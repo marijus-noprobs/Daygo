@@ -64,7 +64,7 @@ const SentimentFace = ({ value, fg }: { value: number; fg: string }) => {
   // Mouth curve
   const mouthY = 170;
   const mouthWidth = 30;
-  const mouthCurve = value <= 25 ? 15 : value <= 65 ? 8 : -2;
+  const mouthCurve = value <= 25 ? -15 : value <= 65 ? -5 : 12;
 
   return (
     <svg width="200" height="220" viewBox="0 0 260 220" className="transition-all duration-500">
