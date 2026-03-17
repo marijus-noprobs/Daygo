@@ -106,13 +106,6 @@ const DayLensApp = () => {
               selectedDate={selectedDate}
               onSelectDate={setSelectedDate}
             />
-            <button onClick={() => setScreen("account")} className="w-9 h-9 rounded-full overflow-hidden border-2 border-primary-foreground/30">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/0440ec97d35cfb90d5c4e49072ca29ffe4dbce91?width=64"
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </button>
           </div>
         </div>
       </div>
