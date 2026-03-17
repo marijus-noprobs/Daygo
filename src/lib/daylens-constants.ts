@@ -57,7 +57,7 @@ export const DEFAULT_GOALS: Goal[] = [
 export interface WearableData {
   sleep: { totalHours: number; deepHours: number; remHours: number; score: number; bedtime: string; wakeTime: string };
   activity: { steps: number; activeKcal: number; standHours: number; workouts: Workout[] };
-  body: { hrv: number; restingHR: number; spo2: number; bodyBattery: number };
+  body: { hrv: number; restingHR: number; spo2: number; bodyBattery: number; stressLevel: number; bloodPressureSys: number; bloodPressureDia: number };
 }
 
 export interface Workout {
