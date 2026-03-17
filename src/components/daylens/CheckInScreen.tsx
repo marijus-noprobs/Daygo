@@ -154,14 +154,14 @@ export const CheckInScreen = ({
       {section === "activity" && (
         <div className="space-y-3 slide-in">
           <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Steps" value={wearable.activity.steps.toLocaleString()} unit="" colorClass="text-dl-orange" icon={Footprints} />
-            <StatTile label="Active kcal" value={wearable.activity.activeKcal} unit="" colorClass="text-dl-red" icon={Flame} />
-            <StatTile label="HRV" value={wearable.body.hrv} unit="ms" colorClass="text-dl-blue" icon={Heart} />
+            <StatTile label="Steps" value={wearable.activity.steps.toLocaleString()} unit="" colorClass="text-dl-lime" icon={Footprints} />
+            <StatTile label="Active kcal" value={wearable.activity.activeKcal} unit="" colorClass="text-dl-indigo" icon={Flame} />
+            <StatTile label="HRV" value={wearable.body.hrv} unit="ms" colorClass="text-dl-pink" icon={Heart} />
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Resting HR" value={wearable.body.restingHR} unit="bpm" colorClass="text-dl-pink" icon={Heart} />
-            <StatTile label="SpO₂" value={wearable.body.spo2} unit="%" colorClass="text-dl-emerald" icon={Wind} />
-            <StatTile label="Body Batt." value={wearable.body.bodyBattery} unit="" colorClass="text-dl-yellow" icon={BatteryCharging} />
+            <StatTile label="Resting HR" value={wearable.body.restingHR} unit="bpm" colorClass="text-dl-lime" icon={Heart} />
+            <StatTile label="SpO₂" value={wearable.body.spo2} unit="%" colorClass="text-dl-indigo" icon={Wind} />
+            <StatTile label="Body Batt." value={wearable.body.bodyBattery} unit="" colorClass="text-dl-pink" icon={BatteryCharging} />
           </div>
           <GlassCard>
             <div className="flex justify-between items-center mb-4">

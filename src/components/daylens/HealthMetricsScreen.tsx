@@ -135,7 +135,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
           label="Resting HR"
           value={body.restingHR}
           unit="bpm"
-          color="#FF6B6B"
+          color="#F06B9E"
           min={40} max={100} current={body.restingHR}
           subtitle={avgHR ? `7-day avg: ${avgHR} bpm` : undefined}
         />
@@ -144,7 +144,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
           label="HRV"
           value={body.hrv}
           unit="ms"
-          color="#5E8BFF"
+          color="#7B7BF7"
           min={15} max={100} current={body.hrv}
           subtitle={avgHRV ? `7-day avg: ${avgHRV} ms` : undefined}
         />
@@ -153,7 +153,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
           label="SpO₂"
           value={body.spo2}
           unit="%"
-          color="#30D158"
+          color="#D4FF5E"
           min={90} max={100} current={body.spo2}
           subtitle={body.spo2 >= 95 ? "Normal range" : "Below normal"}
         />

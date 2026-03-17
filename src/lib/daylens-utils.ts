@@ -41,11 +41,9 @@ export const isLateNight = (startTime: string) => {
 
 export const scoreGradient = (val: number, max = 5): [string, string] => {
   const n = val / max;
-  if (n >= 0.85) return ["#30D158", "#34C759"];
-  if (n >= 0.65) return ["#64D2FF", "#30B0C7"];
-  if (n >= 0.45) return ["#FFD60A", "#FF9F0A"];
-  if (n >= 0.25) return ["#FF9F0A", "#FF6B00"];
-  return ["#FF453A", "#FF3B30"];
+  if (n >= 0.65) return ["#D4FF5E", "#C5F467"];  // lime
+  if (n >= 0.35) return ["#7B7BF7", "#6B6BE7"];  // blue
+  return ["#F06B9E", "#E05B8E"];                   // pink
 };
 
 export const scoreLabel = (v: number) => (["", "Poor", "Fair", "Good", "Great", "Peak"][Math.round(v)] || "");

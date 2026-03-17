@@ -276,7 +276,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-muted-foreground/60">{r.lw}{r.unit}</span>
                       <ArrowRight className="text-muted-foreground/30 w-2.5 h-2.5" />
-                      <span className={`text-sm font-semibold ${up ? "text-dl-emerald" : "text-dl-red"}`}>{r.tw}{r.unit}</span>
+                      <span className={`text-sm font-semibold ${up ? "text-dl-lime" : "text-dl-pink"}`}>{r.tw}{r.unit}</span>
                       <span className="text-xs">{up ? "↑" : "↓"}</span>
                     </div>
                   </div>

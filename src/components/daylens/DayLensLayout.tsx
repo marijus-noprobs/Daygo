@@ -292,10 +292,10 @@ const HomeScreen = ({
             <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
               <span className="text-[10px] font-bold text-primary-foreground">S</span>
             </div>
-            <div className="w-6 h-6 rounded-full bg-dl-blue flex items-center justify-center">
+            <div className="w-6 h-6 rounded-full bg-dl-indigo flex items-center justify-center">
               <span className="text-[10px] font-bold text-white">C</span>
             </div>
-            <div className="w-6 h-6 rounded-full bg-dl-purple flex items-center justify-center">
+            <div className="w-6 h-6 rounded-full bg-dl-pink flex items-center justify-center">
               <span className="text-[10px] font-bold text-white">R</span>
             </div>
           </div>
