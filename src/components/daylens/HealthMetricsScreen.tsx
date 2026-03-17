@@ -102,7 +102,7 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
       </div>
 
       {/* Body Battery — hero */}
-      <div className="rounded-3xl p-6 text-center relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${scoreGradient(body.bodyBattery / 20)[0]}20, ${scoreGradient(body.bodyBattery / 20)[1]}10)` }}>
+      <div className="glass-card-apple rounded-3xl p-6 text-center relative overflow-hidden">
         <p className="text-xs font-medium text-muted-foreground mb-1">Body Battery</p>
         <div className="text-5xl font-bold mb-1" style={{ color: scoreGradient(body.bodyBattery / 20)[0] }}>
           {body.bodyBattery}
