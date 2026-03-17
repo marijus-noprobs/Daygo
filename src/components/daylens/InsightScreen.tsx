@@ -196,7 +196,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     <div className="h-full rounded-full bg-muted-foreground/40" style={{ width: (c.avgWithout / 5 * 100) + "%", transition: "width .7s ease" }} />
                   </div>
                 </div>
-                <div className={`mt-4 rounded-xl px-3 py-2.5 text-xs leading-relaxed border ${positive ? "bg-dl-emerald/[0.08] border-dl-emerald/20 text-dl-emerald" : "bg-dl-red/[0.08] border-dl-red/20 text-dl-red"}`}>
+                <div className={`mt-4 rounded-xl px-3 py-2.5 text-xs leading-relaxed border ${positive ? "bg-dl-lime/[0.08] border-dl-lime/20 text-dl-lime" : "bg-dl-pink/[0.08] border-dl-pink/20 text-dl-pink"}`}>
                   {positive
                     ? `Days after ${c.label.toLowerCase()} your score is ${c.diff.toFixed(2)} points higher on average.`
                     : `Days after ${c.label.toLowerCase()} your score drops by ${Math.abs(c.diff).toFixed(2)} points on average.`}
