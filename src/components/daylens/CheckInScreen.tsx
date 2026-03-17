@@ -235,8 +235,8 @@ export const CheckInScreen = ({
                 </div>
                 <div className="flex justify-between text-xs mb-3">
                   <span className="text-muted-foreground">Eaten: <span className="text-foreground font-semibold">{eaten.toLocaleString()}</span></span>
-                  <span className={remaining >= 0 ? "text-dl-emerald font-semibold" : "text-dl-red font-semibold"}>
-                    {remaining >= 0 ? `${remaining.toLocaleString()} left` : `${Math.abs(remaining).toLocaleString()} over`}
+                   <span className={remaining >= 0 ? "text-dl-lime font-semibold" : "text-dl-pink font-semibold"}>
+                     {remaining >= 0 ? `${remaining.toLocaleString()} left` : `${Math.abs(remaining).toLocaleString()} over`}
                   </span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
