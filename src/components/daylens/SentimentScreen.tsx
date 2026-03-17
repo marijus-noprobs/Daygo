@@ -219,5 +219,6 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
       {/* Bottom safe area */}
       <div className="h-8" />
     </div>
+    </div>
   );
 };
