@@ -266,169 +266,145 @@ const HomeScreen = ({
     );
   }
 
-  const sleepHrs = latestEntry?.wearable?.sleep?.totalHours || 7.2;
-  const hrv = latestEntry?.wearable?.body?.hrv || 52;
-  const restingHR = latestEntry?.wearable?.body?.restingHR || 58;
-  const bodyBattery = latestEntry?.wearable?.body?.bodyBattery || 72;
-  const sleepScore = latestEntry?.wearable?.sleep?.score || 78;
-  const stressLevel = latestEntry?.wearable?.body?.stressLevel || 34;
-  const workouts = latestEntry?.wearable?.activity?.workouts || [];
-
-  const today_ = new Date();
-  const dateStr = today_.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }).toUpperCase();
-  const dayStr = today_.toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
-
   return (
-    <div className="space-y-0 fade-up -mx-6 -mt-6">
-      {/* ── Hero metric block ── */}
-      <div className="relative px-6 pt-2 pb-8">
-        {/* Micro text top */}
-        <div className="flex justify-between items-center mb-8">
-          <span className="text-[8px] tracking-[0.3em] text-foreground/20 uppercase font-medium">daygo.ai __ performance __ tracking</span>
-          <span className="text-[8px] tracking-[0.3em] text-foreground/20 uppercase font-medium">v2.0</span>
-        </div>
-
-        {/* Main step count — NOCTA style */}
-        <div className="text-center mb-2">
-          <p className="text-[9px] tracking-[0.4em] text-foreground/30 uppercase mb-3 font-medium">Daily Steps</p>
-          <span className="text-6xl font-bold tracking-tight text-foreground font-display">{steps.toLocaleString()}</span>
-        </div>
-
-        {/* Thin divider line */}
-        <div className="w-full h-px bg-foreground/10 mt-6" />
-
-        {/* Framed stats row */}
-        <div className="flex items-stretch mt-6">
-          <div className="flex-1 border border-foreground/10 px-4 py-3">
-            <p className="text-[8px] tracking-[0.3em] text-foreground/30 uppercase mb-1">Calories</p>
-            <span className="text-lg font-bold text-foreground font-display">{kcal}</span>
-            <span className="text-[9px] text-foreground/30 ml-1">kcal</span>
-          </div>
-          <div className="flex-1 border-y border-r border-foreground/10 px-4 py-3">
-            <p className="text-[8px] tracking-[0.3em] text-foreground/30 uppercase mb-1">Goal</p>
-            <span className="text-lg font-bold text-primary font-display">{goalPct}%</span>
-          </div>
-          <div className="flex-1 border-y border-r border-foreground/10 px-4 py-3">
-            <p className="text-[8px] tracking-[0.3em] text-foreground/30 uppercase mb-1">Workouts</p>
-            <span className="text-lg font-bold text-foreground font-display">{workouts.length}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Thin full-width divider ── */}
-      <div className="w-full h-px bg-foreground/8" />
-
-      {/* ── Vitals grid — framed cells ── */}
-      <div className="px-6 py-6">
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-[10px] tracking-[0.35em] text-foreground/40 uppercase font-bold">Vitals</h2>
-          <span className="text-[8px] tracking-[0.3em] text-foreground/15 uppercase">Live Data</span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-0">
-          {[
-            { label: "Sleep", value: `${sleepHrs}`, unit: "hrs", sub: `Score ${sleepScore}%` },
-            { label: "HRV", value: `${hrv}`, unit: "ms", sub: "Variability" },
-            { label: "Resting HR", value: `${restingHR}`, unit: "bpm", sub: "Heart Rate" },
-            { label: "Body Battery", value: `${bodyBattery}`, unit: "%", sub: "Recovery" },
-          ].map((m, i) => (
-            <div key={m.label} className={`border border-foreground/10 px-4 py-5 ${i < 2 ? "" : ""}`}>
-              <p className="text-[8px] tracking-[0.3em] text-foreground/30 uppercase mb-2">{m.label}</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-bold text-foreground font-display">{m.value}</span>
-                <span className="text-[9px] text-foreground/25">{m.unit}</span>
-              </div>
-              <p className="text-[8px] text-foreground/20 mt-1 tracking-wider uppercase">{m.sub}</p>
+    <div className="space-y-8 fade-up">
+      {/* Summary Card - Dark */}
+      <div className="glass-card-apple rounded-[32px] p-6 relative overflow-hidden">
+        <div className="flex justify-between items-start mb-2">
+          <div>
+            <p className="text-xs font-medium text-foreground/50 mb-1">Activity Summary</p>
+            <div className="flex items-baseline gap-1">
+              <span className="text-3xl font-bold text-foreground">{steps.toLocaleString()}</span>
+              <span className="text-xs text-foreground/40 font-medium">Steps</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Thin full-width divider ── */}
-      <div className="w-full h-px bg-foreground/8" />
-
-      {/* ── Stress / Activity bar ── */}
-      <div className="px-6 py-6">
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-[10px] tracking-[0.35em] text-foreground/40 uppercase font-bold">Status</h2>
-        </div>
-
-        <div className="space-y-4">
-          {/* Stress bar */}
-          <div className="border border-foreground/10 p-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-[8px] tracking-[0.3em] text-foreground/30 uppercase">Stress Level</span>
-              <span className="text-sm font-bold text-foreground font-display">{stressLevel}%</span>
-            </div>
-            <div className="w-full h-1 bg-foreground/5 rounded-full overflow-hidden">
-              <div className="h-full rounded-full transition-all" style={{
-                width: `${stressLevel}%`,
-                background: stressLevel > 60 ? "hsl(var(--dl-pink))" : stressLevel > 35 ? "hsl(var(--dl-indigo))" : "hsl(var(--primary))"
-              }} />
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="text-[10px] text-foreground/50">🔥 {kcal} kcal</span>
+              <span className="text-[10px] font-bold text-primary bg-primary/20 px-2 py-0.5 rounded-full">{goalPct}%</span>
             </div>
           </div>
+          <div className="flex flex-col gap-2">
+            <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+              <Download className="w-4 h-4 text-foreground/70" />
+            </button>
+            <button className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <RefreshCw className="w-4 h-4 text-primary" />
+            </button>
+          </div>
+        </div>
 
-          {/* Activity progress */}
-          <div className="border border-foreground/10 p-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-[8px] tracking-[0.3em] text-foreground/30 uppercase">Activity Progress</span>
-              <span className="text-sm font-bold text-primary font-display">{goalPct}%</span>
+        {/* Arc Visualization */}
+        <div className="flex flex-col items-center mt-4">
+          <div className="relative w-[220px] h-[110px] overflow-hidden">
+            <svg width="220" height="110" viewBox="0 0 220 110" className="absolute top-0 left-0">
+              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="20" strokeLinecap="round" />
+              <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="hsl(78, 100%, 68%)" strokeWidth="20" strokeLinecap="round"
+                strokeDasharray={`${(goalPct / 100) * 283} 283`} />
+            </svg>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5">
+              <span className="text-[10px] font-bold text-foreground">Active Goals</span>
+              <ChevronRight className="w-3 h-3 text-foreground/60" />
             </div>
-            <div className="w-full h-1 bg-foreground/5 rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${goalPct}%` }} />
+          </div>
+          <div className="flex justify-between w-[180px] -mt-1">
+            <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+              <span className="text-[10px] font-bold text-primary-foreground">S</span>
+            </div>
+            <div className="w-6 h-6 rounded-full bg-dl-indigo flex items-center justify-center">
+              <span className="text-[10px] font-bold text-white">C</span>
+            </div>
+            <div className="w-6 h-6 rounded-full bg-dl-pink flex items-center justify-center">
+              <span className="text-[10px] font-bold text-white">R</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Thin full-width divider ── */}
-      <div className="w-full h-px bg-foreground/8" />
-
-      {/* ── Bottom frame — date + CTA ── */}
-      <div className="px-6 py-6">
-        {/* Micro text scattered */}
-        <div className="flex justify-between mb-6">
-          <span className="text-[8px] tracking-[0.3em] text-foreground/15 uppercase">daygo __ daygo __ daygo</span>
-          <span className="text-[8px] tracking-[0.3em] text-foreground/15 uppercase">daygo __ daygo</span>
-        </div>
-
-        {/* Date frame */}
-        <div className="flex border border-foreground/10">
-          <div className="flex-1 px-4 py-3">
-            <span className="text-[9px] tracking-[0.25em] text-foreground/40 uppercase font-bold">{dateStr}</span>
-          </div>
-          <div className="border-l border-foreground/10 px-4 py-3">
-            <span className="text-[9px] tracking-[0.25em] text-foreground/40 uppercase font-bold">{dayStr}</span>
-          </div>
-        </div>
-
-        {/* CTA */}
-        {!hasToday && (
-          <button onClick={onGoToCheckin}
-            className="w-full mt-6 py-4 border border-foreground/15 text-foreground text-[10px] tracking-[0.35em] uppercase font-bold hover:bg-foreground/5 active:scale-[0.98] transition-all">
-            Log Today's Check-in →
+      {/* My Activity Section */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-foreground">My Activity</h2>
+          <button className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+            + Add
           </button>
-        )}
+        </div>
 
-        {hasToday && (
-          <button onClick={onViewInsights}
-            className="w-full mt-6 py-4 border border-primary/30 text-primary text-[10px] tracking-[0.35em] uppercase font-bold hover:bg-primary/5 active:scale-[0.98] transition-all">
-            View Insights →
-          </button>
-        )}
-
-        {/* Bottom micro text */}
-        <div className="flex justify-between mt-6">
-          <span className="text-[7px] tracking-[0.2em] text-foreground/10 uppercase leading-relaxed max-w-[45%]">
-            Data collected from wearable devices. Auto-synced daily for performance tracking.
-          </span>
-          <span className="text-[7px] tracking-[0.2em] text-foreground/10 uppercase text-right leading-relaxed max-w-[45%]">
-            Optimized insights. Powered by daygo.ai analytics engine.
-          </span>
+        {/* Horizontal scroll activity cards */}
+        <div className="overflow-x-auto pl-8 pr-8 pt-4 pb-10">
+          <div className="flex w-fit min-w-max gap-4 mx-auto pr-2">
+            {/* Running card */}
+            <ActivityFigmaCard
+              iconBg="bg-purple-100"
+              iconColor="text-dl-purple"
+              barColor="#D4FF5E"
+              label="Running"
+              value="5.20 KM"
+              subtext="34:12 mins"
+              change="+12%"
+              changePositive
+            />
+            {/* Cycling card */}
+            <ActivityFigmaCard
+              iconBg="bg-blue-100"
+              iconColor="text-dl-blue"
+              barColor="#F87171"
+              label="Cycling"
+              value="12.8 KM"
+              subtext="45:00 mins"
+              change="-3.4%"
+              changePositive={false}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Quick action to log today */}
+      {!hasToday && (
+        <button onClick={onGoToCheckin}
+          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm active:scale-95 transition-transform">
+          Log Today's Check-in →
+        </button>
+      )}
+
+      {hasToday && (
+        <button onClick={onViewInsights}
+          className="w-full py-4 rounded-2xl glass-card-apple text-foreground font-semibold text-sm active:scale-95 transition-transform">
+          View Insights →
+        </button>
+      )}
     </div>
   );
 };
+
+/* ─── Activity Card (Figma Style) ─────────────────────────────────────────── */
+
+const ActivityFigmaCard = ({
+  iconBg, iconColor, barColor, label, value, subtext, change, changePositive,
+}: {
+  iconBg: string; iconColor: string; barColor: string;
+  label: string; value: string; subtext: string; change: string; changePositive: boolean;
+}) => (
+  <div className="min-w-[160px] w-[160px] p-4 glass-card-apple !rounded-[28px] flex flex-col justify-between h-[155px] flex-shrink-0">
+    <div className="flex justify-between items-start">
+      <div className={`w-10 h-10 rounded-2xl ${iconBg} flex items-center justify-center`}>
+        <Zap className={`w-6 h-6 ${iconColor}`} />
+      </div>
+      <div className="flex items-end gap-0.5 h-6">
+        {[8, 16, 12, 20].map((h, i) => (
+          <div key={i} className="w-1 rounded-sm" style={{ height: h, background: barColor }} />
+        ))}
+      </div>
+    </div>
+    <div className="mt-6">
+      <div className="flex items-center gap-1">
+        <span className="text-[10px] font-medium text-muted-foreground">{label}</span>
+        <span className={`text-[10px] font-bold px-1.5 rounded-full ${
+          changePositive ? "bg-primary text-primary-foreground" : "bg-red-100 text-dl-red"
+        }`}>{change}</span>
+      </div>
+      <div className="text-lg font-bold text-foreground mt-0.5">{value}</div>
+      <div className="text-[10px] text-muted-foreground">{subtext}</div>
+    </div>
+  </div>
+);
 
 export default DayLensApp;
