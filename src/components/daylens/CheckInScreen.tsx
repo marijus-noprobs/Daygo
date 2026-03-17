@@ -111,11 +111,33 @@ export const CheckInScreen = ({
       {/* SLEEP */}
       {section === "sleep" && (
         <div className="space-y-3 slide-in">
-          <div className="grid grid-cols-2 gap-3">
-            <StatTile label="Total Sleep" value={wearable.sleep.totalHours} unit="hrs" colorClass="text-dl-indigo" icon={Moon} />
-            <StatTile label="Sleep Score" value={wearable.sleep.score} unit="/100" colorClass="text-dl-emerald" icon={Star} />
-            <StatTile label="Deep Sleep" value={wearable.sleep.deepHours} unit="hrs" colorClass="text-dl-purple" icon={Moon} />
-            <StatTile label="REM Sleep" value={wearable.sleep.remHours} unit="hrs" colorClass="text-dl-blue" icon={Moon} />
+          {/* Circular Sleep Score */}
+          <div className="flex flex-col items-center py-4">
+            <div className="relative w-36 h-36">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 144 144">
+                <circle cx="72" cy="72" r="62" fill="none" stroke="hsl(var(--secondary))" strokeWidth="10" />
+                <circle
+                  cx="72" cy="72" r="62" fill="none"
+                  stroke="hsl(var(--color-indigo))"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(wearable.sleep.score / 100) * 2 * Math.PI * 62} ${2 * Math.PI * 62}`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-bold text-foreground">{wearable.sleep.score}</span>
+                <span className="text-[10px] text-muted-foreground font-medium">Sleep Score</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {wearable.sleep.score >= 80 ? "Great sleep! 🌙" : wearable.sleep.score >= 60 ? "Decent rest" : "Needs improvement"}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <StatTile label="Total" value={wearable.sleep.totalHours} unit="hrs" colorClass="text-dl-indigo" icon={Moon} />
+            <StatTile label="Deep" value={wearable.sleep.deepHours} unit="hrs" colorClass="text-dl-purple" icon={Moon} />
+            <StatTile label="REM" value={wearable.sleep.remHours} unit="hrs" colorClass="text-dl-blue" icon={Moon} />
           </div>
           <GlassCard>
             <SectionHeader title="Adjust Values" subtitle="Edit if needed" />
