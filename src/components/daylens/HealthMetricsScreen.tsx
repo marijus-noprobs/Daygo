@@ -85,9 +85,9 @@ export const HealthMetricsScreen = ({ entries, recent }: HealthMetricsScreenProp
     );
   }
 
-  const stressColor = body.stressLevel <= 25 ? "#30D158" : body.stressLevel <= 50 ? "#FFD60A" : body.stressLevel <= 75 ? "#FF9F0A" : "#FF453A";
+  const stressColor = body.stressLevel <= 40 ? "#D4FF5E" : body.stressLevel <= 70 ? "#7B7BF7" : "#F06B9E";
   const bpLabel = getBPLabel(body.bloodPressureSys, body.bloodPressureDia);
-  const bpColor = bpLabel === "Normal" ? "#30D158" : bpLabel === "Elevated" ? "#FFD60A" : "#FF453A";
+  const bpColor = bpLabel === "Normal" ? "#D4FF5E" : bpLabel === "Elevated" ? "#7B7BF7" : "#F06B9E";
 
   // Trend: compare to average of last 7 days
   const recentBodies = recent.slice(0, 7).map(e => e.wearable?.body).filter(Boolean);
