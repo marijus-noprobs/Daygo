@@ -9,6 +9,7 @@ import { PerfectDayScreen } from "./PerfectDayScreen";
 import { AccountScreen } from "./AccountScreen";
 import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
+import { HealthMetricsScreen } from "./HealthMetricsScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation } from "@/lib/daylens-utils";
 
