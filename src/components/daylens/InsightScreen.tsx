@@ -181,7 +181,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                 <div className="mb-3">
                   <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                     <span>Days with {c.label.toLowerCase()}</span>
-                    <span className={`font-semibold ${positive ? "text-dl-emerald" : "text-dl-red"}`}>{c.avgWith} avg</span>
+                    <span className={`font-semibold ${positive ? "text-dl-lime" : "text-dl-pink"}`}>{c.avgWith} avg</span>
                   </div>
                   <div className="w-full h-2 bg-secondary/60 rounded-full overflow-hidden">
                     <div className="h-full rounded-full" style={{ width: (c.avgWith / 5 * 100) + "%", background: `linear-gradient(90deg,${g1},${g2})`, transition: "width .7s ease" }} />
