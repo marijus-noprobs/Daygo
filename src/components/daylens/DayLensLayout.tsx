@@ -306,7 +306,7 @@ const HomeScreen = ({
       <div>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-foreground">My Activity</h2>
-          <button className="px-4 py-1.5 rounded-full bg-foreground text-background text-xs font-bold">
+          <button className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">
             + Add
           </button>
         </div>
