@@ -6,10 +6,10 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 100 40% 96%;
     --foreground: 0 0% 4%;
 
-    --card: 0 0% 97%;
+    --card: 0 0% 100% / 0.45;
     --card-foreground: 0 0% 4%;
 
     --popover: 0 0% 100%;
@@ -18,10 +18,10 @@
     --primary: 78 100% 68%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 0 0% 96%;
+    --secondary: 100 20% 92%;
     --secondary-foreground: 0 0% 9%;
 
-    --muted: 0 0% 96%;
+    --muted: 100 15% 92%;
     --muted-foreground: 0 0% 45%;
 
     --accent: 78 100% 68%;
@@ -30,17 +30,18 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
+    --border: 100 20% 85%;
+    --input: 100 15% 88%;
     --ring: 78 100% 68%;
 
     --radius: 1.25rem;
 
     /* DayLens custom tokens */
     --lime: 78 100% 68%;
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(0, 0, 0, 0.06);
-    --glass-blur: 20px;
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    --glass-blur: 24px;
 
     --nav-bg: 0 0% 4%;
     --header-bg: 78 100% 68%;
