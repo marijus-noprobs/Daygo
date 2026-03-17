@@ -156,7 +156,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
             </GlassCard>
           ) : activityCorrelations.map((c) => {
             const positive = c.diff > 0;
-            const [g1, g2] = positive ? ["#30D158", "#34C759"] : ["#FF453A", "#FF3B30"];
+            const [g1, g2] = positive ? ["#D4FF5E", "#C5F467"] : ["#F06B9E", "#E05B8E"];
             return (
               <GlassCard key={c.type}>
                 <div className="flex items-start justify-between mb-4">
