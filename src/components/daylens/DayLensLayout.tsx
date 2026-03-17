@@ -44,6 +44,22 @@ const DayLensApp = () => {
   const todayEntry = entries.find(e => e.date === today);
   const todayScore = todayEntry ? computeDayScore(todayEntry) : null;
 
+  // Auto-detect activity level from wearable data
+  const detectedLevel = useMemo(() => detectActivityLevel(entries), [entries]);
+  const detectedLevelLabel = detectedLevel ? ACTIVITY_LEVEL_LABELS[detectedLevel] || null : null;
+
+  // Auto-update profile when detected level changes
+  useMemo(() => {
+    if (detectedLevel && detectedLevel !== profile.activityLevel) {
+      const updated = { ...profile, activityLevel: detectedLevel };
+      setProfile(updated);
+      save("dl_profile", updated);
+    }
+  }, [detectedLevel]);
+
+  // Generate health suggestions
+  const healthSuggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
+
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayEntry = entries.find(e => e.date === yesterday.toISOString().split("T")[0]);
 
