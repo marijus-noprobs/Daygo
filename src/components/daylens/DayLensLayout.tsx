@@ -348,7 +348,7 @@ const HomeScreen = ({
 
       {hasToday && (
         <button onClick={onViewInsights}
-          className="w-full py-4 rounded-2xl bg-foreground text-background font-semibold text-sm active:scale-95 transition-transform">
+          className="w-full py-4 rounded-2xl glass-card-apple text-foreground font-semibold text-sm active:scale-95 transition-transform">
           View Insights →
         </button>
       )}
