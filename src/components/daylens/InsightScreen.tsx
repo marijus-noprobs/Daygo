@@ -108,10 +108,10 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
           <GlassCard>
             <SectionHeader title="14-Day Averages" />
             {[
-              { label: "Sleep", val: avg(recent.map(e => e.wearable.sleep.totalHours)).toFixed(1), unit: "hrs", colorClass: "text-dl-indigo", icon: Moon },
-              { label: "HRV", val: Math.round(avg(recent.map(e => e.wearable.body.hrv))), unit: "ms", colorClass: "text-dl-blue", icon: Heart },
-              { label: "Steps", val: Math.round(avg(recent.map(e => e.wearable.activity.steps))).toLocaleString(), unit: "", colorClass: "text-dl-orange", icon: Footprints },
-              { label: "Mood", val: avg(recent.map(e => e.mood.overallMood)).toFixed(1), unit: "/5", colorClass: "text-dl-yellow", icon: Smile },
+              { label: "Sleep", val: avg(recent.map(e => e.wearable.sleep.totalHours)).toFixed(1), unit: "hrs", colorClass: "text-dl-lime", icon: Moon },
+              { label: "HRV", val: Math.round(avg(recent.map(e => e.wearable.body.hrv))), unit: "ms", colorClass: "text-dl-indigo", icon: Heart },
+              { label: "Steps", val: Math.round(avg(recent.map(e => e.wearable.activity.steps))).toLocaleString(), unit: "", colorClass: "text-dl-pink", icon: Footprints },
+              { label: "Mood", val: avg(recent.map(e => e.mood.overallMood)).toFixed(1), unit: "/5", colorClass: "text-dl-lime", icon: Smile },
             ].map((r, i, arr) => (
               <div key={r.label} className={`flex items-center justify-between py-3.5 ${i < arr.length - 1 ? "border-b border-secondary/60" : ""}`}>
                 <div className="flex items-center gap-2.5">
