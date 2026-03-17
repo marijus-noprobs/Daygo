@@ -218,7 +218,7 @@ export const CheckInScreen = ({
                   <h3 className="text-sm font-semibold">Daily Calorie Target</h3>
                 </div>
                 <div className="flex justify-between items-baseline mb-2">
-                  <span className="text-3xl font-bold text-dl-emerald">{rec.adjustedTarget.toLocaleString()}</span>
+                  <span className="text-3xl font-bold text-dl-lime">{rec.adjustedTarget.toLocaleString()}</span>
                   <span className="text-xs text-muted-foreground">kcal recommended</span>
                 </div>
                 {/* Progress bar */}
