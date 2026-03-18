@@ -2,71 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 @layer base {
   :root {
-    --background: 232 40% 8%;
-    --foreground: 220 20% 92%;
+    --background: 240 10% 2%;
+    --foreground: 0 0% 100%;
 
-    --card: 232 35% 10%;
-    --card-foreground: 220 20% 92%;
+    --card: 240 6% 6%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 232 35% 9%;
-    --popover-foreground: 220 20% 92%;
+    --popover: 240 6% 5%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 78 100% 68%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 78 68% 62%;
+    --primary-foreground: 80 100% 8%;
 
-    --secondary: 232 25% 16%;
-    --secondary-foreground: 220 15% 85%;
+    --secondary: 240 5% 12%;
+    --secondary-foreground: 0 0% 65%;
 
-    --muted: 232 22% 18%;
-    --muted-foreground: 220 12% 55%;
+    --muted: 240 5% 14%;
+    --muted-foreground: 0 0% 28%;
 
-    --accent: 78 100% 68%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 78 68% 62%;
+    --accent-foreground: 80 100% 8%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 232 20% 20%;
-    --input: 232 22% 18%;
-    --ring: 78 100% 68%;
+    --border: 0 0% 10%;
+    --input: 240 5% 12%;
+    --ring: 78 68% 62%;
 
     --radius: 1.25rem;
 
     /* DayLens custom tokens */
-    --lime: 78 100% 68%;
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --lime: 78 68% 62%;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     --glass-blur: 40px;
 
-    --nav-bg: 232 35% 7%;
-    --header-bg: 232 30% 10%;
+    --nav-bg: 240 6% 4%;
+    --header-bg: 240 6% 6%;
 
-    --color-indigo: 239 84% 67%;
+    --color-indigo: 225 100% 75%;
     --color-emerald: 160 84% 39%;
     --color-purple: 271 91% 65%;
-    --color-blue: 217 91% 60%;
-    --color-pink: 330 81% 60%;
+    --color-blue: 225 100% 75%;
+    --color-pink: 330 100% 75%;
     --color-orange: 25 95% 53%;
-    --color-amber: 38 92% 50%;
+    --color-amber: 38 100% 60%;
     --color-yellow: 48 96% 53%;
     --color-red: 0 84% 60%;
     --color-cyan: 188 94% 43%;
-    --color-lime: 84 89% 68%;
+    --color-lime: 78 68% 62%;
     --color-sky: 199 89% 48%;
 
-    --sidebar-background: 232 35% 9%;
-    --sidebar-foreground: 220 15% 65%;
-    --sidebar-primary: 78 100% 68%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 232 20% 14%;
-    --sidebar-accent-foreground: 220 15% 80%;
-    --sidebar-border: 232 20% 16%;
-    --sidebar-ring: 78 100% 68%;
+    --sidebar-background: 240 6% 5%;
+    --sidebar-foreground: 0 0% 40%;
+    --sidebar-primary: 78 68% 62%;
+    --sidebar-primary-foreground: 80 100% 8%;
+    --sidebar-accent: 240 5% 10%;
+    --sidebar-accent-foreground: 0 0% 50%;
+    --sidebar-border: 0 0% 10%;
+    --sidebar-ring: 78 68% 62%;
   }
 }
 
@@ -82,10 +82,10 @@
   }
   body {
     @apply text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: hsl(232 40% 5%);
+    background: hsl(240 10% 2%);
     min-height: 100vh;
   }
   body::before {
@@ -93,7 +93,7 @@
     position: fixed;
     inset: 0;
     background: url('/images/bg-gradient.png') center center / cover no-repeat;
-    opacity: 0.3;
+    opacity: 0.15;
     z-index: -1;
     pointer-events: none;
   }
@@ -101,47 +101,52 @@
 
 @layer components {
   .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   }
 
   .glass-card-apple {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(40px) saturate(180%);
     -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 1.25rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25),
-                0 4px 16px rgba(0, 0, 0, 0.15),
-                inset 0 0.5px 0 rgba(255, 255, 255, 0.10),
-                inset 0 0 30px rgba(120, 130, 200, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35),
+                inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
     position: relative;
     overflow: hidden;
   }
-  .glass-card-apple::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    opacity: 0.03;
-    pointer-events: none;
-    border-radius: inherit;
+
+  .glass-hero {
+    background: rgba(200, 232, 120, 0.06);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(200, 232, 120, 0.12);
+    border-radius: 26px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(200, 232, 120, 0.08);
+    position: relative;
+    overflow: hidden;
   }
 
   .nav-blur {
-    background: hsl(0 0% 0% / 0.85);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(50px) saturate(180%);
     -webkit-backdrop-filter: blur(50px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   }
 
-  .header-lime {
-    background: hsl(var(--primary));
-    border-radius: 0 0 28px 28px;
+  .header-dark {
+    padding: 56px 20px 20px;
+  }
+
+  .font-display {
+    font-family: 'Syne', sans-serif;
+    letter-spacing: -0.03em;
   }
 }
 
@@ -156,33 +161,34 @@
 
   input[type=range] {
     -webkit-appearance: none;
-    height: 3px;
+    height: 2px;
     border-radius: 2px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
     outline: none;
     cursor: pointer;
   }
   input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
-    background: hsl(78 100% 68%);
+    background: hsl(78, 68%, 62%);
     cursor: pointer;
+    box-shadow: 0 0 8px rgba(200, 232, 120, 0.5);
   }
 
   input[type=time] {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
-    color: hsl(100 20% 92%);
-    font-family: 'Inter', sans-serif;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
     font-size: 14px;
     padding: 8px 12px;
     outline: none;
   }
   input[type=time]:focus {
-    border-color: hsl(var(--color-indigo) / 0.5);
+    border-color: rgba(125, 168, 255, 0.4);
   }
 }
 
@@ -218,3 +224,9 @@
 .scale-in { animation: scaleIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1) both; }
 .shimmer { animation: shimmer 1.6s ease infinite; }
 .spin-slow { animation: spin-slow 0.9s linear infinite; }
+
+.d1 { animation-delay: .04s; }
+.d2 { animation-delay: .09s; }
+.d3 { animation-delay: .14s; }
+.d4 { animation-delay: .19s; }
+.d5 { animation-delay: .24s; }

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, ChevronRight } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { GlassCard, SectionHeader } from "./DayLensUI";
 import type { HealthSuggestion } from "@/lib/daylens-utils";
 
@@ -9,63 +9,60 @@ interface HealthSuggestionsProps {
   detectedLevelLabel: string | null;
 }
 
-const PRIORITY_STYLES = {
-  high: "border-dl-pink/30 bg-dl-pink/[0.04]",
-  medium: "border-dl-indigo/30 bg-dl-indigo/[0.04]",
-  low: "border-dl-lime/30 bg-dl-lime/[0.04]",
+const PRIORITY_ICON_BG: Record<string, string> = {
+  high: "rgba(255,128,200,0.12)",
+  medium: "rgba(125,168,255,0.12)",
+  low: "rgba(200,232,120,0.12)",
 };
 
-const PRIORITY_DOT = {
-  high: "bg-dl-pink",
-  medium: "bg-dl-indigo",
-  low: "bg-dl-lime",
+const PRIORITY_STROKE: Record<string, string> = {
+  high: "#ff80c8",
+  medium: "#7da8ff",
+  low: "#c8e878",
 };
 
 export const HealthSuggestions = ({ suggestions, detectedLevel, detectedLevelLabel }: HealthSuggestionsProps) => {
   if (suggestions.length === 0 && !detectedLevel) return null;
 
   return (
-    <div className="space-y-4">
-      {/* Detected Activity Level */}
+    <div className="space-y-3">
       {detectedLevel && detectedLevelLabel && (
-        <GlassCard className="border-dl-indigo/20 bg-dl-indigo/[0.03]">
+        <GlassCard>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-8 rounded-xl bg-dl-indigo/15 flex items-center justify-center">
-              <Sparkles size={16} className="text-dl-indigo" />
+            <div className="w-8 h-8 rounded-[11px] flex items-center justify-center" style={{ background: "rgba(125,168,255,0.12)" }}>
+              <Sparkles size={15} style={{ color: "#7da8ff" }} />
             </div>
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Detected Activity Level</p>
-              <p className="text-sm font-bold text-foreground">{detectedLevelLabel}</p>
+              <p className="text-[10px] text-white/[0.28] uppercase tracking-wider font-semibold">Detected Activity Level</p>
+              <p className="text-[12px] font-bold text-foreground">{detectedLevelLabel}</p>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed mt-2">
-            Based on your steps, workouts, and active calories from the past 7 days. This auto-updates your calorie targets.
+          <p className="text-[11px] text-white/[0.38] leading-relaxed mt-2">
+            Based on your steps, workouts, and active calories from the past 7 days.
           </p>
         </GlassCard>
       )}
 
-      {/* Suggestions */}
       {suggestions.length > 0 && (
         <div>
-          <SectionHeader title="Smart Suggestions" subtitle="Personalized insights based on your data" />
-          <div className="space-y-3 mt-3">
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-display text-sm font-bold text-foreground">Suggestions</span>
+          </div>
+          <div className="space-y-2.5">
             {suggestions.slice(0, 5).map((s, i) => (
               <motion.div
                 key={s.id}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.06 }}
-                className={`rounded-2xl border p-4 ${PRIORITY_STYLES[s.priority]}`}
+                className="glass-card-apple rounded-[18px] p-4 flex gap-3 cursor-pointer"
               >
-                <div className="flex items-start gap-3">
-                  <span className="text-xl shrink-0 mt-0.5">{s.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-sm font-semibold text-foreground">{s.title}</h4>
-                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${PRIORITY_DOT[s.priority]}`} />
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{s.description}</p>
-                  </div>
+                <div className="w-8 h-8 rounded-[11px] flex items-center justify-center flex-shrink-0" style={{ background: PRIORITY_ICON_BG[s.priority] }}>
+                  <span className="text-sm">{s.icon}</span>
+                </div>
+                <div>
+                  <div className="text-[12px] font-semibold text-foreground mb-0.5">{s.title}</div>
+                  <div className="text-[11px] text-white/[0.38] leading-relaxed">{s.description}</div>
                 </div>
               </motion.div>
             ))}
