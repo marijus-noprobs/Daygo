@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Moon, Star, Zap, Activity as ActivityIcon, Heart, Wind, BatteryCharging, Footprints, Flame, CheckCircle, Plus, Trash2, Calendar, X, UtensilsCrossed } from "lucide-react";
+import { Moon, Star, Zap, Activity as ActivityIcon, Heart, Wind, BatteryCharging, Footprints, Flame, CheckCircle, Plus, Trash2, Calendar, X, UtensilsCrossed, ChevronLeft } from "lucide-react";
 import { GlassCard, SectionHeader, ScoreRing, StatTile, ListInput, MoodRow, BottomSheet } from "./DayLensUI";
 import { ActivityCard, ActivityTypePicker, AddFoodItem } from "./ActivityComponents";
 import type { WearableData, NutritionData, MoodData, Activity, DayEntry, UserProfile } from "@/lib/daylens-constants";
@@ -48,6 +48,9 @@ export const CheckInScreen = ({
     }, 1500);
   };
 
+  const sections = ["sleep", "activity", "nutrition", "mood", "activities"];
+  const sectionIndex = sections.indexOf(section);
+
   if (submitted || hasToday) return (
     <div className="flex flex-col items-center justify-center min-h-[65vh] gap-8 fade-up">
       <div className="relative">
@@ -55,10 +58,10 @@ export const CheckInScreen = ({
         <ScoreRing score={todayScore || 3.5} size={180} thick={12} />
       </div>
       <div className="text-center">
-        <h2 className="text-2xl font-semibold tracking-tight">Log Complete</h2>
-        <p className="text-muted-foreground text-sm mt-1">Your data has been saved.</p>
+        <h2 className="font-display text-2xl font-extrabold tracking-tight">Log Complete</h2>
+        <p className="text-white/[0.38] text-[11px] mt-1">Your data has been saved.</p>
       </div>
-      <button onClick={onViewInsights} className="w-full bg-foreground text-background font-semibold py-4 rounded-2xl active:scale-95 transition-transform">View Insights →</button>
+      <button onClick={onViewInsights} className="w-full bg-primary text-primary-foreground font-display font-extrabold py-4 rounded-[18px] active:scale-[0.98] transition-transform text-[15px]">View Insights →</button>
     </div>
   );
 
@@ -66,44 +69,43 @@ export const CheckInScreen = ({
     <div className="flex flex-col justify-center min-h-[65vh] fade-up">
       <GlassCard className="flex flex-col items-center text-center gap-5 py-10 relative overflow-hidden">
         <div className="absolute inset-0 bg-dl-indigo/[0.04] pointer-events-none" />
-        <div className={`w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-dl-indigo ${syncing ? "spin-slow" : ""}`}>
+        <div className={`w-20 h-20 rounded-full bg-white/[0.05] flex items-center justify-center text-dl-indigo ${syncing ? "spin-slow" : ""}`}>
           <ActivityIcon size={36} />
         </div>
         <div className="z-10">
-          <h2 className="text-xl font-semibold mb-2">{syncing ? "Syncing..." : "Sync Wearable"}</h2>
-          <p className="text-sm text-muted-foreground max-w-[220px] mx-auto leading-relaxed">{syncing ? "Pulling sleep, HRV & activity data..." : "Connect Apple Health, Oura, Whoop or Garmin."}</p>
+          <h2 className="font-display text-xl font-extrabold mb-2">{syncing ? "Syncing..." : "Sync Wearable"}</h2>
+          <p className="text-[11px] text-white/[0.38] max-w-[220px] mx-auto leading-relaxed">{syncing ? "Pulling sleep, HRV & activity data..." : "Connect Apple Health, Oura, Whoop or Garmin."}</p>
         </div>
         {syncing
-          ? <div className="w-full h-1 bg-secondary rounded-full overflow-hidden"><div className="h-full w-3/5 bg-dl-indigo rounded-full shimmer" /></div>
-          : <button onClick={handleSync} className="w-full bg-dl-indigo hover:opacity-90 text-foreground font-medium py-3.5 rounded-2xl transition-all shadow-lg shadow-dl-indigo/25 active:scale-95 z-10 text-sm">Connect & Sync</button>
+          ? <div className="w-full h-1 bg-white/[0.07] rounded-full overflow-hidden"><div className="h-full w-3/5 bg-dl-indigo rounded-full shimmer" /></div>
+          : <button onClick={handleSync} className="w-full bg-dl-indigo hover:opacity-90 text-foreground font-display font-bold py-3.5 rounded-[18px] transition-all shadow-lg shadow-dl-indigo/25 active:scale-[0.98] z-10 text-[13px]">Connect & Sync</button>
         }
       </GlassCard>
     </div>
   );
 
-  const sections = ["sleep", "activity", "nutrition", "mood", "activities"];
-
   return (
-    <div className="space-y-5 pb-28 fade-up">
-      {/* Synced banner */}
-      <div className="flex items-center justify-between glass-card-apple px-4 py-3 rounded-2xl">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-dl-lime/10 flex items-center justify-center text-dl-lime">
-            <CheckCircle size={18} />
-          </div>
-          <div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">Synced</div>
-            <div className="text-sm font-medium">Apple Watch · Sleep score: <span className="text-dl-indigo font-semibold">{wearable.sleep.score}</span></div>
-          </div>
-        </div>
+    <div className="space-y-4 pb-28 fade-up">
+      {/* Header */}
+      <div className="font-display text-[18px] font-extrabold text-foreground tracking-tight">Daily Check-in</div>
+
+      {/* Progress bar */}
+      <div className="flex gap-[5px]">
+        {sections.map((s, i) => (
+          <div key={s} className={`flex-1 h-[2px] rounded-full transition-colors duration-400 ${i <= sectionIndex ? "bg-primary" : "bg-white/[0.1]"}`} />
+        ))}
       </div>
 
       {/* Section tabs */}
-      <div className="flex p-1 glass-card-apple rounded-2xl overflow-x-auto">
+      <div className="flex p-1 glass-card-apple !rounded-[18px] overflow-x-auto">
         {sections.map(s => (
           <button key={s} onClick={() => setSection(s)}
-            className={`flex-1 py-2 text-xs font-medium rounded-lg capitalize whitespace-nowrap transition-all px-2 ${section === s ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground/70"}`}>
-            {s === "activities" ? "📅 Log" : s}
+            className={`flex-1 py-[7px] text-[10px] font-bold rounded-[13px] capitalize whitespace-nowrap transition-all px-1 uppercase tracking-[0.04em] ${
+              section === s
+                ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
+                : "text-white/[0.3]"
+            }`}>
+            {s === "activities" ? "Log" : s}
           </button>
         ))}
       </div>
@@ -111,325 +113,162 @@ export const CheckInScreen = ({
       {/* SLEEP */}
       {section === "sleep" && (
         <div className="space-y-3 slide-in">
-          {/* Circular Sleep Score */}
-          <div className="flex flex-col items-center py-4">
-            <div className="relative w-36 h-36">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 144 144">
-                <circle cx="72" cy="72" r="62" fill="none" stroke="hsl(var(--secondary))" strokeWidth="10" />
-                <circle
-                  cx="72" cy="72" r="62" fill="none"
-                  stroke="hsl(239, 84%, 67%)"
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={`${(wearable.sleep.score / 100) * 2 * Math.PI * 62} ${2 * Math.PI * 62}`}
-                />
+          <div className="glass-card-apple rounded-[22px] p-[18px]">
+            <div className="flex flex-col items-center mb-4">
+              <svg width="88" height="88" viewBox="0 0 88 88" className="mb-1">
+                <defs><linearGradient id="sleepG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#c8e878" /><stop offset="100%" stopColor="#a0d040" /></linearGradient></defs>
+                <circle cx="44" cy="44" r="35" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="7" />
+                <circle cx="44" cy="44" r="35" fill="none" stroke="url(#sleepG)" strokeWidth="7" strokeLinecap="round"
+                  strokeDasharray={`${(wearable.sleep.score / 100) * 2 * Math.PI * 35} ${2 * Math.PI * 35}`}
+                  transform="rotate(-90 44 44)" />
               </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold text-foreground">{wearable.sleep.score}</span>
-                <span className="text-[10px] text-muted-foreground font-medium">Sleep Score</span>
-              </div>
+              <div className="font-display text-[26px] font-extrabold text-primary text-center">{wearable.sleep.score}</div>
+              <div className="text-[11px] text-white/[0.28] mt-0.5">Sleep Score</div>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              {wearable.sleep.score >= 80 ? "Great sleep! 🌙" : wearable.sleep.score >= 60 ? "Decent rest" : "Needs improvement"}
-            </p>
+            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Adjust Sleep Data</div>
+            <div className="space-y-0">
+              <SliderRow label="Total sleep" value={wearable.sleep.totalHours} min={4} max={12} step={0.5} unit="h"
+                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, totalHours: v } }))} />
+              <SliderRow label="Deep sleep" value={wearable.sleep.deepHours} min={0} max={4} step={0.25} unit="h"
+                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, deepHours: v } }))} />
+              <SliderRow label="REM sleep" value={wearable.sleep.remHours} min={0} max={4} step={0.25} unit="h"
+                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, remHours: v } }))} />
+              <SliderRow label="Score" value={wearable.sleep.score} min={0} max={100} step={1} unit=""
+                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, score: v } }))} />
+            </div>
           </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Total" value={wearable.sleep.totalHours} unit="hrs" colorClass="text-dl-lime" icon={Moon} />
-            <StatTile label="Deep" value={wearable.sleep.deepHours} unit="hrs" colorClass="text-dl-indigo" icon={Moon} />
-            <StatTile label="REM" value={wearable.sleep.remHours} unit="hrs" colorClass="text-dl-pink" icon={Moon} />
-          </div>
-          <GlassCard>
-            <SectionHeader title="Adjust Values" subtitle="Edit if needed" />
-            <ListInput label="Total sleep" value={wearable.sleep.totalHours} unit="h" step={0.1} max={14} onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, totalHours: v } }))} />
-            <ListInput label="Deep sleep" value={wearable.sleep.deepHours} unit="h" step={0.1} max={6} onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, deepHours: v } }))} />
-            <ListInput label="REM sleep" value={wearable.sleep.remHours} unit="h" step={0.1} max={6} onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, remHours: v } }))} />
-            <ListInput label="Sleep score" value={wearable.sleep.score} unit="/100" step={1} max={100} onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, score: v } }))} />
-          </GlassCard>
-          <button onClick={() => setSection("activity")} className="w-full py-3.5 border border-secondary rounded-2xl text-muted-foreground text-sm font-medium hover:bg-secondary transition-colors">Next: Activity →</button>
+          <button onClick={() => setSection("activity")} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Next: Body Metrics →</button>
         </div>
       )}
 
       {/* ACTIVITY */}
       {section === "activity" && (
         <div className="space-y-3 slide-in">
-          <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Steps" value={wearable.activity.steps.toLocaleString()} unit="" colorClass="text-dl-lime" icon={Footprints} />
-            <StatTile label="Active kcal" value={wearable.activity.activeKcal} unit="" colorClass="text-dl-indigo" icon={Flame} />
-            <StatTile label="HRV" value={wearable.body.hrv} unit="ms" colorClass="text-dl-pink" icon={Heart} />
+          <div className="glass-card-apple rounded-[22px] p-[18px]">
+            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Body & Recovery</div>
+            <SliderRow label="HRV" value={wearable.body.hrv} min={20} max={120} step={1} unit="ms"
+              onChange={v => setWearable(w => ({ ...w, body: { ...w.body, hrv: v } }))} />
+            <SliderRow label="Resting HR" value={wearable.body.restingHR} min={40} max={100} step={1} unit="bpm"
+              onChange={v => setWearable(w => ({ ...w, body: { ...w.body, restingHR: v } }))} />
+            <SliderRow label="SpO₂" value={wearable.body.spo2} min={90} max={100} step={1} unit="%"
+              onChange={v => setWearable(w => ({ ...w, body: { ...w.body, spo2: v } }))} />
+            <SliderRow label="Body Battery" value={wearable.body.bodyBattery} min={0} max={100} step={1} unit=""
+              onChange={v => setWearable(w => ({ ...w, body: { ...w.body, bodyBattery: v } }))} />
+            <SliderRow label="Steps" value={wearable.activity.steps} min={0} max={25000} step={100} unit=""
+              onChange={v => setWearable(w => ({ ...w, activity: { ...w.activity, steps: v } }))}
+              formatVal={v => v >= 1000 ? (v/1000).toFixed(1) + "k" : String(v)} />
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <StatTile label="Resting HR" value={wearable.body.restingHR} unit="bpm" colorClass="text-dl-lime" icon={Heart} />
-            <StatTile label="SpO₂" value={wearable.body.spo2} unit="%" colorClass="text-dl-indigo" icon={Wind} />
-            <StatTile label="Body Batt." value={wearable.body.bodyBattery} unit="" colorClass="text-dl-pink" icon={BatteryCharging} />
-          </div>
-          <GlassCard>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-sm font-semibold">Workouts</h3>
-              <button onClick={() => setWearable(p => ({ ...p, activity: { ...p.activity, workouts: [...p.activity.workouts, { type: "Running", durationMin: 30, intensity: "Moderate", avgHR: 145 }] } }))}
-                className="flex items-center gap-1 text-xs text-dl-indigo font-medium">
-                <Plus size={16} /> Add
-              </button>
-            </div>
-            {wearable.activity.workouts.length === 0
-              ? <p className="text-center text-sm text-muted-foreground py-3">No workouts logged</p>
-              : wearable.activity.workouts.map((w, wi) => (
-                <div key={wi} className="bg-secondary/40 rounded-2xl p-4 mb-2">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <div className="text-sm font-semibold">{w.type}</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">{w.durationMin} min · {w.intensity} · {w.avgHR} bpm</div>
-                    </div>
-                    <button onClick={() => setWearable(p => ({ ...p, activity: { ...p.activity, workouts: p.activity.workouts.filter((_, i) => i !== wi) } }))}
-                      className="text-muted-foreground hover:text-dl-red">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {["Running", "Cycling", "Weight Training", "HIIT", "Yoga", "Walking", "Swimming", "Other"].map(t => (
-                      <button key={t} onClick={() => setWearable(p => { const wk = [...p.activity.workouts]; wk[wi] = { ...wk[wi], type: t }; return { ...p, activity: { ...p.activity, workouts: wk } }; })}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors ${w.type === t ? "bg-dl-indigo/30 text-dl-indigo border border-dl-indigo/30" : "bg-muted/50 text-muted-foreground hover:text-foreground/70"}`}>
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))
-            }
-          </GlassCard>
-          <button onClick={() => setSection("nutrition")} className="w-full py-3.5 border border-secondary rounded-2xl text-muted-foreground text-sm font-medium hover:bg-secondary transition-colors">Next: Nutrition →</button>
+          <button onClick={() => setSection("nutrition")} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Next: Nutrition →</button>
         </div>
       )}
 
       {/* NUTRITION */}
       {section === "nutrition" && (
         <div className="space-y-3 slide-in">
-          {/* Calorie Recommendation */}
-          {(() => {
-            const rec = calcCalorieRecommendation(profile, wearable);
-            const allItems = nutrition.meals.flatMap(m => m.items || []);
-            const eaten = allItems.reduce((s, i) => s + (i.kcal || 0), 0) || nutrition.calories;
-            const remaining = rec.adjustedTarget - eaten;
-            const pct = Math.min(100, Math.round((eaten / rec.adjustedTarget) * 100));
-            return (
-              <GlassCard className="border-dl-lime/20 bg-dl-lime/[0.03]">
-                <div className="flex items-center gap-2 mb-3">
-                  <UtensilsCrossed className="w-4 h-4 text-dl-lime" />
-                  <h3 className="text-sm font-semibold">Daily Calorie Target</h3>
-                </div>
-                <div className="flex justify-between items-baseline mb-2">
-                  <span className="text-3xl font-bold text-dl-lime">{rec.adjustedTarget.toLocaleString()}</span>
-                  <span className="text-xs text-muted-foreground">kcal recommended</span>
-                </div>
-                {/* Progress bar */}
-                <div className="w-full h-2 bg-secondary rounded-full mb-3 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${pct}%`,
-                      background: remaining >= 0
-                        ? "linear-gradient(90deg, hsl(var(--dl-emerald)), hsl(var(--dl-blue)))"
-                        : "linear-gradient(90deg, hsl(var(--dl-orange)), hsl(var(--dl-red)))",
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between text-xs mb-3">
-                  <span className="text-muted-foreground">Eaten: <span className="text-foreground font-semibold">{eaten.toLocaleString()}</span></span>
-                   <span className={remaining >= 0 ? "text-dl-lime font-semibold" : "text-dl-pink font-semibold"}>
-                     {remaining >= 0 ? `${remaining.toLocaleString()} left` : `${Math.abs(remaining).toLocaleString()} over`}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-secondary/50 rounded-xl py-2">
-                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider">BMR</div>
-                    <div className="text-sm font-semibold">{rec.bmr}</div>
-                  </div>
-                  <div className="bg-secondary/50 rounded-xl py-2">
-                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Exercise</div>
-                    <div className="text-sm font-semibold text-dl-pink">+{rec.exerciseBonus}</div>
-                  </div>
-                  <div className="bg-secondary/50 rounded-xl py-2">
-                    <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Protein</div>
-                    <div className="text-sm font-semibold text-dl-indigo">{rec.proteinG}g</div>
-                  </div>
-                </div>
-                <p className="text-[10px] text-muted-foreground/60 mt-2.5 leading-relaxed">
-                  Based on your profile ({profile.heightCm}cm, {profile.weightKg}kg, {profile.age}y, {profile.goal} goal). Exercise bonus from today's active calories.
-                </p>
-              </GlassCard>
-            );
-          })()}
-          {nutrition.meals.map((m, mi) => (
-            <GlassCard key={mi}>
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex gap-2">
-                  {["Breakfast", "Lunch", "Dinner", "Snack"].map(t => (
-                    <button key={t} onClick={() => setNutrition(p => { const ms = [...p.meals]; ms[mi] = { ...ms[mi], name: t }; return { ...p, meals: ms }; })}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${m.name === t ? "bg-dl-amber/20 text-dl-amber border border-dl-amber/30" : "bg-secondary text-muted-foreground hover:text-foreground/70"}`}>
-                      {t}
-                    </button>
-                  ))}
-                </div>
-                {nutrition.meals.length > 1 && (
-                  <button onClick={() => setNutrition(p => ({ ...p, meals: p.meals.filter((_, i) => i !== mi) }))} className="text-muted-foreground hover:text-dl-red transition-colors">
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
-              <div className="space-y-2 mb-3">
-                {(m.items || []).map((item, ii) => (
-                  <div key={ii} className="flex items-center gap-2 bg-secondary/40 rounded-xl px-3 py-2.5">
-                    <span className="text-sm text-foreground flex-1">{item.name}</span>
-                    <span className="text-xs text-muted-foreground">{item.kcal > 0 ? item.kcal + "kcal" : ""}</span>
-                    <span className="text-xs text-muted-foreground/60">{item.proteinG > 0 ? item.proteinG + "g protein" : ""}</span>
-                    <button onClick={() => setNutrition(p => { const ms = [...p.meals]; ms[mi] = { ...ms[mi], items: (ms[mi].items || []).filter((_, i) => i !== ii) }; return { ...p, meals: ms }; })}
-                      className="text-muted-foreground/50 hover:text-dl-red transition-colors ml-1 flex-shrink-0">
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <AddFoodItem onAdd={(item) => setNutrition(p => { const ms = [...p.meals]; ms[mi] = { ...ms[mi], items: [...(ms[mi].items || []), item] }; return { ...p, meals: ms }; })} />
-              <div className="mt-4 pt-4 border-t border-secondary/60">
-                <div className="flex justify-between text-xs text-muted-foreground mb-2">
-                  <span>Overall meal quality</span>
-                  <span className="font-semibold text-foreground">{m.quality}/5</span>
-                </div>
-                <input type="range" min="1" max="5" step="1" value={m.quality} className="w-full"
-                  onChange={e => { const ms = [...nutrition.meals]; ms[mi] = { ...ms[mi], quality: +e.target.value }; setNutrition(n => ({ ...n, meals: ms })); }} />
-              </div>
-              <textarea rows={1} placeholder="Notes about this meal..." className="mt-3 text-xs bg-foreground/[0.04] border border-foreground/[0.08] rounded-2xl text-foreground w-full resize-none outline-none p-3 leading-relaxed placeholder:text-foreground/20 focus:border-dl-indigo/50"
-                value={m.notes || ""} onChange={e => setNutrition(p => { const ms = [...p.meals]; ms[mi] = { ...ms[mi], notes: e.target.value }; return { ...p, meals: ms }; })} />
-            </GlassCard>
-          ))}
-          <button onClick={() => setNutrition(p => ({ ...p, meals: [...p.meals, { name: "Snack", quality: 3, notes: "", items: [] }] }))}
-            className="w-full py-3.5 border border-secondary border-dashed rounded-2xl text-muted-foreground text-sm font-medium hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2">
-            <Plus size={16} /> Add another meal
-          </button>
-          <GlassCard>
-            <SectionHeader title="Daily Totals" />
-            {(() => {
-              const allItems = nutrition.meals.flatMap(m => m.items || []);
-              const autoKcal = allItems.reduce((s, i) => s + (i.kcal || 0), 0);
-              const autoProtein = allItems.reduce((s, i) => s + (i.proteinG || 0), 0);
-              return (
-                <div className="space-y-1">
-                  <ListInput label="Water intake" value={nutrition.waterLiters} unit="L" step={0.25} max={8} onChange={v => setNutrition(n => ({ ...n, waterLiters: v }))} />
-                  <ListInput label="Calories" value={autoKcal || nutrition.calories} unit="kcal" step={50} max={6000} onChange={v => setNutrition(n => ({ ...n, calories: v }))} />
-                  <ListInput label="Protein" value={autoProtein || nutrition.proteinG} unit="g" step={5} max={400} onChange={v => setNutrition(n => ({ ...n, proteinG: v }))} />
-                  <ListInput label="Alcohol" value={nutrition.alcoholUnits} unit="units" step={1} max={20} onChange={v => setNutrition(n => ({ ...n, alcoholUnits: v }))} />
-                </div>
-              );
-            })()}
-          </GlassCard>
-          <button onClick={() => setSection("mood")} className="w-full py-3.5 border border-secondary rounded-2xl text-muted-foreground text-sm font-medium hover:bg-secondary transition-colors">Next: Mood →</button>
+          <div className="glass-card-apple rounded-[22px] p-[18px]">
+            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Nutrition</div>
+            <SliderRow label="Calories" value={nutrition.calories} min={0} max={5000} step={50} unit=" kcal"
+              onChange={v => setNutrition(n => ({ ...n, calories: v }))} />
+            <SliderRow label="Protein" value={nutrition.proteinG} min={0} max={300} step={5} unit="g"
+              onChange={v => setNutrition(n => ({ ...n, proteinG: v }))} />
+            <SliderRow label="Water" value={nutrition.waterLiters} min={0} max={5} step={0.25} unit="L"
+              onChange={v => setNutrition(n => ({ ...n, waterLiters: v }))} />
+            <SliderRow label="Alcohol" value={nutrition.alcoholUnits} min={0} max={10} step={1} unit=" units"
+              onChange={v => setNutrition(n => ({ ...n, alcoholUnits: v }))} />
+          </div>
+          <div className="glass-card-apple rounded-[22px] p-[18px]">
+            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Meal Quality</div>
+            <div className="grid grid-cols-5 gap-[6px]">
+              {["😔","😐","🙂","😊","🥗"].map((e, i) => (
+                <button key={i} onClick={() => setNutrition(n => ({ ...n, meals: n.meals.map((m, mi) => mi === 0 ? { ...m, quality: i + 1 } : m) }))}
+                  className={`py-2.5 rounded-xl text-[17px] text-center transition-all ${
+                    nutrition.meals[0]?.quality === i + 1
+                      ? "bg-primary/[0.12] border border-primary/[0.25] scale-110"
+                      : "bg-white/[0.05] border border-white/[0.07]"
+                  }`}>{e}</button>
+              ))}
+            </div>
+          </div>
+          <button onClick={() => setSection("mood")} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Next: Mood →</button>
         </div>
       )}
 
       {/* MOOD */}
       {section === "mood" && (
         <div className="space-y-3 slide-in">
-          <GlassCard>
-            <SectionHeader title="Mental State" />
-            <MoodRow label="Overall Mood" value={mood.overallMood} onChange={v => setMood(m => ({ ...m, overallMood: v }))} />
-            <MoodRow label="Anxiety (1=calm)" value={mood.anxiety} onChange={v => setMood(m => ({ ...m, anxiety: v }))} />
-            <MoodRow label="Focus & Clarity" value={mood.focus} onChange={v => setMood(m => ({ ...m, focus: v }))} />
-            <MoodRow label="Mental Energy" value={mood.energy} onChange={v => setMood(m => ({ ...m, energy: v }))} />
-          </GlassCard>
-          <GlassCard>
-            <SectionHeader title="Context" subtitle="Optional — helps AI analysis" />
-            <div className="mb-3">
-              <label className="text-xs text-muted-foreground mb-2 block">Stress events today?</label>
-              <textarea rows={2} placeholder="Anything notable..." value={mood.stressEvents}
-                onChange={e => setMood(m => ({ ...m, stressEvents: e.target.value }))}
-                className="bg-foreground/[0.04] border border-foreground/[0.08] rounded-2xl text-foreground w-full resize-none outline-none p-3 text-sm leading-relaxed placeholder:text-foreground/20 focus:border-dl-indigo/50" />
+          <div className="glass-card-apple rounded-[22px] p-[18px]">
+            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Mental State</div>
+            <SliderRow label="Overall Mood" value={mood.overallMood} min={1} max={5} step={1} unit="/5"
+              onChange={v => setMood(m => ({ ...m, overallMood: v }))} />
+            <SliderRow label="Focus" value={mood.focus} min={1} max={5} step={1} unit="/5"
+              onChange={v => setMood(m => ({ ...m, focus: v }))} />
+            <SliderRow label="Energy" value={mood.energy} min={1} max={5} step={1} unit="/5"
+              onChange={v => setMood(m => ({ ...m, energy: v }))} />
+            <SliderRow label="Anxiety" value={mood.anxiety} min={1} max={5} step={1} unit="/5"
+              onChange={v => setMood(m => ({ ...m, anxiety: v }))} />
+          </div>
+          <div className="glass-card-apple rounded-[22px] p-[18px]">
+            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">How are you feeling?</div>
+            <div className="grid grid-cols-5 gap-[6px]">
+              {["😔","😐","🙂","😄","🤩"].map((e, i) => {
+                const val = i + 1;
+                return (
+                  <button key={i} onClick={() => setMood(m => ({ ...m, overallMood: val }))}
+                    className={`py-2.5 rounded-xl text-[17px] text-center transition-all ${
+                      mood.overallMood === val
+                        ? "bg-primary/[0.12] border border-primary/[0.25] scale-110"
+                        : "bg-white/[0.05] border border-white/[0.07]"
+                    }`}>{e}</button>
+                );
+              })}
             </div>
-            <div>
-              <label className="text-xs text-muted-foreground mb-2 block">One thing you're grateful for</label>
-              <textarea rows={2} placeholder="Optional..." value={mood.gratitude}
-                onChange={e => setMood(m => ({ ...m, gratitude: e.target.value }))}
-                className="bg-foreground/[0.04] border border-foreground/[0.08] rounded-2xl text-foreground w-full resize-none outline-none p-3 text-sm leading-relaxed placeholder:text-foreground/20 focus:border-dl-indigo/50" />
-            </div>
-          </GlassCard>
-          <button onClick={() => setSection("activities")} className="w-full py-3.5 border border-secondary rounded-2xl text-muted-foreground text-sm font-medium hover:bg-secondary transition-colors">Next: Log Activities →</button>
+          </div>
+          <button onClick={onSubmit} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Complete Check-in ✓</button>
         </div>
       )}
 
-      {/* ACTIVITIES LOG */}
+      {/* ACTIVITIES */}
       {section === "activities" && (
         <div className="space-y-3 slide-in">
-          {yesterdayEntry?.activities && yesterdayEntry.activities.length > 0 && (
-            <GlassCard className="border-dl-orange/20 bg-dl-orange/5">
-              <SectionHeader title="Yesterday's Activities" subtitle="For context — how does today feel compared?" />
-              <div className="space-y-2">
-                {yesterdayEntry.activities.map((a, i) => {
-                  const at = ACTIVITY_TYPES.find(t => t.key === a.type) || ACTIVITY_TYPES[0];
-                  const dur = durationHours(a.startTime, a.endTime);
-                  const late = isLateNight(a.startTime);
-                  return (
-                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border ${at.bgClass} ${at.borderClass}`}>
-                      <span className="text-lg">{at.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-medium ${at.colorClass}`}>{at.label}</div>
-                        <div className="text-xs text-muted-foreground">{a.startTime} – {a.endTime} · {formatDuration(dur)}{a.notes ? " · " + a.notes : ""}</div>
-                      </div>
-                      {late && <span className="text-[10px] px-2 py-0.5 rounded bg-dl-orange/15 text-dl-orange border border-dl-orange/20 font-medium flex-shrink-0">Late</span>}
-                    </div>
-                  );
-                })}
-              </div>
+          <SectionHeader title="Today's Activities" action={
+            <button onClick={() => setShowAddActivity(true)} className="text-[11px] text-primary font-bold flex items-center gap-1"><Plus size={14} />Add</button>
+          } />
+          {todayActivities.length === 0 && (
+            <GlassCard className="text-center py-8">
+              <Calendar className="text-white/[0.22] mx-auto mb-3 w-10 h-10" />
+              <p className="text-white/[0.38] text-[11px]">No activities logged for today.</p>
             </GlassCard>
           )}
+          {todayActivities.map((a, i) => (
+            <ActivityCard key={a.id} activity={a}
+              onUpdate={u => setTodayActivities(as => as.map(x => x.id === a.id ? u : x))}
+              onRemove={() => setTodayActivities(as => as.filter(x => x.id !== a.id))} />
+          ))}
+          <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Quick notes about your day..."
+            className="w-full bg-white/[0.05] border border-white/[0.08] rounded-[18px] p-4 text-[13px] text-foreground placeholder-white/[0.15] resize-none outline-none focus:border-primary/[0.3] min-h-[80px]" />
+          <button onClick={onSubmit} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Complete Check-in ✓</button>
 
-          <GlassCard>
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="text-base font-semibold">Today's Activities</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">What did you do today? When?</p>
-              </div>
-              <button onClick={() => setShowAddActivity(true)}
-                className="flex items-center gap-1.5 bg-dl-indigo/20 border border-dl-indigo/30 text-dl-indigo text-xs font-semibold px-3 py-2 rounded-xl hover:bg-dl-indigo/30 transition-colors">
-                <Plus size={14} /> Add
-              </button>
-            </div>
-            {todayActivities.length === 0
-              ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <div className="text-3xl mb-2">📅</div>
-                  <p className="text-sm">No activities logged yet.</p>
-                  <p className="text-xs mt-1 text-muted-foreground/50">Add gaming, work, social time and more.</p>
-                </div>
-              )
-              : todayActivities.map(a => (
-                <ActivityCard key={a.id} activity={a}
-                  onUpdate={updated => setTodayActivities(acts => acts.map(x => x.id === a.id ? updated : x))}
-                  onRemove={() => setTodayActivities(acts => acts.filter(x => x.id !== a.id))} />
-              ))
-            }
-          </GlassCard>
-
-          <GlassCard>
-            <label className="text-xs text-muted-foreground mb-2 block">General note</label>
-            <textarea rows={2} placeholder="Anything else notable..." value={note} onChange={e => setNote(e.target.value)}
-              className="bg-foreground/[0.04] border border-foreground/[0.08] rounded-2xl text-foreground w-full resize-none outline-none p-3 text-sm leading-relaxed placeholder:text-foreground/20 focus:border-dl-indigo/50" />
-          </GlassCard>
-
-          <button onClick={onSubmit}
-            className="w-full py-4 bg-foreground text-background font-semibold rounded-2xl shadow-xl shadow-foreground/10 active:scale-95 transition-all flex items-center justify-center gap-2 text-base">
-            <CheckCircle size={18} /> Complete Check-in
-          </button>
+          <BottomSheet open={showAddActivity} onClose={() => setShowAddActivity(false)} title="Add Activity">
+            <ActivityTypePicker onSelect={type => { setTodayActivities(as => [...as, { ...newActivityBlank(), type }]); setShowAddActivity(false); }} />
+          </BottomSheet>
         </div>
       )}
-
-      {/* Add Activity Sheet */}
-      <BottomSheet open={showAddActivity} onClose={() => setShowAddActivity(false)} title="Add Activity">
-        <p className="text-xs text-muted-foreground mb-4 -mt-1">What did you do today? Pick a type to add it.</p>
-        <ActivityTypePicker onSelect={type => {
-          setTodayActivities(acts => [...acts, { ...newActivityBlank(), type }]);
-          setShowAddActivity(false);
-        }} />
-      </BottomSheet>
     </div>
   );
 };
 
+/* ─── Slider Row (HTML-matching style) ──────────────── */
+const SliderRow = ({ label, value, min, max, step, unit, onChange, formatVal }: {
+  label: string; value: number; min: number; max: number; step: number; unit: string;
+  onChange: (v: number) => void; formatVal?: (v: number) => string;
+}) => (
+  <div className="flex items-center gap-2.5 py-2.5 border-b border-white/[0.05] last:border-0">
+    <span className="text-[11px] text-white/[0.38] font-medium w-[86px] flex-shrink-0">{label}</span>
+    <input type="range" min={min} max={max} step={step} value={value}
+      onChange={e => onChange(parseFloat(e.target.value))}
+      className="flex-1" />
+    <span className="font-display text-[11px] font-extrabold text-foreground w-[48px] text-right flex-shrink-0">
+      {formatVal ? formatVal(value) : `${value}${unit}`}
+    </span>
+  </div>
+);

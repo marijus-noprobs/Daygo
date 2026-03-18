@@ -14,7 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ["'DM Sans'", '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ["'Syne'", 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -60,7 +61,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // DayLens semantic colors
         dl: {
           indigo: "hsl(var(--color-indigo))",
           emerald: "hsl(var(--color-emerald))",
