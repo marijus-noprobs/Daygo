@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["'DM Sans'", '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        sans: ["'Syne'", 'sans-serif'],
         display: ["'Syne'", 'sans-serif'],
+        mono: ["'DM Mono'", 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
