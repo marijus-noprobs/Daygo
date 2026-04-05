@@ -265,23 +265,6 @@ const HomeScreen = ({
   const ringR = 28;
   const ringCirc = 2 * Math.PI * ringR;
 
-  // Generate dot matrix for last 3 months
-  const dotMatrix = useMemo(() => {
-    const months: { label: string; dots: boolean[] }[] = [];
-    const now = new Date();
-    for (let m = 2; m >= 0; m--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
-      const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-      const label = d.toLocaleString("default", { month: "short" });
-      const dots: boolean[] = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        dots.push(entries.some((e: DayEntry) => e.date === dateStr));
-      }
-      months.push({ label, dots });
-    }
-    return months;
-  }, [entries]);
 
   return (
     <div className="space-y-4 fade-up">
