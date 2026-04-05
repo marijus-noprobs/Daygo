@@ -2,14 +2,14 @@ import { ReactNode } from "react";
 import { X } from "lucide-react";
 import { scoreGradient, scoreLabel } from "@/lib/daylens-utils";
 
-// ─── Glass Card ───────────────────────────────────────────────────────────────
+// ─── Glass Card (now solid dark) ──────────────────────────────────────────────
 export const GlassCard = ({
   children, className = "", onClick, style = {},
 }: {
   children: ReactNode; className?: string; onClick?: () => void; style?: React.CSSProperties;
 }) => (
   <div onClick={onClick} style={style}
-    className={`glass-card-apple rounded-[22px] p-5 ${onClick ? "cursor-pointer hover:bg-white/[0.06] transition-all" : ""} ${className}`}>
+    className={`card-dark rounded-[20px] p-5 ${onClick ? "cursor-pointer hover:bg-card/80 transition-all" : ""} ${className}`}>
     {children}
   </div>
 );
@@ -41,7 +41,7 @@ export const ScoreRing = ({ score, max = 5, size = 140, thick = 10 }: { score: n
             <stop offset="100%" stopColor={c2} />
           </linearGradient>
         </defs>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={thick} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="hsl(0 0% 15%)" strokeWidth={thick} />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={`url(#${id})`} strokeWidth={thick} strokeLinecap="round"
           strokeDasharray={`${pct * circ} ${circ}`} style={{ transition: "stroke-dasharray .8s cubic-bezier(.34,1.56,.64,1)" }} />
       </svg>
@@ -57,13 +57,13 @@ export const ScoreRing = ({ score, max = 5, size = 140, thick = 10 }: { score: n
 export const ListInput = ({ label, value, unit, onChange, min = 0, max = 9999, step = 1 }: {
   label: string; value: number; unit: string; onChange: (v: number) => void; min?: number; max?: number; step?: number;
 }) => (
-  <div className="flex items-center justify-between py-3 border-b border-white/[0.05] last:border-0">
-    <span className="text-[11px] font-medium text-white/[0.38]">{label}</span>
+  <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+    <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
     <div className="flex items-center gap-2">
       <input type="number" value={value} min={min} max={max} step={step}
         onChange={e => onChange(parseFloat(e.target.value) || 0)}
         className="bg-transparent text-right text-[11px] font-extrabold text-foreground focus:outline-none w-16 font-display" />
-      <span className="text-[11px] text-white/[0.28] w-8 text-right">{unit}</span>
+      <span className="text-[11px] text-muted-foreground w-8 text-right">{unit}</span>
     </div>
   </div>
 );
@@ -76,14 +76,14 @@ export const MoodRow = ({ label, value, onChange, max = 5 }: {
   return (
     <div className="mb-5">
       <div className="flex justify-between mb-2.5">
-        <span className="text-[11px] font-medium text-white/[0.38]">{label}</span>
+        <span className="text-[11px] font-medium text-muted-foreground">{label}</span>
         <span className="text-[11px] font-extrabold font-display" style={{ color: c1 }}>{value}/{max}</span>
       </div>
       <div className="flex gap-1.5">
         {Array.from({ length: max }, (_, i) => i + 1).map(v => (
           <button key={v} onClick={() => onChange(v)}
             className={`flex-1 h-9 rounded-xl text-xs font-semibold transition-all duration-200 ${
-              value === v ? "text-foreground shadow-lg scale-105" : "bg-white/[0.05] text-white/[0.3] border border-white/[0.07] hover:bg-white/[0.08]"
+              value === v ? "text-foreground shadow-lg scale-105" : "bg-card text-muted-foreground border border-border hover:bg-card/80"
             }`}
             style={value === v ? {
               background: `linear-gradient(135deg,${scoreGradient(v, max).join(",")})`,
@@ -102,13 +102,13 @@ export const StatTile = ({ label, value, unit, colorClass, icon: Icon }: {
   label: string; value: string | number; unit: string; colorClass: string;
   icon: React.ComponentType<any>;
 }) => (
-  <div className="glass-card-apple rounded-[18px] p-3.5">
+  <div className="card-dark rounded-[18px] p-3.5">
     <div className="flex items-center gap-1.5 mb-1.5">
       <Icon className={`w-3.5 h-3.5 ${colorClass}`} size={14} />
-      <span className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-[0.08em]">{label}</span>
+      <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{label}</span>
     </div>
     <div className={`font-display text-[22px] font-extrabold tracking-tight ${colorClass}`}>
-      {value}<span className="text-[11px] font-normal text-white/[0.28] ml-1">{unit}</span>
+      {value}<span className="text-[11px] font-normal text-muted-foreground ml-1">{unit}</span>
     </div>
   </div>
 );
@@ -119,9 +119,9 @@ export const BottomSheet = ({ open, onClose, children, title }: {
 }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm fade-in" onClick={onClose}>
-      <div className="w-full max-w-md glass-card-apple rounded-t-[26px] shadow-2xl scale-in" onClick={e => e.stopPropagation()}>
-        <div className="w-10 h-1 bg-white/[0.15] rounded-full mx-auto mt-4 mb-5" />
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 fade-in" onClick={onClose}>
+      <div className="w-full max-w-md bg-card rounded-t-[26px] shadow-2xl scale-in border border-border border-b-0" onClick={e => e.stopPropagation()}>
+        <div className="w-10 h-1 bg-muted rounded-full mx-auto mt-4 mb-5" />
         {title && <div className="px-6 pb-3"><h3 className="font-display text-lg font-extrabold text-foreground">{title}</h3></div>}
         <div className="px-6 pb-10 overflow-y-auto" style={{ maxHeight: "82vh" }}>{children}</div>
       </div>
