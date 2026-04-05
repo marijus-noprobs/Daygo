@@ -84,7 +84,7 @@
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: hsl(0 0% 4%);
+    background: #0e0e0f;
     min-height: 100vh;
   }
 }
