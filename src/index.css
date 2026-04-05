@@ -2,14 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
+    --background: 0 0% 5.5%;
     --foreground: 0 0% 95%;
 
-    --card: 0 0% 9%;
+    --card: 0 0% 9.4%;
     --card-foreground: 0 0% 95%;
 
     --popover: 0 0% 7%;
@@ -18,11 +18,11 @@
     --primary: 78 68% 62%;
     --primary-foreground: 80 100% 8%;
 
-    --secondary: 0 0% 12%;
+    --secondary: 0 0% 12.5%;
     --secondary-foreground: 0 0% 55%;
 
     --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 35%;
+    --muted-foreground: 0 0% 36%;
 
     --accent: 78 68% 62%;
     --accent-foreground: 80 100% 8%;
@@ -30,7 +30,7 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 14%;
+    --border: 0 0% 100% / 0.04;
     --input: 0 0% 12%;
     --ring: 78 68% 62%;
 
@@ -39,31 +39,32 @@
     /* DayLens custom tokens */
     --lime: 78 68% 62%;
     --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.04);
 
-    --nav-bg: 0 0% 5%;
-    --header-bg: 0 0% 4%;
+    --nav-bg: 0 0% 5.5%;
+    --header-bg: 0 0% 5.5%;
 
     --color-indigo: 225 100% 75%;
     --color-emerald: 160 84% 39%;
     --color-purple: 271 91% 65%;
-    --color-blue: 225 100% 75%;
-    --color-pink: 330 100% 75%;
+    --color-blue: 225 100% 71%;
+    --color-pink: 338 82% 67%;
     --color-orange: 25 95% 53%;
-    --color-amber: 38 100% 60%;
+    --color-amber: 36 100% 63%;
     --color-yellow: 48 96% 53%;
     --color-red: 0 84% 60%;
     --color-cyan: 188 94% 43%;
     --color-lime: 78 68% 62%;
     --color-sky: 199 89% 48%;
+    --color-teal: 162 79% 58%;
 
-    --sidebar-background: 0 0% 5%;
+    --sidebar-background: 0 0% 5.5%;
     --sidebar-foreground: 0 0% 40%;
     --sidebar-primary: 78 68% 62%;
     --sidebar-primary-foreground: 80 100% 8%;
     --sidebar-accent: 0 0% 10%;
     --sidebar-accent-foreground: 0 0% 50%;
-    --sidebar-border: 0 0% 12%;
+    --sidebar-border: 0 0% 100% / 0.04;
     --sidebar-ring: 78 68% 62%;
   }
 }
@@ -83,16 +84,16 @@
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: hsl(0 0% 4%);
+    background: #0e0e0f;
     min-height: 100vh;
   }
 }
 
 @layer components {
-  /* Solid dark card — no blur, no glass */
+  /* Solid dark card */
   .card-dark {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 13%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 20px;
     position: relative;
     overflow: hidden;
@@ -100,39 +101,47 @@
 
   /* Slightly elevated card */
   .card-dark-elevated {
-    background: hsl(0 0% 11%);
-    border: 1px solid hsl(0 0% 15%);
-    border-radius: 20px;
+    background: #1f1f21;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 18px;
     position: relative;
     overflow: hidden;
   }
 
-  /* Keep glass-card-apple for backward compat but make it match */
+  /* Compact card */
+  .card-sm {
+    background: #181819;
+    border-radius: 16px;
+    padding: 13px;
+  }
+
   .glass-card-apple {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 13%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 20px;
     position: relative;
     overflow: hidden;
   }
 
   .glass-hero {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 15%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 24px;
     position: relative;
     overflow: hidden;
   }
 
   .glass {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 13%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.04);
   }
 
   .nav-blur {
-    background: hsl(0 0% 7%);
-    border: 1px solid hsl(0 0% 13%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    background: rgba(14, 14, 15, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
   }
 
   .header-dark {
@@ -142,6 +151,83 @@
   .font-display {
     font-family: 'Syne', sans-serif;
     letter-spacing: -0.03em;
+  }
+
+  .font-mono {
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Segment control */
+  .seg {
+    display: flex;
+    background: #1f1f21;
+    border-radius: 14px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .seg-btn {
+    flex: 1;
+    padding: 7px;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.36);
+    text-align: center;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .seg-btn.active {
+    background: #181819;
+    color: #f2f2f3;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Labels matching reference */
+  .label-ref {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.36);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Big number */
+  .big-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  /* Medium number */
+  .med-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  /* Unit text */
+  .unit-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.36);
+    margin-left: 3px;
+  }
+
+  /* Progress bar */
+  .progress-bar-bg {
+    height: 3px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 

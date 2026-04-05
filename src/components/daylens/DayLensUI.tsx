@@ -8,8 +8,8 @@ export const GlassCard = ({
 }: {
   children: ReactNode; className?: string; onClick?: () => void; style?: React.CSSProperties;
 }) => (
-  <div onClick={onClick} style={style}
-    className={`card-dark rounded-[20px] p-5 ${onClick ? "cursor-pointer hover:bg-card/80 transition-all" : ""} ${className}`}>
+  <div onClick={onClick} style={{ background: '#181819', border: '1px solid rgba(255,255,255,0.04)', ...style }}
+    className={`rounded-[20px] p-4 ${onClick ? "cursor-pointer hover:brightness-110 transition-all" : ""} ${className}`}>
     {children}
   </div>
 );
