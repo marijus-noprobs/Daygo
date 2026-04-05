@@ -128,7 +128,7 @@ const DayLensApp = () => {
       </div>
 
       {/* Main content */}
-      <main className="px-5 pb-28 min-h-[60vh]">
+      <main className="px-4 pb-28 min-h-[60vh]">
         {screen === "checkin" && (
           <HomeScreen
             entries={entries} recent={recent} todayScore={todayScore} wearable={wearable}
