@@ -151,24 +151,16 @@ const DayLensApp = () => {
         )}
       </main>
 
-      {/* Bottom nav — elevated center button */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-        <nav className="flex items-center gap-1 px-4 h-[58px] rounded-full nav-blur">
-          {NAV.map((item, idx) => {
+      {/* Bottom nav */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-40">
+        <nav className="flex justify-around items-center px-0 py-2.5 pb-[22px]" style={{ background: 'rgba(14,14,15,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+          {NAV.map((item) => {
             const active = screen === item.id;
-            const isCenter = idx === 2;
-            if (isCenter) {
-              return (
-                <button key={item.id} onClick={() => setScreen(item.id)}
-                  className={`flex items-center justify-center w-12 h-12 rounded-full -mt-4 shadow-lg transition-all ${active ? "bg-primary" : "bg-card border border-border"}`}>
-                  <item.icon className={`w-5 h-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} strokeWidth={2} />
-                </button>
-              );
-            }
             return (
               <button key={item.id} onClick={() => setScreen(item.id)}
-                className={`flex items-center justify-center w-11 h-11 rounded-full transition-all ${active ? "bg-primary" : ""}`}>
-                <item.icon className={`w-[18px] h-[18px] ${active ? "text-primary-foreground" : "text-muted-foreground"}`} strokeWidth={active ? 2.5 : 1.5} />
+                className="flex flex-col items-center gap-1 px-5 py-1 transition-colors">
+                <item.icon className={`w-5 h-5 ${active ? "text-foreground" : ""}`} strokeWidth={1.8} style={active ? {} : { color: 'rgba(255,255,255,0.14)' }} />
+                <span className="text-[10px] font-bold uppercase" style={{ letterSpacing: '0.04em', color: active ? '#f2f2f3' : 'rgba(255,255,255,0.14)' }}>{item.label}</span>
               </button>
             );
           })}
