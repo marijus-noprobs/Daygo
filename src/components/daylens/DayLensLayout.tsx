@@ -263,85 +263,100 @@ const HomeScreen = ({
 
 
   return (
-    <div className="space-y-4 fade-up">
-      {/* Top 2-col: Score + Streak highlight */}
-      <div className="grid grid-cols-2 gap-3 fade-up d1">
-        {/* Score card */}
-        <div className="card-dark p-5">
-          <div className="flex items-center gap-3 mb-3">
+    <div className="space-y-[10px] fade-up">
+      {/* Top 2-col grid */}
+      <div className="grid grid-cols-2 gap-[10px] fade-up d1">
+        {/* Score + steps card */}
+        <div className="card-dark" style={{ padding: 14 }}>
+          <div className="flex justify-between items-start mb-[18px]">
             <div className="relative" style={{ width: 56, height: 56 }}>
               <svg width="56" height="56" className="transform -rotate-90">
-                <circle cx="28" cy="28" r={ringR} fill="none" stroke="hsl(0 0% 15%)" strokeWidth="3.5" />
+                <circle cx="28" cy="28" r={ringR} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3.5" />
                 <circle cx="28" cy="28" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="3.5" strokeLinecap="round"
                   strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
-                  style={{ transition: "stroke-dasharray .6s ease" }} />
+                  style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-base font-extrabold text-foreground">{score.toFixed(0)}</span>
+                <span className="font-display text-[15px] font-extrabold text-foreground">{score.toFixed(0)}</span>
               </div>
             </div>
-            <Zap className="w-4 h-4 text-primary ml-auto" />
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.14)' }}>⊞</span>
           </div>
-          <div className="font-display text-[32px] font-extrabold text-foreground leading-none tracking-tight">{steps >= 1000 ? `${(steps/1000).toFixed(1)}k` : steps}</div>
-          <div className="text-[11px] text-muted-foreground mt-1">Steps today</div>
+          <div className="big-num text-foreground">{steps >= 1000 ? `${(steps/1000).toFixed(1)}k` : steps}</div>
+          <div className="label-ref mt-1.5">Steps today</div>
         </div>
 
-        {/* Lime accent card — like reference */}
-        <div className="rounded-[20px] p-5 bg-primary text-primary-foreground">
-          <div className="flex justify-end mb-3">
-            <div className="w-7 h-7 rounded-lg bg-primary-foreground/10 flex items-center justify-center">
-              <Heart className="w-3.5 h-3.5 text-primary-foreground" />
-            </div>
+        {/* Body weight / sleep card */}
+        <div className="card-dark" style={{ padding: 14 }}>
+          <div className="flex justify-end mb-2">
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.14)' }}>⊞</span>
           </div>
-          <div className="font-display text-[32px] font-extrabold leading-none tracking-tight">{sleepScore}%</div>
-          <div className="text-[11px] mt-1 opacity-70">Sleep quality</div>
+          <div className="big-num text-foreground">{sleepScore}<span className="unit-text">%</span></div>
+          <div style={{ marginTop: 6 }}>
+            <div className="text-[14px] font-bold text-foreground">Sleep quality</div>
+            <div className="label-ref">{sleepTotal.toFixed(1)}h total</div>
+          </div>
         </div>
       </div>
 
-      {/* Check-in history list */}
-      <div className="card-dark p-5 fade-up d2">
-        <div className="flex justify-between items-center mb-4">
-          <span className="font-display text-sm font-bold text-foreground">Recent Check-ins</span>
-          <span className="text-[10px] text-muted-foreground">See all</span>
+      {/* Recent check-ins list */}
+      <div className="card-dark fade-up d2" style={{ padding: '14px 16px' }}>
+        <div className="flex justify-between items-center mb-2">
+          <span className="label-ref">Recent Sessions</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'hsl(var(--primary))' }}>See all</span>
         </div>
         {recent.slice(0, 3).map((entry: DayEntry, i: number) => {
           const entryScore = computeDayScore(entry);
           const d = new Date(entry.date);
           const label = i === 0 ? "Today" : i === 1 ? "Yesterday" : d.toLocaleDateString("en", { month: "short", day: "numeric" });
           return (
-            <div key={entry.date} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+            <div key={entry.date} className="flex items-center justify-between" style={{ padding: '13px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center">
-                  <span className="font-display text-xs font-bold text-foreground">{entryScore.toFixed(0)}</span>
+                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ border: '2px solid rgba(255,255,255,0.15)' }}>
+                  <span className="font-display text-[13px] font-extrabold text-foreground">{entryScore.toFixed(0)}</span>
                 </div>
                 <div>
-                  <div className="text-[12px] font-semibold text-foreground">{label}</div>
-                  <div className="text-[10px] text-muted-foreground">{entry.wearable?.activity?.steps || 0} steps</div>
+                  <div className="text-[15px] font-bold text-foreground">{label}</div>
+                  <div className="label-ref">{entry.wearable?.activity?.steps || 0} steps</div>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.14)' }}>⊞</span>
             </div>
           );
         })}
       </div>
 
-      {/* Bento grid — HR, Calories, HRV, Sleep */}
-      <div className="grid grid-cols-2 gap-3 fade-up d3">
-        <MetricCard label="Resting HR" value={String(restingHR)} unit="bpm" accentVar="--color-blue" />
-        <MetricCard label="Burned" value={String(kcal)} unit="kcal" accentVar="--color-pink" />
-        <MetricCard label="HRV" value={String(hrv)} unit="ms" accentVar="--color-lime" />
-        <MetricCard label="Sleep" value={sleepTotal.toFixed(1)} unit="hrs" accentVar="--color-blue" />
+      {/* Stats row */}
+      <div className="card-dark fade-up d3" style={{ padding: '14px 16px' }}>
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="text-[14px] font-bold text-foreground">Volume lifted</div>
+            <div className="label-ref">Last 7 days</div>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="font-display text-[28px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>{kcal}</span>
+            <span className="unit-text">kcal</span>
+          </div>
+        </div>
       </div>
 
-      {/* CTA Button — lime like reference */}
+      {/* Bento grid — HR, HRV, Sleep, Battery */}
+      <div className="grid grid-cols-2 gap-[10px] fade-up d4">
+        <MetricCard label="Resting HR" value={String(restingHR)} unit="bpm" accentVar="--color-blue" />
+        <MetricCard label="HRV" value={String(hrv)} unit="ms" accentVar="--color-lime" />
+      </div>
+
+      {/* CTA */}
       {!hasToday ? (
         <button onClick={onGoToCheckin}
-          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-sm tracking-tight hover:brightness-95 active:scale-[0.98] transition-all fade-up d4">
+          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d5"
+          style={{ letterSpacing: '-0.02em' }}>
           Start a New Check-in
         </button>
       ) : (
         <button onClick={onViewInsights}
-          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-sm tracking-tight hover:brightness-95 active:scale-[0.98] transition-all fade-up d4">
+          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d5"
+          style={{ letterSpacing: '-0.02em' }}>
           View Insights
         </button>
       )}
@@ -353,10 +368,10 @@ const HomeScreen = ({
 const MetricCard = ({ label, value, unit, accentVar }: {
   label: string; value: string; unit: string; accentVar: string;
 }) => (
-  <div className="card-dark p-4">
-    <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.08em] mb-2">{label}</div>
-    <div className="font-display text-[22px] font-extrabold tracking-tight leading-none" style={{ color: `hsl(var(${accentVar}))` }}>
-      {value}<span className="text-[11px] font-normal text-muted-foreground ml-0.5">{unit}</span>
+  <div className="card-sm">
+    <div className="label-ref mb-1.5">{label}</div>
+    <div className="med-num" style={{ color: `hsl(var(${accentVar}))` }}>
+      {value}<span className="unit-text">{unit}</span>
     </div>
   </div>
 );
