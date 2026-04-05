@@ -112,20 +112,18 @@ const DayLensApp = () => {
 
   return (
     <div className="max-w-md mx-auto min-h-screen relative">
-      {/* Header — minimal dark */}
-      <div className="header-dark">
+      {/* Header — clean minimal */}
+      <div className="px-5 pt-14 pb-5">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="font-display text-[28px] font-extrabold text-foreground tracking-tight leading-none">
+            <h1 className="font-display text-[26px] font-extrabold text-foreground tracking-tight leading-none">
               {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Trends" : screen === "goals" ? "Goals" : "Profile"}
             </h1>
+            <p className="text-[11px] text-muted-foreground mt-1">Your daily overview</p>
           </div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <MoodCalendar entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:bg-card transition-colors">
-              <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-            </button>
-            <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:bg-card transition-colors" onClick={() => !hasToday && setScreen("checkin")}>
+            <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center" onClick={() => !hasToday && setScreen("checkin")}>
               <Plus className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
@@ -133,7 +131,7 @@ const DayLensApp = () => {
       </div>
 
       {/* Main content */}
-      <main className="px-[18px] pt-2 pb-28 min-h-[60vh]">
+      <main className="px-5 pb-28 min-h-[60vh]">
         {screen === "checkin" && (
           <HomeScreen
             entries={entries} recent={recent} todayScore={todayScore} wearable={wearable}
@@ -156,11 +154,20 @@ const DayLensApp = () => {
         )}
       </main>
 
-      {/* Bottom nav — minimal icons */}
+      {/* Bottom nav — elevated center button */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-        <nav className="flex items-center gap-0 px-5 h-[56px] rounded-full nav-blur">
-          {NAV.map(item => {
+        <nav className="flex items-center gap-1 px-4 h-[58px] rounded-full nav-blur">
+          {NAV.map((item, idx) => {
             const active = screen === item.id;
+            const isCenter = idx === 2;
+            if (isCenter) {
+              return (
+                <button key={item.id} onClick={() => setScreen(item.id)}
+                  className={`flex items-center justify-center w-12 h-12 rounded-full -mt-4 shadow-lg transition-all ${active ? "bg-primary" : "bg-card border border-border"}`}>
+                  <item.icon className={`w-5 h-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} strokeWidth={2} />
+                </button>
+              );
+            }
             return (
               <button key={item.id} onClick={() => setScreen(item.id)}
                 className={`flex items-center justify-center w-11 h-11 rounded-full transition-all ${active ? "bg-primary" : ""}`}>
@@ -268,123 +275,86 @@ const HomeScreen = ({
 
   return (
     <div className="space-y-4 fade-up">
-      {/* Top 2-col grid: Score ring + Body weight */}
+      {/* Top 2-col: Score + Streak highlight */}
       <div className="grid grid-cols-2 gap-3 fade-up d1">
-        {/* Score card with ring */}
+        {/* Score card */}
         <div className="card-dark p-5">
-          <div className="flex items-start justify-between mb-3">
-            <div className="relative" style={{ width: 68, height: 68 }}>
-              <svg width="68" height="68" className="transform -rotate-90">
-                <circle cx="34" cy="34" r={ringR} fill="none" stroke="hsl(0 0% 15%)" strokeWidth="4" />
-                <circle cx="34" cy="34" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="4" strokeLinecap="round"
+          <div className="flex items-center gap-3 mb-3">
+            <div className="relative" style={{ width: 56, height: 56 }}>
+              <svg width="56" height="56" className="transform -rotate-90">
+                <circle cx="28" cy="28" r={ringR} fill="none" stroke="hsl(0 0% 15%)" strokeWidth="3.5" />
+                <circle cx="28" cy="28" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="3.5" strokeLinecap="round"
                   strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
                   style={{ transition: "stroke-dasharray .6s ease" }} />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-lg font-extrabold text-foreground">{score.toFixed(0)}</span>
+                <span className="font-display text-base font-extrabold text-foreground">{score.toFixed(0)}</span>
               </div>
             </div>
-            <button className="w-7 h-7 rounded-lg border border-border flex items-center justify-center">
-              <SlidersHorizontal className="w-3 h-3 text-muted-foreground" />
-            </button>
+            <Zap className="w-4 h-4 text-primary ml-auto" />
           </div>
-          <div className="text-[13px] font-semibold text-foreground">Today's Score</div>
-          <div className="text-[11px] text-muted-foreground mt-0.5">{streak > 0 ? `${streak}-day streak` : "Start your streak"}</div>
+          <div className="font-display text-[32px] font-extrabold text-foreground leading-none tracking-tight">{steps >= 1000 ? `${(steps/1000).toFixed(1)}k` : steps}</div>
+          <div className="text-[11px] text-muted-foreground mt-1">Steps today</div>
         </div>
 
-        {/* Body weight card */}
-        <div className="card-dark p-5">
-          <div className="flex items-start justify-between mb-3">
-            <div className="font-display text-[36px] font-extrabold text-foreground leading-none tracking-tight">
-              {bodyWeight}<span className="text-sm font-medium text-muted-foreground ml-0.5">kg</span>
+        {/* Lime accent card — like reference */}
+        <div className="rounded-[20px] p-5 bg-primary text-primary-foreground">
+          <div className="flex justify-end mb-3">
+            <div className="w-7 h-7 rounded-lg bg-primary-foreground/10 flex items-center justify-center">
+              <Heart className="w-3.5 h-3.5 text-primary-foreground" />
             </div>
-            <button className="w-7 h-7 rounded-lg border border-border flex items-center justify-center">
-              <SlidersHorizontal className="w-3 h-3 text-muted-foreground" />
-            </button>
           </div>
-          <div className="text-[13px] font-semibold text-foreground">Body weight</div>
-          <div className="text-[11px] text-muted-foreground mt-0.5">31 min ago</div>
+          <div className="font-display text-[32px] font-extrabold leading-none tracking-tight">{sleepScore}%</div>
+          <div className="text-[11px] mt-1 opacity-70">Sleep quality</div>
         </div>
       </div>
 
-      {/* Dot matrix calendar card */}
+      {/* Check-in history list */}
       <div className="card-dark p-5 fade-up d2">
-        <div className="flex justify-between mb-4">
-          {dotMatrix.map((month) => (
-            <div key={month.label} className="flex-1 text-center">
-              <span className="text-[11px] text-muted-foreground font-medium">{month.label}</span>
-            </div>
-          ))}
+        <div className="flex justify-between items-center mb-4">
+          <span className="font-display text-sm font-bold text-foreground">Recent Check-ins</span>
+          <span className="text-[10px] text-muted-foreground">See all</span>
         </div>
-        <div className="flex gap-3">
-          {dotMatrix.map((month) => (
-            <div key={month.label} className="flex-1">
-              <div className="grid grid-cols-7 gap-[3px]">
-                {month.dots.map((active, i) => (
-                  <div key={i} className={`w-[5px] h-[5px] rounded-full ${active ? "bg-foreground" : "bg-border"}`} />
-                ))}
+        {recent.slice(0, 3).map((entry: DayEntry, i: number) => {
+          const entryScore = computeDayScore(entry);
+          const d = new Date(entry.date);
+          const label = i === 0 ? "Today" : i === 1 ? "Yesterday" : d.toLocaleDateString("en", { month: "short", day: "numeric" });
+          return (
+            <div key={entry.date} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center">
+                  <span className="font-display text-xs font-bold text-foreground">{entryScore.toFixed(0)}</span>
+                </div>
+                <div>
+                  <div className="text-[12px] font-semibold text-foreground">{label}</div>
+                  <div className="text-[10px] text-muted-foreground">{entry.wearable?.activity?.steps || 0} steps</div>
+                </div>
               </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </div>
-          ))}
-        </div>
-
-        {/* Activity item below dots */}
-        <div className="flex items-center gap-3 mt-5 pt-4 border-t border-border">
-          <div className="w-10 h-10 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
-            <span className="font-display text-sm font-bold text-foreground">{streak}</span>
-          </div>
-          <div className="flex-1">
-            <div className="text-[13px] font-semibold text-foreground">Daily check-in</div>
-            <div className="text-[11px] text-muted-foreground">Every day</div>
-          </div>
-          <button className="w-7 h-7 rounded-lg border border-border flex items-center justify-center">
-            <SlidersHorizontal className="w-3 h-3 text-muted-foreground" />
-          </button>
-        </div>
-      </div>
-
-      {/* Stats card — Steps this week */}
-      <div className="card-dark p-5 fade-up d3">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-[13px] font-semibold text-foreground">Steps today</div>
-            <div className="text-[11px] text-muted-foreground">Last 7 days</div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-display text-[28px] font-extrabold text-foreground tracking-tight">{steps >= 1000 ? `${(steps/1000).toFixed(1)}` : steps}</span>
-            <span className="text-sm text-muted-foreground font-medium">steps</span>
-          </div>
-          <button className="w-7 h-7 rounded-lg border border-border flex items-center justify-center">
-            <SlidersHorizontal className="w-3 h-3 text-muted-foreground" />
-          </button>
-        </div>
+          );
+        })}
       </div>
 
       {/* Bento grid — HR, Calories, HRV, Sleep */}
-      <div className="grid grid-cols-2 gap-3 fade-up d4">
+      <div className="grid grid-cols-2 gap-3 fade-up d3">
         <MetricCard label="Resting HR" value={String(restingHR)} unit="bpm" accentVar="--color-blue" />
         <MetricCard label="Burned" value={String(kcal)} unit="kcal" accentVar="--color-pink" />
         <MetricCard label="HRV" value={String(hrv)} unit="ms" accentVar="--color-lime" />
         <MetricCard label="Sleep" value={sleepTotal.toFixed(1)} unit="hrs" accentVar="--color-blue" />
       </div>
 
-      {/* CTA */}
+      {/* CTA Button — lime like reference */}
       {!hasToday ? (
-        <div className="card-dark p-4 flex items-center justify-between cursor-pointer hover:bg-card/80 transition-colors fade-up d5" onClick={onGoToCheckin}>
-          <div>
-            <div className="text-[13px] font-semibold text-foreground">Log Today's Check-in</div>
-            <div className="text-[11px] text-muted-foreground mt-0.5">Takes less than 2 minutes</div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
-        </div>
+        <button onClick={onGoToCheckin}
+          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-sm tracking-tight hover:brightness-95 active:scale-[0.98] transition-all fade-up d4">
+          Start a New Check-in
+        </button>
       ) : (
-        <div className="card-dark p-4 flex items-center justify-between cursor-pointer hover:bg-card/80 transition-colors fade-up d5" onClick={onViewInsights}>
-          <div>
-            <div className="text-[13px] font-semibold text-foreground">View Insights</div>
-            <div className="text-[11px] text-muted-foreground mt-0.5">See your trends and patterns</div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
-        </div>
+        <button onClick={onViewInsights}
+          className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold text-sm tracking-tight hover:brightness-95 active:scale-[0.98] transition-all fade-up d4">
+          View Insights
+        </button>
       )}
     </div>
   );
