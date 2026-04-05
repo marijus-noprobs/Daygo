@@ -220,6 +220,24 @@ const HomeScreen = ({
   const bodyWeight = profile?.weightKg || 75;
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
 
+  // Generate dot matrix for last 3 months (must be before any early returns)
+  const dotMatrix = useMemo(() => {
+    const months: { label: string; dots: boolean[] }[] = [];
+    const now = new Date();
+    for (let m = 2; m >= 0; m--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+      const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      const label = d.toLocaleString("default", { month: "short" });
+      const dots: boolean[] = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        dots.push(entries.some((e: DayEntry) => e.date === dateStr));
+      }
+      months.push({ label, dots });
+    }
+    return months;
+  }, [entries]);
+
   if (!submitted && !hasToday && !wearable) {
     return (
       <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
