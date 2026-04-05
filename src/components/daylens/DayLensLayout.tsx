@@ -112,20 +112,18 @@ const DayLensApp = () => {
 
   return (
     <div className="max-w-md mx-auto min-h-screen relative">
-      {/* Header — minimal dark */}
-      <div className="header-dark">
+      {/* Header — clean minimal */}
+      <div className="px-5 pt-14 pb-5">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="font-display text-[28px] font-extrabold text-foreground tracking-tight leading-none">
+            <h1 className="font-display text-[26px] font-extrabold text-foreground tracking-tight leading-none">
               {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Trends" : screen === "goals" ? "Goals" : "Profile"}
             </h1>
+            <p className="text-[11px] text-muted-foreground mt-1">Your daily overview</p>
           </div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <MoodCalendar entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:bg-card transition-colors">
-              <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-            </button>
-            <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center hover:bg-card transition-colors" onClick={() => !hasToday && setScreen("checkin")}>
+            <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center" onClick={() => !hasToday && setScreen("checkin")}>
               <Plus className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
@@ -133,7 +131,7 @@ const DayLensApp = () => {
       </div>
 
       {/* Main content */}
-      <main className="px-[18px] pt-2 pb-28 min-h-[60vh]">
+      <main className="px-5 pb-28 min-h-[60vh]">
         {screen === "checkin" && (
           <HomeScreen
             entries={entries} recent={recent} todayScore={todayScore} wearable={wearable}
@@ -156,11 +154,20 @@ const DayLensApp = () => {
         )}
       </main>
 
-      {/* Bottom nav — minimal icons */}
+      {/* Bottom nav — elevated center button */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
-        <nav className="flex items-center gap-0 px-5 h-[56px] rounded-full nav-blur">
-          {NAV.map(item => {
+        <nav className="flex items-center gap-1 px-4 h-[58px] rounded-full nav-blur">
+          {NAV.map((item, idx) => {
             const active = screen === item.id;
+            const isCenter = idx === 2;
+            if (isCenter) {
+              return (
+                <button key={item.id} onClick={() => setScreen(item.id)}
+                  className={`flex items-center justify-center w-12 h-12 rounded-full -mt-4 shadow-lg transition-all ${active ? "bg-primary" : "bg-card border border-border"}`}>
+                  <item.icon className={`w-5 h-5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} strokeWidth={2} />
+                </button>
+              );
+            }
             return (
               <button key={item.id} onClick={() => setScreen(item.id)}
                 className={`flex items-center justify-center w-11 h-11 rounded-full transition-all ${active ? "bg-primary" : ""}`}>
