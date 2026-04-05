@@ -90,10 +90,10 @@
 }
 
 @layer components {
-  /* Solid dark card — no blur, no glass */
+  /* Solid dark card */
   .card-dark {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 13%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 20px;
     position: relative;
     overflow: hidden;
@@ -101,39 +101,47 @@
 
   /* Slightly elevated card */
   .card-dark-elevated {
-    background: hsl(0 0% 11%);
-    border: 1px solid hsl(0 0% 15%);
-    border-radius: 20px;
+    background: #1f1f21;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 18px;
     position: relative;
     overflow: hidden;
   }
 
-  /* Keep glass-card-apple for backward compat but make it match */
+  /* Compact card */
+  .card-sm {
+    background: #181819;
+    border-radius: 16px;
+    padding: 13px;
+  }
+
   .glass-card-apple {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 13%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 20px;
     position: relative;
     overflow: hidden;
   }
 
   .glass-hero {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 15%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 24px;
     position: relative;
     overflow: hidden;
   }
 
   .glass {
-    background: hsl(0 0% 9%);
-    border: 1px solid hsl(0 0% 13%);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.04);
   }
 
   .nav-blur {
-    background: hsl(0 0% 7%);
-    border: 1px solid hsl(0 0% 13%);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    background: rgba(14, 14, 15, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
   }
 
   .header-dark {
@@ -143,6 +151,83 @@
   .font-display {
     font-family: 'Syne', sans-serif;
     letter-spacing: -0.03em;
+  }
+
+  .font-mono {
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Segment control */
+  .seg {
+    display: flex;
+    background: #1f1f21;
+    border-radius: 14px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .seg-btn {
+    flex: 1;
+    padding: 7px;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.36);
+    text-align: center;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .seg-btn.active {
+    background: #181819;
+    color: #f2f2f3;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Labels matching reference */
+  .label-ref {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.36);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Big number */
+  .big-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  /* Medium number */
+  .med-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  /* Unit text */
+  .unit-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.36);
+    margin-left: 3px;
+  }
+
+  /* Progress bar */
+  .progress-bar-bg {
+    height: 3px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
