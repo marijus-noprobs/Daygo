@@ -111,20 +111,17 @@ const DayLensApp = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto min-h-screen relative">
-      {/* Header — clean minimal */}
-      <div className="px-5 pt-14 pb-5">
+    <div className="max-w-md mx-auto min-h-screen relative" style={{ background: '#0e0e0f' }}>
+      {/* Header */}
+      <div className="px-4 pt-14 pb-3">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="font-display text-[26px] font-extrabold text-foreground tracking-tight leading-none">
-              {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Trends" : screen === "goals" ? "Goals" : "Profile"}
-            </h1>
-            <p className="text-[11px] text-muted-foreground mt-1">Your daily overview</p>
-          </div>
-          <div className="flex items-center gap-2">
+          <h1 className="font-display text-[30px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>
+            {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Insights" : screen === "goals" ? "Goals" : "Profile"}
+          </h1>
+          <div className="flex items-center gap-[9px]">
             <MoodCalendar entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <button className="w-9 h-9 rounded-full border border-border flex items-center justify-center" onClick={() => !hasToday && setScreen("checkin")}>
-              <Plus className="w-4 h-4 text-muted-foreground" />
+            <button className="w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: '#1f1f21', color: 'rgba(255,255,255,0.36)' }} onClick={() => !hasToday && setScreen("checkin")}>
+              <Plus className="w-[18px] h-[18px]" />
             </button>
           </div>
         </div>
