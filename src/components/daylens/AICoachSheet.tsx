@@ -265,23 +265,12 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Handle */}
-        <div className="flex-shrink-0 pt-3 pb-1 flex justify-center">
-          <div className="w-10 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)" }} />
-        </div>
-
-        {/* Header */}
-        <div className="flex-shrink-0 flex items-center justify-between px-5 py-3">
-          <div>
-            <div className="font-display text-[15px] font-extrabold text-foreground" style={{ letterSpacing: "-0.02em" }}>AI Coach</div>
-            <div className="text-[10px] text-muted-foreground">Personalized guidance</div>
-          </div>
+        {/* Close button */}
+        <div className="flex-shrink-0 flex justify-end px-4 pt-4 pb-1">
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/[0.05] transition-colors">
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
-
-        <div className="w-full h-px" style={{ background: "rgba(255,255,255,0.04)" }} />
 
         {/* Messages */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
