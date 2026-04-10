@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { type DayEntry } from "@/lib/daylens-constants";
 import { computeDayScore, scoreGradient } from "@/lib/daylens-utils";
 
-const MOOD_EMOJI = ["", "😫", "😕", "😐", "😊", "🤩"];
+
 
 interface MoodCalendarProps {
   entries: DayEntry[];
@@ -48,9 +48,6 @@ export const MoodCalendar = ({ entries, selectedDate, onSelectDate }: MoodCalend
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: color }}
             />
-            {mood && (
-              <span className="text-[8px] leading-none">{MOOD_EMOJI[mood]}</span>
-            )}
           </div>
         )}
       </div>
