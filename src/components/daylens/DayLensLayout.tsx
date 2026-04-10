@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import ParticleRing from "./ParticleRing";
-import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users, MessageCircle, HelpCircle } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
+import { AICoachSheet } from "./AICoachSheet";
 import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
 import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
