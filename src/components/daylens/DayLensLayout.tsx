@@ -273,7 +273,7 @@ const HomeScreen = ({
   entries, recent, todayScore, wearable, submitted, hasToday,
   onViewInsights, setWearable, setWearableRaw, nutrition, setNutrition,
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
-  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection, forceCheckIn,
+  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection,
 }: any) => {
   const latestEntry = recent[0];
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
@@ -306,14 +306,14 @@ const HomeScreen = ({
     return months;
   }, [entries]);
 
-  if (forceCheckIn || (!submitted && !hasToday)) {
+  if (!submitted && !hasToday) {
     return (
       <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
         setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
         nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
         todayActivities={todayActivities} setTodayActivities={setTodayActivities}
         note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} forceOpen={forceCheckIn} />
+        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} />
     );
   }
 
