@@ -355,7 +355,7 @@ const HomeScreen = ({
               color="#ffffff"
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em', textShadow: '0 0 24px rgba(200,232,120,0.25)' }}>{score.toFixed(0)}</span>
+              <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em' }}>{score.toFixed(0)}</span>
               <span className="text-[8px] uppercase tracking-[0.15em] text-muted-foreground font-bold mt-0.5">score</span>
             </div>
           </div>

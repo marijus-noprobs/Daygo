@@ -3,14 +3,13 @@ import React, { useRef, useEffect } from 'react';
 interface ParticleRingProps {
   size: number;
   progress: number; // 0-1
-  color: string; // hex or rgb
+  color: string; // hex
   className?: string;
 }
 
 const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, className }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number>(0);
-  const timeRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,8 +26,8 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
     const cy = size / 2;
     const baseR = size * 0.38;
 
-    // Generate particles once
-    const particleCount = 320;
+    // Ring particles — more of them, tighter spread
+    const particleCount = 500;
     const particles: {
       angle: number;
       rOffset: number;
@@ -40,75 +39,87 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
     }[] = [];
 
     for (let i = 0; i < particleCount; i++) {
-      const angle = Math.random() * Math.PI * 2;
       particles.push({
-        angle,
-        rOffset: (Math.random() - 0.5) * size * 0.14,
-        size: 0.4 + Math.random() * 1.8,
-        opacity: 0.08 + Math.random() * 0.7,
-        speed: 0.0003 + Math.random() * 0.0012,
-        drift: (Math.random() - 0.5) * 0.4,
+        angle: Math.random() * Math.PI * 2,
+        rOffset: (Math.random() - 0.5) * size * 0.18,
+        size: 0.3 + Math.random() * 1.4,
+        opacity: 0.05 + Math.random() * 0.65,
+        speed: 0.0002 + Math.random() * 0.001,
+        drift: (Math.random() - 0.5) * 0.5,
         phase: Math.random() * Math.PI * 2,
       });
     }
 
-    // Scattered fill particles inside the sphere
-    const innerCount = 180;
+    // Dense inner noise field
+    const innerCount = 350;
     const innerParticles: {
-      x: number;
-      y: number;
-      size: number;
-      opacity: number;
-      phase: number;
+      x: number; y: number; size: number; opacity: number; phase: number;
     }[] = [];
 
     for (let i = 0; i < innerCount; i++) {
       const a = Math.random() * Math.PI * 2;
-      const r = Math.random() * baseR * 0.85;
+      const r = Math.random() * baseR * 0.9;
       innerParticles.push({
         x: Math.cos(a) * r,
         y: Math.sin(a) * r,
-        size: 0.3 + Math.random() * 1.0,
-        opacity: 0.03 + Math.random() * 0.12,
+        size: 0.3 + Math.random() * 0.8,
+        opacity: 0.02 + Math.random() * 0.1,
         phase: Math.random() * Math.PI * 2,
       });
     }
 
-    // Parse color
+    // Static noise grain scattered everywhere
+    const noiseCount = 600;
+    const noiseParticles: { x: number; y: number; size: number; opacity: number }[] = [];
+    for (let i = 0; i < noiseCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.random() * size * 0.48;
+      noiseParticles.push({
+        x: cx + Math.cos(a) * r,
+        y: cy + Math.sin(a) * r,
+        size: 0.2 + Math.random() * 0.6,
+        opacity: 0.02 + Math.random() * 0.06,
+      });
+    }
+
     const parseColor = (c: string) => {
       if (c.startsWith('#')) {
-        const r = parseInt(c.slice(1, 3), 16);
-        const g = parseInt(c.slice(3, 5), 16);
-        const b = parseInt(c.slice(5, 7), 16);
-        return { r, g, b };
+        return {
+          r: parseInt(c.slice(1, 3), 16),
+          g: parseInt(c.slice(3, 5), 16),
+          b: parseInt(c.slice(5, 7), 16),
+        };
       }
-      return { r: 200, g: 232, b: 120 }; // fallback lime
+      return { r: 255, g: 255, b: 255 };
     };
 
     const { r: cr, g: cg, b: cb } = parseColor(color);
 
     const draw = (time: number) => {
-      timeRef.current = time;
       ctx.clearRect(0, 0, size, size);
 
-      // Inner scattered dots (grid-like noise fill)
+      // Static noise grain
+      for (const n of noiseParticles) {
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${n.opacity})`;
+        ctx.fillRect(n.x, n.y, n.size, n.size);
+      }
+
+      // Inner scattered dots
       for (const p of innerParticles) {
-        const flicker = 0.5 + 0.5 * Math.sin(time * 0.001 + p.phase);
-        const alpha = p.opacity * flicker * 0.5;
+        const flicker = 0.4 + 0.6 * Math.sin(time * 0.0008 + p.phase);
+        const alpha = p.opacity * flicker;
         ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha})`;
         ctx.fillRect(cx + p.x - p.size / 2, cy + p.y - p.size / 2, p.size, p.size);
       }
 
-      // Ring particles
+      // Ring particles — no glow, just raw dots
       const progressAngle = progress * Math.PI * 2;
 
       for (const p of particles) {
         const a = p.angle + time * p.speed;
         const normalizedAngle = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-
-        // Particles in the "active" arc are brighter
         const inActiveArc = normalizedAngle <= progressAngle;
-        const edgeFade = inActiveArc ? 1 : 0.15;
+        const edgeFade = inActiveArc ? 1 : 0.12;
 
         const wobble = Math.sin(time * 0.002 + p.phase) * p.drift;
         const r = baseR + p.rOffset + wobble * 4;
@@ -116,23 +127,13 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
         const x = cx + Math.cos(a) * r;
         const y = cy + Math.sin(a) * r;
 
-        const flicker = 0.6 + 0.4 * Math.sin(time * 0.003 + p.phase * 3);
+        const flicker = 0.5 + 0.5 * Math.sin(time * 0.003 + p.phase * 3);
         const alpha = p.opacity * flicker * edgeFade;
-
-        // Glow for bright particles
-        if (inActiveArc && p.opacity > 0.5 && p.size > 1.2) {
-          const grad = ctx.createRadialGradient(x, y, 0, x, y, p.size * 3);
-          grad.addColorStop(0, `rgba(${cr},${cg},${cb},${alpha * 0.4})`);
-          grad.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
-          ctx.fillStyle = grad;
-          ctx.fillRect(x - p.size * 3, y - p.size * 3, p.size * 6, p.size * 6);
-        }
 
         ctx.fillStyle = inActiveArc
           ? `rgba(${cr},${cg},${cb},${alpha})`
-          : `rgba(255,255,255,${alpha * 0.3})`;
+          : `rgba(${cr},${cg},${cb},${alpha * 0.25})`;
 
-        // Square dots for that digital/gritty look
         ctx.fillRect(x - p.size / 2, y - p.size / 2, p.size, p.size);
       }
 
