@@ -275,6 +275,7 @@ const HomeScreen = ({
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
   onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection,
 }: any) => {
+  const latestEntry = recent[0];
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
   const sleepTotal = latestEntry?.wearable?.sleep?.totalHours || 7.5;
   const avgMood = recent.length > 0 ? avg(recent.slice(0, 7).map((e: DayEntry) => e.mood.overallMood)) : 3.5;
