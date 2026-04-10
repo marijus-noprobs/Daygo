@@ -431,16 +431,7 @@ const HomeScreen = ({
               className="w-full bg-transparent text-[14px] text-foreground placeholder:text-foreground/25 outline-none mb-3"
             />
             {/* Bottom action row */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <button type="button" onClick={() => { setShowCoach(true); }} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <Sparkles className="w-4 h-4 text-foreground/40" />
-                </button>
-                <div className="flex items-center gap-1 px-3 h-9 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <Zap className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-[11px] font-semibold text-foreground/50">Coach</span>
-                </div>
-              </div>
+            <div className="flex items-center justify-end">
               <button type="submit" className="h-9 px-5 rounded-full bg-foreground text-background text-[12px] font-bold hover:bg-foreground/90 transition-colors">
                 Ask
               </button>
