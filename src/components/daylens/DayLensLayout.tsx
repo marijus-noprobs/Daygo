@@ -409,23 +409,44 @@ const HomeScreen = ({
       </div>
 
       {/* ── AI COACH ENTRY ──────────────────────────────── */}
-      <button
-        onClick={() => { setCoachQuestion(null); setShowCoach(true); }}
-        className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl fade-up d1 hover:brightness-110 active:scale-[0.98] transition-all"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}
-      >
-        <div className="relative flex-shrink-0">
-          <ParticleRing size={38} progress={1} color="#a78bfa" />
+      <div className="fade-up d1 flex flex-col items-center gap-3">
+        <div className="relative w-[72px] h-[72px]">
+          {/* Warm glow blob */}
+          <div className="absolute inset-0 rounded-[22px]" style={{
+            background: 'linear-gradient(135deg, #e8956b 0%, #c97a4a 25%, #1a1a2e 45%, #4a8fa8 65%, #f5e0c3 85%, #f0c8a0 100%)',
+            boxShadow: '0 0 40px 8px rgba(232,149,107,0.25), 0 0 80px 16px rgba(232,149,107,0.1)',
+            filter: 'blur(0.5px)',
+          }} />
+          {/* Inner content */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <Sparkles className="w-5 h-5 text-white/90 drop-shadow-lg" />
           </div>
         </div>
-        <div className="flex-1 text-left">
-          <div className="text-[12px] font-bold text-foreground/90">AI Coach</div>
-          <p className="text-[11px] text-foreground/50 leading-snug mt-0.5">{aiSummary}</p>
-        </div>
-        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
-      </button>
+        {/* Input bar */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const form = e.target as HTMLFormElement;
+            const input = form.elements.namedItem('coachInput') as HTMLInputElement;
+            const val = input.value.trim();
+            setCoachQuestion(val || null);
+            setShowCoach(true);
+            input.value = '';
+          }}
+          className="w-full flex items-center gap-2 rounded-2xl px-4 py-3 transition-all focus-within:ring-1 focus-within:ring-primary/30"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <input
+            name="coachInput"
+            type="text"
+            placeholder="Ask AI Coach..."
+            className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-muted-foreground/50 outline-none"
+          />
+          <button type="submit" className="text-muted-foreground/40 hover:text-primary transition-colors">
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </form>
+      </div>
 
 
 
