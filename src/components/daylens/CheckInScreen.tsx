@@ -36,7 +36,7 @@ export const CheckInScreen = ({
 }: CheckInScreenProps) => {
   const [section, setSection] = useState("nutrition");
   const [showAddActivity, setShowAddActivity] = useState(false);
-
+  const [showSentiment, setShowSentiment] = useState(false);
   const sections = ["nutrition", "activities", "mood"];
   const sectionIndex = sections.indexOf(section);
 
