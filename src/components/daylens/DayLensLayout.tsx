@@ -326,7 +326,7 @@ const HomeScreen = ({
       {/* Top 2-col grid */}
       <div className="grid grid-cols-2 gap-[10px] fade-up d1">
         {/* Score card */}
-        <div className="card-dark" style={{ padding: 14 }}>
+        <div className="card-dark-gradient" style={{ padding: 14 }}>
           <div className="flex justify-between items-start mb-4">
             <div className="relative" style={{ width: 52, height: 52 }}>
               <svg width="52" height="52" className="transform -rotate-90">
@@ -381,7 +381,7 @@ const HomeScreen = ({
 
       {/* Perfect Day Blueprint */}
       {(topPositive || topNegative) && (
-        <div className="card-dark fade-up d3" style={{ padding: '16px 18px' }}>
+        <div className="card-dark-gradient fade-up d3" style={{ padding: '16px 18px' }}>
           <div className="flex items-center justify-between mb-3">
             <span className="label-ref">Your perfect day</span>
             
