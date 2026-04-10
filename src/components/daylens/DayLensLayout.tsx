@@ -379,15 +379,15 @@ const HomeScreen = ({
         )}
       </div>
 
-      {/* Perfect Day Blueprint */}
-      {(topPositive || topNegative) && (
+      {/* Insights — correlations + suggestions combined */}
+      {(topPositive || topNegative || suggestions.length > 0) && (
         <div className="card-dark-gradient fade-up d3" style={{ padding: '16px 18px' }}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="label-ref">Your perfect day</span>
-            
+          <div className="flex items-center justify-between mb-2">
+            <span className="label-ref">Insights</span>
           </div>
+
           {topPositive && (
-            <div className="flex items-center justify-between py-3" style={{ borderBottom: topNegative ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+            <div className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <div>
                 <div className="text-[14px] font-bold text-foreground">More {topPositive.label.toLowerCase()}</div>
                 <div className="label-ref mt-0.5">avg {formatDuration(topPositive.avgDuration)}</div>
@@ -399,7 +399,7 @@ const HomeScreen = ({
             </div>
           )}
           {topNegative && (
-            <div className="flex items-center justify-between py-3">
+            <div className="flex items-center justify-between py-3" style={{ borderBottom: suggestions.length > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
               <div>
                 <div className="text-[14px] font-bold text-foreground">Less {topNegative.label.toLowerCase()}</div>
                 <div className="label-ref mt-0.5">esp. late evening</div>
@@ -410,15 +410,7 @@ const HomeScreen = ({
               </div>
             </div>
           )}
-        </div>
-      )}
 
-      {/* Suggestions */}
-      {suggestions.length > 0 && (
-        <div className="card-dark fade-up d4" style={{ padding: '16px 18px' }}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="label-ref">Insights</span>
-          </div>
           {suggestions.slice(0, 3).map((s, i, arr) => (
             <div key={s.id} className="flex items-start gap-3 py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
               <div className="w-[3px] rounded-full flex-shrink-0 mt-0.5" style={{
