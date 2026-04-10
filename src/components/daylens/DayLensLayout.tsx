@@ -205,11 +205,11 @@ const DayLensApp = () => {
             <h3 className="font-display text-base font-extrabold text-foreground mb-4">Log</h3>
             <div className="space-y-1">
               {[
-                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", section: "nutrition" as const },
-                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", section: "activities" as const },
-                { icon: Users, label: "Social", desc: "Log social interaction", section: "activities" as const },
+                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", modal: "food" as const },
+                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", modal: "activity" as const },
+                { icon: Users, label: "Social", desc: "Log social interaction", modal: "social" as const },
               ].map(item => (
-                <button key={item.label} onClick={() => openQuickAdd(item.section)}
+                <button key={item.label} onClick={() => openQuickAddModal(item.modal)}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
                   style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
@@ -225,6 +225,17 @@ const DayLensApp = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Quick Add Category Modals */}
+      {quickAddModal === "food" && (
+        <FoodModal nutrition={nutrition} setNutrition={setNutrition} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
+      )}
+      {quickAddModal === "activity" && (
+        <ActivityModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
+      )}
+      {quickAddModal === "social" && (
+        <SocialModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
       )}
 
       {/* Pricing Sheet */}
