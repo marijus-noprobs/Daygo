@@ -24,7 +24,8 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
 
     const cx = size / 2;
     const cy = size / 2;
-    const baseR = size * 0.36;
+    const ringR = size * 0.34; // center of the ring band
+    const ringThickness = size * 0.08; // thick band
 
     const parseColor = (c: string) => {
       if (c.startsWith('#')) {
@@ -39,104 +40,129 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
 
     const { r: cr, g: cg, b: cb } = parseColor(color);
 
-    // Ring layers with different frequencies and amplitudes
-    const rings = [
-      { r: baseR * 0.7, amp: 2.5, freq: 3, speed: 0.0006, opacity: 0.06, width: 0.5 },
-      { r: baseR * 0.78, amp: 3, freq: 4, speed: 0.0008, opacity: 0.08, width: 0.5 },
-      { r: baseR * 0.85, amp: 2, freq: 5, speed: 0.001, opacity: 0.1, width: 0.6 },
-      { r: baseR * 0.92, amp: 4, freq: 3, speed: 0.0007, opacity: 0.15, width: 0.8 },
-      { r: baseR, amp: 5, freq: 4, speed: 0.0009, opacity: 0.25, width: 1 },
-      { r: baseR * 1.05, amp: 6, freq: 5, speed: 0.0011, opacity: 0.5, width: 1.2 },
-      { r: baseR * 1.1, amp: 4, freq: 6, speed: 0.0013, opacity: 0.35, width: 1 },
-      { r: baseR * 1.16, amp: 7, freq: 4, speed: 0.001, opacity: 0.6, width: 1.5 },
-      { r: baseR * 1.22, amp: 5, freq: 5, speed: 0.0012, opacity: 0.3, width: 1 },
-      { r: baseR * 1.28, amp: 3, freq: 3, speed: 0.0008, opacity: 0.15, width: 0.7 },
-      { r: baseR * 1.33, amp: 2, freq: 4, speed: 0.0006, opacity: 0.08, width: 0.5 },
-    ];
+    // Generate massive particle cloud
+    const count = 4000;
+    const particles: {
+      angle: number;
+      dist: number; // distance from ring center line
+      size: number;
+      baseOpacity: number;
+      speed: number;
+      phase: number;
+      layer: number; // 0=core, 1=mid, 2=outer scatter
+    }[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      
+      // Gaussian-like distribution around the ring center
+      const u1 = Math.random();
+      const u2 = Math.random();
+      const gaussian = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+      const dist = gaussian * ringThickness * 0.6;
+      
+      const absDist = Math.abs(dist);
+      const layer = absDist < ringThickness * 0.3 ? 0 : absDist < ringThickness * 0.8 ? 1 : 2;
+      
+      particles.push({
+        angle,
+        dist,
+        size: layer === 0 ? 0.3 + Math.random() * 1.0 : 
+              layer === 1 ? 0.2 + Math.random() * 0.8 :
+              0.2 + Math.random() * 0.5,
+        baseOpacity: layer === 0 ? 0.4 + Math.random() * 0.6 :
+                     layer === 1 ? 0.15 + Math.random() * 0.4 :
+                     0.03 + Math.random() * 0.15,
+        speed: (0.00005 + Math.random() * 0.0002) * (layer === 2 ? 0.5 : 1),
+        phase: Math.random() * Math.PI * 2,
+        layer,
+      });
+    }
+
+    // Outer scattered halo particles
+    const haloCount = 800;
+    const haloParticles: {
+      angle: number;
+      dist: number;
+      size: number;
+      opacity: number;
+      speed: number;
+      phase: number;
+    }[] = [];
+
+    for (let i = 0; i < haloCount; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = ringThickness + Math.random() * size * 0.12;
+      const sign = Math.random() > 0.5 ? 1 : -1;
+      
+      haloParticles.push({
+        angle,
+        dist: dist * sign,
+        size: 0.2 + Math.random() * 0.4,
+        opacity: 0.02 + Math.random() * 0.08,
+        speed: 0.00003 + Math.random() * 0.0001,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    // Inner sparse dust
+    const dustCount = 300;
+    const dustParticles: {
+      x: number; y: number; size: number; opacity: number; phase: number;
+    }[] = [];
+
+    for (let i = 0; i < dustCount; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = Math.random() * ringR * 0.7;
+      dustParticles.push({
+        x: Math.cos(a) * r,
+        y: Math.sin(a) * r,
+        size: 0.2 + Math.random() * 0.6,
+        opacity: 0.02 + Math.random() * 0.06,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
 
     const draw = (time: number) => {
       ctx.clearRect(0, 0, size, size);
 
+      // Inner dust
+      for (const d of dustParticles) {
+        const flicker = 0.5 + 0.5 * Math.sin(time * 0.001 + d.phase);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${d.opacity * flicker})`;
+        ctx.fillRect(cx + d.x, cy + d.y, d.size, d.size);
+      }
+
+      // Outer halo
+      for (const h of haloParticles) {
+        const a = h.angle + time * h.speed;
+        const r = ringR + h.dist;
+        const x = cx + Math.cos(a) * r;
+        const y = cy + Math.sin(a) * r;
+        const flicker = 0.4 + 0.6 * Math.sin(time * 0.0008 + h.phase);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${h.opacity * flicker})`;
+        ctx.fillRect(x, y, h.size, h.size);
+      }
+
+      // Main ring particles
       const progressAngle = progress * Math.PI * 2;
 
-      for (const ring of rings) {
-        const points = 200;
-        
-        ctx.beginPath();
-        for (let i = 0; i <= points; i++) {
-          const angle = (i / points) * Math.PI * 2;
-          
-          // Organic undulation using multiple sine waves
-          const wave1 = Math.sin(angle * ring.freq + time * ring.speed) * ring.amp;
-          const wave2 = Math.sin(angle * (ring.freq + 2) - time * ring.speed * 0.7) * ring.amp * 0.5;
-          const wave3 = Math.sin(angle * (ring.freq * 2) + time * ring.speed * 1.3) * ring.amp * 0.3;
-          
-          const r = ring.r + wave1 + wave2 + wave3;
-          
-          const x = cx + Math.cos(angle - Math.PI / 2) * r;
-          const y = cy + Math.sin(angle - Math.PI / 2) * r;
-          
-          if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
+      for (const p of particles) {
+        const a = p.angle + time * p.speed;
+        const r = ringR + p.dist;
+        const x = cx + Math.cos(a) * r;
+        const y = cy + Math.sin(a) * r;
 
-        // Active arc portion is brighter
-        const inActiveZone = ring.r >= baseR * 0.98 && ring.r <= baseR * 1.2;
-        const alphaMultiplier = inActiveZone ? 1 : 0.6;
-        
-        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${ring.opacity * alphaMultiplier})`;
-        ctx.lineWidth = ring.width;
-        ctx.stroke();
-      }
+        // Check if in active progress arc
+        const normAngle = ((a - (-Math.PI / 2)) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+        const inActive = normAngle <= progressAngle;
 
-      // Draw the main bright progress arc on top
-      const mainR = baseR * 1.08;
-      const arcPoints = 200;
-      
-      ctx.beginPath();
-      for (let i = 0; i <= arcPoints; i++) {
-        const t = i / arcPoints;
-        const angle = t * progressAngle;
-        
-        const wave1 = Math.sin(angle * 4 + time * 0.001) * 5;
-        const wave2 = Math.sin(angle * 6 - time * 0.0008) * 3;
-        const wave3 = Math.sin(angle * 9 + time * 0.0015) * 1.5;
-        
-        const r = mainR + wave1 + wave2 + wave3;
-        
-        const x = cx + Math.cos(angle - Math.PI / 2) * r;
-        const y = cy + Math.sin(angle - Math.PI / 2) * r;
-        
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      
-      ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.85)`;
-      ctx.lineWidth = 2;
-      ctx.stroke();
+        const flicker = 0.6 + 0.4 * Math.sin(time * 0.002 + p.phase);
+        const alpha = p.baseOpacity * flicker * (inActive ? 1 : 0.35);
 
-      // Secondary bright ring slightly inside
-      ctx.beginPath();
-      for (let i = 0; i <= arcPoints; i++) {
-        const t = i / arcPoints;
-        const angle = t * progressAngle;
-        
-        const wave1 = Math.sin(angle * 5 - time * 0.0009) * 4;
-        const wave2 = Math.sin(angle * 3 + time * 0.0012) * 2.5;
-        
-        const r = mainR * 0.94 + wave1 + wave2;
-        
-        const x = cx + Math.cos(angle - Math.PI / 2) * r;
-        const y = cy + Math.sin(angle - Math.PI / 2) * r;
-        
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha})`;
+        ctx.fillRect(x - p.size / 2, y - p.size / 2, p.size, p.size);
       }
-      
-      ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.45)`;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
 
       animRef.current = requestAnimationFrame(draw);
     };
