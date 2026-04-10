@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Heart, Moon, Activity } from "lucide-react";
 import { HealthSuggestions } from "./HealthSuggestions";
+import ParticleRing from "./ParticleRing";
 import type { DayEntry } from "@/lib/daylens-constants";
 import type { HealthSuggestion } from "@/lib/daylens-utils";
 import { avg, computeDayScore } from "@/lib/daylens-utils";

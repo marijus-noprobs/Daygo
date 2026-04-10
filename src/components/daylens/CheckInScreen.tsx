@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { ScoreRing, BottomSheet } from "./DayLensUI";
+import { BottomSheet } from "./DayLensUI";
+import ParticleRing from "./ParticleRing";
 import { MealLogSection } from "./MealLogSection";
 import { ActivityCard, ActivityTypePicker } from "./ActivityComponents";
 import { SentimentScreen } from "./SentimentScreen";
