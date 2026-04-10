@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { ScoreRing, BottomSheet } from "./DayLensUI";
 import { MealLogSection } from "./MealLogSection";
 import { ActivityCard, ActivityTypePicker } from "./ActivityComponents";
+import { SentimentScreen } from "./SentimentScreen";
 import type { WearableData, NutritionData, MoodData, Activity, DayEntry, UserProfile } from "@/lib/daylens-constants";
 import { scoreGradient, newActivityBlank } from "@/lib/daylens-utils";
 
