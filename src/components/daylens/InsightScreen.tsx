@@ -89,6 +89,16 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
     return parts.join(", ") + ".";
   }, [avgScore, prevAvgScore, activityCorrelations]);
 
+  if (entries.length < 3) return (
+    <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4 fade-up">
+      <div className="w-16 h-16 bg-white/[0.05] rounded-full flex items-center justify-center text-muted-foreground">
+        <TrendingUp size={32} />
+      </div>
+      <h2 className="font-display text-xl font-extrabold">Gathering Data</h2>
+      <p className="text-[11px] text-muted-foreground max-w-xs leading-relaxed">Log a few more days to unlock patterns and insights.</p>
+    </div>
+  );
+
   return (
     <div className="space-y-4 pb-28 fade-up">
       {/* AI Narrative */}
