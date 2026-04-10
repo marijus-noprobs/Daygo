@@ -33,8 +33,8 @@ export interface PlanOption {
 
 export const PLAN_OPTIONS: PlanOption[] = [
   { id: "free",    label: "Free",    price: "$0",  period: "",    gradientClass: "from-secondary to-secondary", borderClass: "border-muted", features: ["30-day history", "Daily check-in", "Basic insights", "Activity tracking"] },
-  { id: "pro",     label: "Pro",     price: "$9",  period: "/mo", gradientClass: "from-dl-blue/20 to-dl-indigo/20", borderClass: "border-dl-blue/40", features: ["Unlimited history", "AI analysis", "Activity impact analysis", "Goal tracking", "Anomaly alerts", "Perfect Day"], highlight: true },
-  { id: "premium", label: "Premium", price: "$19", period: "/mo", gradientClass: "from-dl-purple/20 to-dl-purple/20", borderClass: "border-dl-purple/40", features: ["Everything in Pro", "Custom categories", "Coach sharing", "Priority support"] },
+  { id: "pro",     label: "Pro",     price: "$9",  period: "/mo", gradientClass: "from-primary/20 to-primary/20", borderClass: "border-primary/40", features: ["Unlimited history", "AI analysis", "Activity impact analysis", "Goal tracking", "Anomaly alerts", "Perfect Day"], highlight: true },
+  { id: "premium", label: "Premium", price: "$19", period: "/mo", gradientClass: "from-white/20 to-white/20", borderClass: "border-white/40", features: ["Everything in Pro", "Custom categories", "Coach sharing", "Priority support"] },
 ];
 
 export interface Goal {

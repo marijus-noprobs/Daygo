@@ -11,10 +11,10 @@ const STEPS = ["welcome", "profile", "features", "wearable"] as const;
 type Step = typeof STEPS[number];
 
 const FEATURES = [
-  { icon: Activity, title: "Daily Check-in", desc: "Log sleep, nutrition, mood & activities in seconds", color: "text-dl-emerald" },
-  { icon: TrendingUp, title: "Smart Insights", desc: "See how your habits affect tomorrow's performance", color: "text-dl-blue" },
-  { icon: Target, title: "Goal Tracking", desc: "Set targets and track streaks across all metrics", color: "text-dl-orange" },
-  { icon: Sparkles, title: "Perfect Day Blueprint", desc: "AI analyzes your best days to find your formula", color: "text-dl-purple" },
+  { icon: Activity, title: "Daily Check-in", desc: "Log sleep, nutrition, mood & activities in seconds", color: "text-primary" },
+  { icon: TrendingUp, title: "Smart Insights", desc: "See how your habits affect tomorrow's performance", color: "text-primary" },
+  { icon: Target, title: "Goal Tracking", desc: "Set targets and track streaks across all metrics", color: "text-foreground" },
+  { icon: Sparkles, title: "Perfect Day Blueprint", desc: "AI analyzes your best days to find your formula", color: "text-foreground" },
 ];
 
 const SEX_OPTIONS: { value: "male" | "female"; label: string; emoji: string }[] = [
@@ -51,8 +51,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
 
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-background flex flex-col overflow-hidden">
-      <div className="fixed top-20 -left-20 w-80 h-80 bg-dl-indigo/[0.06] blur-[120px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-32 -right-20 w-72 h-72 bg-dl-purple/[0.06] blur-[100px] rounded-full pointer-events-none" />
+      <div className="fixed top-20 -left-20 w-80 h-80 bg-white/[0.06] blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-32 -right-20 w-72 h-72 bg-white/[0.06] blur-[100px] rounded-full pointer-events-none" />
 
       {step !== "welcome" && (
         <button onClick={skip} className="absolute top-12 right-6 z-50 text-[11px] text-white/[0.3] hover:text-white/[0.5] transition-colors flex items-center gap-1">
@@ -182,7 +182,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
               <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10">
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1 }}
-                  className="w-20 h-20 rounded-2xl bg-gradient-to-br from-dl-emerald to-dl-cyan flex items-center justify-center mb-6 shadow-lg shadow-dl-emerald/30">
+                  className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary flex items-center justify-center mb-6 shadow-lg shadow-primary/30">
                   <Watch size={36} className="text-foreground" />
                 </motion.div>
                 <h2 className="font-display text-2xl font-extrabold tracking-tight mb-2">Connect a wearable</h2>

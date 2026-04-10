@@ -176,7 +176,7 @@ const DayLensApp = () => {
               className={`relative p-4 rounded-[20px] border cursor-pointer hover:scale-[1.01] active:scale-[0.99] transition-transform ${
                 p.id === plan ? "border-primary bg-primary/10" : "border-border bg-card"
               }`}>
-              {p.highlight && <span className="absolute -top-2 right-4 text-[10px] font-bold bg-dl-blue text-foreground px-2 py-0.5 rounded-full">Popular</span>}
+              {p.highlight && <span className="absolute -top-2 right-4 text-[10px] font-bold bg-primary text-foreground px-2 py-0.5 rounded-full">Popular</span>}
               {plan === p.id && <span className="absolute top-4 right-4 text-foreground">✓</span>}
               <div className="flex justify-between items-baseline mb-3">
                 <span className="font-display font-bold text-base">{p.label}</span>

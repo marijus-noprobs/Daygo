@@ -27,7 +27,7 @@ export const ActivityCard = ({ activity, onUpdate, onRemove }: {
             </div>
           </div>
         </div>
-        <button onClick={onRemove} className="text-muted-foreground hover:text-dl-red transition-colors mt-0.5">
+        <button onClick={onRemove} className="text-muted-foreground hover:text-destructive transition-colors mt-0.5">
           <X size={16} />
         </button>
       </div>
