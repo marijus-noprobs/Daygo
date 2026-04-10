@@ -1,12 +1,9 @@
-import { useMemo, useState } from "react";
-import { Moon, Heart, Footprints, Smile, Info, Sparkles, ArrowRight, TrendingUp, TrendingDown, FileText, Utensils, Droplets, Dumbbell } from "lucide-react";
-import { GlassCard, SectionHeader, ScoreRing } from "./DayLensUI";
+import { useMemo } from "react";
+import { TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
+import { GlassCard } from "./DayLensUI";
 import type { DayEntry } from "@/lib/daylens-constants";
 import {
-  avg, pearson, computeDayScore, scoreGradient, formatDuration,
-  isLateNight, computeActivityCorrelations, detectAnomalies,
-  generateWeeklyReports,
-  type ActivityCorrelation, type Anomaly, type WeeklyReport,
+  avg, computeDayScore, computeActivityCorrelations, detectAnomalies, formatDuration,
 } from "@/lib/daylens-utils";
 
 interface InsightScreenProps {
@@ -16,296 +13,208 @@ interface InsightScreenProps {
   onShowPricing: () => void;
 }
 
+/* ── Sparkline ─────────────────────────────────────────── */
+const Sparkline = ({ data, color, height = 48, width }: { data: number[]; color: string; height?: number; width?: number }) => {
+  if (data.length < 2) return null;
+  const w = width || 200;
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = height - ((v - min) / range) * (height - 6) - 3;
+    return `${x},${y}`;
+  }).join(" ");
+  // fill area
+  const areaPoints = `0,${height} ${points} ${w},${height}`;
+  return (
+    <svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" className="mt-1">
+      <polygon points={areaPoints} fill={color} fillOpacity="0.08" />
+      <polyline points={points} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
+
+/* ── Pct change helper ─────────────────────────────────── */
+const pctChange = (curr: number, prev: number) => {
+  if (!prev) return null;
+  return Math.round(((curr - prev) / prev) * 100);
+};
+
+const PctBadge = ({ pct }: { pct: number | null }) => {
+  if (pct === null) return null;
+  const positive = pct >= 0;
+  return (
+    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold" style={{
+      color: positive ? 'hsl(var(--primary))' : 'hsl(var(--destructive))',
+    }}>
+      {positive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+      {positive ? "+" : ""}{pct}%
+    </span>
+  );
+};
+
 export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: InsightScreenProps) => {
-  const [insightTab, setInsightTab] = useState("overview");
-  const [aiInsight, setAiInsight] = useState("");
-  const [loadingAI, setLoadingAI] = useState(false);
-
   const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
-  const weeklyReports = useMemo(() => generateWeeklyReports(entries), [entries]);
-  const biometricCorrelations = useMemo(() => {
-    if (recent.length < 7) return [];
-    const scores = recent.map(computeDayScore);
-    return [
-      { label: "Sleep hours", vals: recent.map(e => e.wearable.sleep.totalHours) },
-      { label: "Deep sleep", vals: recent.map(e => e.wearable.sleep.deepHours) },
-      { label: "HRV", vals: recent.map(e => e.wearable.body.hrv) },
-      { label: "Steps", vals: recent.map(e => e.wearable.activity.steps) },
-      { label: "Mood", vals: recent.map(e => e.mood.overallMood) },
-      { label: "Anxiety", vals: recent.map(e => e.mood.anxiety) },
-      { label: "Water", vals: recent.map(e => e.nutrition.waterLiters) },
-      { label: "Protein", vals: recent.map(e => e.nutrition.proteinG) },
-      { label: "Alcohol", vals: recent.map(e => e.nutrition.alcoholUnits) },
-    ].map(m => ({ ...m, r: pearson(m.vals, scores) })).sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
-  }, [recent]);
-
   const anomalies = useMemo(() => detectAnomalies(recent), [recent]);
 
   if (entries.length < 3) return (
     <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4 fade-up">
-      <div className="w-16 h-16 bg-white/[0.05] rounded-full flex items-center justify-center text-white/[0.22]">
+      <div className="w-16 h-16 bg-white/[0.05] rounded-full flex items-center justify-center text-muted-foreground">
         <TrendingUp size={32} />
       </div>
       <h2 className="font-display text-xl font-extrabold">Gathering Data</h2>
-      <p className="text-[11px] text-white/[0.38] max-w-xs leading-relaxed">Log a few more days to unlock patterns and insights.</p>
+      <p className="text-[11px] text-muted-foreground max-w-xs leading-relaxed">Log a few more days to unlock patterns and insights.</p>
     </div>
   );
 
-  const last7 = [...recent].slice(0, 7).reverse();
-  const tabs = ["overview", "activity", "correlations", "anomalies", "weekly", "reports"];
+  const thisWeek = recent.slice(0, 7);
+  const lastWeek = recent.slice(7, 14);
+  const last7 = [...thisWeek].reverse();
+  const scores = last7.map(computeDayScore);
+
+  const avgScore = avg(thisWeek.map(computeDayScore));
+  const prevAvgScore = lastWeek.length >= 3 ? avg(lastWeek.map(computeDayScore)) : null;
+
+  const avgSleep = avg(thisWeek.map(e => e.wearable?.sleep?.totalHours || 0));
+  const prevSleep = lastWeek.length >= 3 ? avg(lastWeek.map(e => e.wearable?.sleep?.totalHours || 0)) : null;
+
+  const avgMood = avg(thisWeek.map(e => e.mood?.overallMood || 0));
+  const prevMood = lastWeek.length >= 3 ? avg(lastWeek.map(e => e.mood?.overallMood || 0)) : null;
+
+  const avgSteps = avg(thisWeek.map(e => e.wearable?.activity?.steps || 0));
+  const prevSteps = lastWeek.length >= 3 ? avg(lastWeek.map(e => e.wearable?.activity?.steps || 0)) : null;
+
+  // AI narrative
+  const aiNarrative = useMemo(() => {
+    const parts: string[] = [];
+    const scoreDelta = prevAvgScore ? avgScore - prevAvgScore : 0;
+    if (scoreDelta > 0.3) parts.push("Your overall wellness is trending up this week");
+    else if (scoreDelta < -0.3) parts.push("Your scores have dipped compared to last week");
+    else parts.push("You're holding steady this week");
+
+    const topPositive = activityCorrelations.find(c => c.diff > 0.2);
+    const topNegative = activityCorrelations.find(c => c.diff < -0.2);
+    if (topNegative) parts.push(`${topNegative.label.toLowerCase()} is pulling your scores down`);
+    if (topPositive) parts.push(`${topPositive.label.toLowerCase()} gives you a noticeable boost`);
+
+    return parts.join(", ") + ".";
+  }, [avgScore, prevAvgScore, activityCorrelations]);
 
   return (
     <div className="space-y-4 pb-28 fade-up">
-      <div className="font-display text-[22px] font-extrabold text-foreground tracking-tight">Trends</div>
+      {/* AI Narrative */}
+      <div className="px-1 fade-up d1">
+        <p className="font-display text-[15px] font-bold text-foreground leading-snug">{aiNarrative.charAt(0).toUpperCase() + aiNarrative.slice(1)}</p>
+      </div>
 
-      {/* Tab pills */}
-      <div className="flex gap-[6px] overflow-x-auto">
-        {tabs.map(t => (
-          <button key={t} onClick={() => setInsightTab(t)}
-            className={`px-3.5 py-[7px] rounded-[20px] text-[11px] font-bold whitespace-nowrap flex-shrink-0 transition-all ${
-              insightTab === t
-                ? "bg-primary/[0.1] border border-primary/[0.2] text-primary"
-                : "bg-white/[0.06] border border-white/[0.08] text-white/[0.3]"
-            }`}>
-            {t === "activity" ? "Impact" : t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
+      {/* ── WEEKLY SNAPSHOT ─────────────────────────────── */}
+      <div className="card-dark-gradient rounded-[22px] p-5 fade-up d1">
+        <div className="flex items-center justify-between mb-1">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Day Score · 7 Days</div>
+          <div className="font-mono text-[18px] font-bold text-foreground" style={{ letterSpacing: '-0.03em' }}>
+            {avgScore.toFixed(1)}
+          </div>
+        </div>
+        <Sparkline data={scores} color="hsl(var(--primary))" height={56} />
+        <div className="flex justify-between mt-1 text-[9px] text-muted-foreground">
+          {last7.map((e, i) => (
+            <span key={i}>{new Date(e.date + "T12:00").toLocaleDateString("en", { weekday: "short" }).charAt(0)}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick-glance tiles */}
+      <div className="grid grid-cols-3 gap-3 fade-up d2">
+        {[
+          { label: "Avg Sleep", value: avgSleep.toFixed(1) + "h", pct: pctChange(avgSleep, prevSleep || 0) },
+          { label: "Avg Mood", value: avgMood.toFixed(1) + "/5", pct: pctChange(avgMood, prevMood || 0) },
+          { label: "Avg Steps", value: (avgSteps / 1000).toFixed(1) + "k", pct: pctChange(avgSteps, prevSteps || 0) },
+        ].map(t => (
+          <div key={t.label} className="card-dark rounded-[16px] p-3 text-center">
+            <div className="text-[9px] text-muted-foreground uppercase tracking-wider font-semibold mb-1">{t.label}</div>
+            <div className="font-mono text-[18px] font-bold text-foreground" style={{ letterSpacing: '-0.03em' }}>{t.value}</div>
+            <div className="mt-1"><PctBadge pct={t.pct} /></div>
+          </div>
         ))}
       </div>
 
-      {/* OVERVIEW */}
-      {insightTab === "overview" && (
-        <>
-          {/* Chart area - bar chart */}
-          <div className="glass-card-apple rounded-[22px] p-[18px] fade-up d1">
-            <div className="flex items-end gap-2 w-full" style={{ height: 118 }}>
-              {last7.map((e, i) => {
-                const s = computeDayScore(e);
-                const barColor = s >= 3.25 ? "hsl(var(--primary))" : s >= 1.75 ? "rgba(255,255,255,0.15)" : "hsl(var(--destructive))";
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="w-full rounded-sm" style={{
-                      height: `${(s / 5) * 100}%`,
-                      background: barColor,
-                      transition: "height .5s ease",
-                    }} />
-                    <span className="text-[9px] font-semibold text-white/[0.2]">{new Date(e.date + "T12:00").toLocaleDateString("en", { weekday: "short" }).charAt(0)}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Average grid */}
-          <div className="grid grid-cols-2 gap-[10px] fade-up d2">
-            {[
-              { label: "Day Score", val: avg(recent.map(computeDayScore)).toFixed(1), color: "hsl(var(--primary))", trend: "7-day avg" },
-              { label: "Sleep Score", val: Math.round(avg(recent.map(e => e.wearable.sleep.score))).toString(), color: "rgba(255,255,255,0.7)", trend: "7-day avg" },
-              { label: "Avg Steps", val: (Math.round(avg(recent.map(e => e.wearable.activity.steps))) / 1000).toFixed(1) + "k", color: "rgba(255,255,255,0.5)", trend: "Goal: 12k" },
-              { label: "Avg HRV", val: Math.round(avg(recent.map(e => e.wearable.body.hrv))) + "ms", color: "rgba(255,255,255,0.5)", trend: "7-day avg" },
-            ].map(item => (
-              <div key={item.label} className="glass-card-apple rounded-[18px] p-3.5">
-                <div className="text-[10px] text-white/[0.28] uppercase tracking-[0.08em] font-semibold mb-1.5">{item.label}</div>
-                <div className="font-display text-[21px] font-extrabold tracking-tight" style={{ color: item.color }}>{item.val}</div>
-                <div className="text-[10px] font-bold mt-1 text-white/[0.28]">{item.trend}</div>
-              </div>
-            ))}
-          </div>
-
-          {anomalies.length > 0 && (
-            <GlassCard style={{ borderLeft: '3px solid hsl(var(--destructive))' }}>
-              <div className="flex items-start gap-3">
-                <Info size={16} className="text-destructive mt-0.5 flex-shrink-0" />
-                <div>
-                  <h3 className="text-[12px] font-semibold mb-1">Anomaly Detected</h3>
-                  {anomalies.map((a, i) => (
-                    <p key={i} className="text-[11px] text-white/[0.38] leading-relaxed">
-                      {a.label} is <span className="font-semibold text-destructive">{a.direction}</span> — {a.z}σ deviation
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </GlassCard>
-          )}
-        </>
-      )}
-
-      {/* ACTIVITY IMPACT */}
-      {insightTab === "activity" && (
-        <>
-          <div className="glass-card-apple rounded-[18px] p-4 text-[11px] text-white/[0.38] leading-relaxed">
-            <div className="flex items-start gap-2.5">
-              <Info className="text-muted-foreground mt-0.5 flex-shrink-0 w-4 h-4" />
-              <p>Shows how yesterday's activities affect today's wellness score.</p>
-            </div>
-          </div>
-
-          {activityCorrelations.length === 0 ? (
-            <GlassCard className="text-center py-8">
-              <p className="text-[11px] text-white/[0.38]">Log activities for at least 7 days to see impact patterns.</p>
-            </GlassCard>
-          ) : activityCorrelations.map((c) => {
+      {/* ── ACTIVITY IMPACT CARDS ──────────────────────── */}
+      {activityCorrelations.length > 0 && (
+        <div className="space-y-3 fade-up d3">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold px-1">What's Impacting You</div>
+          {activityCorrelations.slice(0, 5).map(c => {
             const positive = c.diff > 0;
+            const impactPct = Math.round(Math.abs(c.diff / (c.avgWithout || 1)) * 100);
             return (
-              <GlassCard key={c.type}>
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-[14px] flex items-center justify-center text-[11px] font-bold uppercase flex-shrink-0" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      {c.label.slice(0, 2)}
+              <div key={c.type} className="card-dark rounded-[18px] p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="text-[13px] font-bold text-foreground">{c.label}</div>
+                    <div className="text-[11px] text-foreground/70 mt-1 leading-relaxed">
+                      {positive
+                        ? `${c.label} boosts your next-day score by ${impactPct}%`
+                        : `${c.label} drops your next-day score by ${impactPct}%`}
                     </div>
-                    <div>
-                      <div className="text-[12px] font-semibold">{c.label}</div>
-                      <div className="text-[10px] text-white/[0.28] mt-0.5">
-                        {c.avgDuration > 0 ? "Avg " + formatDuration(c.avgDuration) + " · " : ""}{c.sampleSize} days
-                      </div>
-                    </div>
+                    {c.avgDuration > 0 && (
+                      <div className="text-[9px] text-muted-foreground mt-1">Avg {formatDuration(c.avgDuration)} · {c.sampleSize} days</div>
+                    )}
                   </div>
-                  <div className="text-right flex-shrink-0 ml-2">
-                    <div className={`font-display text-lg font-extrabold ${positive ? "text-primary" : "text-destructive"}`}>
-                      {positive ? "+" : ""}{c.diff.toFixed(2)}
-                    </div>
-                    <div className="text-[10px] text-white/[0.28]">next-day</div>
+                  <div className="font-mono text-[16px] font-bold flex-shrink-0 ml-3" style={{
+                    color: positive ? 'hsl(var(--primary))' : 'hsl(var(--destructive))',
+                  }}>
+                    {positive ? "+" : ""}{c.diff.toFixed(2)}
                   </div>
                 </div>
-                <div className="mb-3">
-                  <div className="flex justify-between text-[10px] text-white/[0.28] mb-1.5">
-                    <span>With {c.label.toLowerCase()}</span>
-                    <span className="font-semibold" style={{ color: positive ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>{c.avgWith} avg</span>
+                {/* With vs Without comparison */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl p-2.5 text-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                    <div className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">With</div>
+                    <div className="font-mono text-[14px] font-bold" style={{ color: positive ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>{c.avgWith}</div>
                   </div>
-                  <div className="w-full h-[2px] bg-white/[0.07] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: (c.avgWith / 5 * 100) + "%", background: positive ? "hsl(var(--primary))" : "hsl(var(--destructive))" }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[10px] text-white/[0.28] mb-1.5">
-                    <span>Without</span>
-                    <span className="font-semibold text-white/[0.45]">{c.avgWithout} avg</span>
-                  </div>
-                  <div className="w-full h-[2px] bg-white/[0.07] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-white/[0.15]" style={{ width: (c.avgWithout / 5 * 100) + "%" }} />
+                  <div className="rounded-xl p-2.5 text-center" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                    <div className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1">Without</div>
+                    <div className="font-mono text-[14px] font-bold text-foreground/50">{c.avgWithout}</div>
                   </div>
                 </div>
-              </GlassCard>
-            );
-          })}
-        </>
-      )}
-
-      {/* CORRELATIONS */}
-      {insightTab === "correlations" && (
-        <GlassCard>
-          <SectionHeader title="Metric Correlations" subtitle="How each metric relates to your overall score" />
-          {biometricCorrelations.map((c, i) => {
-            const isPos = c.r >= 0;
-            const strength = Math.abs(c.r);
-            const clr = strength > 0.5 ? (isPos ? "hsl(var(--primary))" : "hsl(var(--destructive))") : "rgba(255,255,255,0.3)";
-            return (
-              <div key={c.label} className={`flex items-center gap-3 py-3 ${i < biometricCorrelations.length - 1 ? "border-b border-white/[0.05]" : ""}`}>
-                <span className="text-[11px] text-white/[0.45] flex-1">{c.label}</span>
-                <div className="w-20 h-1.5 bg-white/[0.07] rounded-full relative overflow-hidden">
-                  <div className="absolute top-0 bottom-0 rounded-full" style={{ width: (strength * 100) + "%", background: clr, left: isPos ? "50%" : undefined, right: isPos ? undefined : ((1 - strength) * 50) + "%" }} />
-                  <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/[0.15]" />
-                </div>
-                <span className="text-[10px] font-mono font-bold w-10 text-right" style={{ color: clr }}>{isPos ? "+" : ""}{c.r.toFixed(2)}</span>
               </div>
             );
           })}
-        </GlassCard>
+        </div>
       )}
 
-      {/* ANOMALIES */}
-      {insightTab === "anomalies" && (
-        <>
-          <p className="text-[10px] text-white/[0.28] px-1 leading-relaxed">Comparing your last 3 days to your baseline.</p>
-          {anomalies.length === 0
-            ? <GlassCard className="text-center py-8"><h3 className="font-display text-base font-extrabold mb-1">All Clear</h3><p className="text-[11px] text-white/[0.38]">No significant deviations detected.</p></GlassCard>
-            : anomalies.map((a, i) => (
-              <GlassCard key={i} style={{ borderLeft: '3px solid hsl(var(--destructive))' }}>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-display text-base font-extrabold mb-1">{a.label}</h3>
-                    <p className="text-[11px] text-white/[0.38] leading-relaxed">
-                      {a.label} is <span className="font-semibold text-destructive">{a.direction}</span> — {a.z}σ from your baseline.
-                    </p>
-                  </div>
-                  <span className="text-[10px] px-2 py-1 rounded-lg font-semibold ml-3 bg-destructive/[0.12] text-destructive">{a.direction.split(" ")[0]}</span>
-                </div>
-              </GlassCard>
-            ))
-          }
-        </>
+      {/* ── COACH ALERTS ───────────────────────────────── */}
+      {anomalies.length > 0 && (
+        <div className="space-y-3 fade-up d4">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold px-1">Coach Alerts</div>
+          {anomalies.map((a, i) => (
+            <div key={i} className="card-dark rounded-[18px] p-4 flex items-start gap-3" style={{ borderLeft: '3px solid hsl(var(--destructive))' }}>
+              <AlertTriangle size={16} className="text-destructive mt-0.5 flex-shrink-0" />
+              <div>
+                <div className="text-[12px] font-bold text-foreground mb-0.5">{a.label} Alert</div>
+                <p className="text-[11px] text-foreground/60 leading-relaxed">
+                  {a.label === "HRV" && "We've noticed a drop in your HRV — try prioritizing an extra hour of sleep tonight."}
+                  {a.label === "Mood" && "Your mood has been trending lower. Consider adding social time or a walk outdoors."}
+                  {a.label === "Sleep" && "Sleep quality has declined. Try cutting screen time 30 minutes before bed."}
+                  {a.label === "Anxiety" && "Anxiety levels are elevated. Deep breathing or meditation could help reset."}
+                  {!["HRV", "Mood", "Sleep", "Anxiety"].includes(a.label) && `${a.label} is ${a.direction}. Consider adjusting your routine.`}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
-      {/* WEEKLY */}
-      {insightTab === "weekly" && (() => {
-        const thisWeek = recent.slice(0, 7), lastWeek = recent.slice(7, 14);
-        if (thisWeek.length < 3) return <GlassCard className="text-center py-8"><p className="text-[11px] text-white/[0.38]">Log at least 3 days this week.</p></GlassCard>;
-        const rows = [
-          { label: "Avg Score", tw: avg(thisWeek.map(computeDayScore)).toFixed(2), lw: lastWeek.length ? avg(lastWeek.map(computeDayScore)).toFixed(2) : "—", unit: "" },
-          { label: "Sleep", tw: avg(thisWeek.map(e => e.wearable.sleep.totalHours)).toFixed(1), lw: lastWeek.length ? avg(lastWeek.map(e => e.wearable.sleep.totalHours)).toFixed(1) : "—", unit: "h" },
-          { label: "HRV", tw: Math.round(avg(thisWeek.map(e => e.wearable.body.hrv))).toString(), lw: lastWeek.length ? Math.round(avg(lastWeek.map(e => e.wearable.body.hrv))).toString() : "—", unit: "ms" },
-          { label: "Steps", tw: Math.round(avg(thisWeek.map(e => e.wearable.activity.steps))).toLocaleString(), lw: lastWeek.length ? Math.round(avg(lastWeek.map(e => e.wearable.activity.steps))).toLocaleString() : "—", unit: "" },
-          { label: "Mood", tw: avg(thisWeek.map(e => e.mood.overallMood)).toFixed(1), lw: lastWeek.length ? avg(lastWeek.map(e => e.mood.overallMood)).toFixed(1) : "—", unit: "/5" },
-        ];
-        return (
-          <>
-            <GlassCard>
-              <SectionHeader title="This Week vs Last" />
-              {rows.map((r, i) => {
-                const up = parseFloat(r.tw) >= parseFloat(r.lw);
-                return (
-                  <div key={r.label} className={`flex items-center justify-between py-3 ${i < rows.length - 1 ? "border-b border-white/[0.05]" : ""}`}>
-                    <span className="text-[11px] text-white/[0.38]">{r.label}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] text-white/[0.2]">{r.lw}{r.unit}</span>
-                      <ArrowRight className="text-white/[0.15] w-2.5 h-2.5" />
-                      <span className={`text-[11px] font-semibold ${up ? "text-primary" : "text-destructive"}`}>{r.tw}{r.unit}</span>
-                      <span className="text-[10px]">{up ? "↑" : "↓"}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </GlassCard>
-          </>
-        );
-      })()}
-
-      {/* REPORTS */}
-      {insightTab === "reports" && (
-        <>
-          <SectionHeader title="Weekly Reports" subtitle="Auto-generated summaries" />
-          {weeklyReports.length === 0 ? (
-            <GlassCard className="text-center py-8">
-              <FileText className="text-white/[0.22] mx-auto mb-3 w-8 h-8" />
-              <p className="text-[11px] text-white/[0.38]">Log at least 3 days to generate your first report.</p>
-            </GlassCard>
-          ) : weeklyReports.map((report, idx) => {
-            return (
-              <GlassCard key={idx}>
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-display text-[13px] font-bold">{report.period}</h3>
-                    <p className="text-[10px] text-white/[0.28] mt-0.5">{report.daysLogged} days logged</p>
-                  </div>
-                  <div className="font-display text-xl font-extrabold text-primary">{report.avgScore.toFixed(1)}</div>
-                </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-white/[0.04] rounded-xl py-2">
-                    <div className="text-[10px] text-white/[0.28] uppercase tracking-wider">Sleep</div>
-                    <div className="font-display text-[13px] font-bold">{report.avgSleep.toFixed(1)}h</div>
-                  </div>
-                  <div className="bg-white/[0.04] rounded-xl py-2">
-                    <div className="text-[10px] text-white/[0.28] uppercase tracking-wider">Steps</div>
-                    <div className="font-display text-[13px] font-bold">{(report.avgSteps / 1000).toFixed(1)}k</div>
-                  </div>
-                  <div className="bg-white/[0.04] rounded-xl py-2">
-                    <div className="text-[10px] text-white/[0.28] uppercase tracking-wider">Mood</div>
-                    <div className="font-display text-[13px] font-bold">{report.avgMood.toFixed(1)}</div>
-                  </div>
-                </div>
-              </GlassCard>
-            );
-          })}
-        </>
+      {/* Pro upsell */}
+      {!isPro && (
+        <div className="card-dark rounded-[22px] p-4 flex items-center justify-between cursor-pointer fade-up d5" onClick={onShowPricing}>
+          <div>
+            <div className="font-display text-[13px] font-bold text-primary">Unlock Pro</div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">AI insights, advanced trends & more</div>
+          </div>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-muted-foreground"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </div>
+        </div>
       )}
     </div>
   );
