@@ -4,7 +4,7 @@ import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, 
 import { BottomSheet } from "./DayLensUI";
 import { AICoachSheet } from "./AICoachSheet";
 import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
-import { MoodCalendar } from "./MoodCalendar";
+import { WeeklyTimeline } from "./WeeklyTimeline";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
 import { GoalsScreen } from "./GoalsScreen";
