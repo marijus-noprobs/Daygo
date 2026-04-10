@@ -234,18 +234,7 @@ const HomeScreen = ({
     return months;
   }, [entries]);
 
-  if (!submitted && !hasToday && !wearable) {
-    return (
-      <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
-        setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
-        nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
-        todayActivities={todayActivities} setTodayActivities={setTodayActivities}
-        note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry} profile={profile} />
-    );
-  }
-
-  if (!submitted && !hasToday && wearable) {
+  if (!submitted && !hasToday) {
     return (
       <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
         setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
@@ -330,8 +319,8 @@ const HomeScreen = ({
       <div className="card-dark fade-up d3" style={{ padding: '14px 16px' }}>
         <div className="flex justify-between items-center">
           <div>
-            <div className="text-[14px] font-bold text-foreground">Volume lifted</div>
-            <div className="label-ref">Last 7 days</div>
+            <div className="text-[14px] font-bold text-foreground">Active calories</div>
+            <div className="label-ref">Today</div>
           </div>
           <div className="flex items-baseline gap-1">
             <span className="font-display text-[28px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>{kcal}</span>
