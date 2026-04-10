@@ -120,15 +120,6 @@ export const WeeklyTimeline = ({ entries, selectedDate, onSelectDate }: WeeklyTi
             </motion.button>
           );
         })}
-
-        {/* Calendar icon at the end */}
-        <div className="flex-shrink-0 pl-1 pr-1" style={{ scrollSnapAlign: "end" }}>
-          <MoodCalendar
-            entries={entries}
-            selectedDate={selectedDate}
-            onSelectDate={onSelectDate}
-          />
-        </div>
       </div>
     </div>
   );
