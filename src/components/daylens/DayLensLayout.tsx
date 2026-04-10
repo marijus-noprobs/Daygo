@@ -420,25 +420,31 @@ const HomeScreen = ({
             setShowCoach(true);
             input.value = '';
           }}
-          className="relative w-full rounded-2xl overflow-hidden coach-glow-bar"
+          className="w-full"
         >
-          {/* Gradient border + glow */}
-          <div className="absolute inset-0 rounded-2xl" style={{
-            background: 'linear-gradient(135deg, hsl(25 95% 48%) 0%, hsl(25 95% 58%) 40%, hsl(25 85% 68%) 70%, hsl(25 95% 58%) 100%)',
-            opacity: 0.5,
-          }} />
-          {/* Inner background */}
-          <div className="absolute inset-[1px] rounded-[15px]" style={{ background: '#111112' }} />
-          {/* Content */}
-          <div className="relative flex items-center gap-3 px-4 py-3.5">
-            <Sparkles className="w-4 h-4 flex-shrink-0 text-primary" />
+          {/* Main input area */}
+          <div className="rounded-[20px] px-5 pt-4 pb-3" style={{ background: '#1a1a1b', border: '1px solid rgba(255,255,255,0.06)' }}>
             <input
               name="coachInput"
               type="text"
-              placeholder="Ask AI Coach..."
-              className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-foreground/30 outline-none"
+              placeholder="How can Coach help?"
+              className="w-full bg-transparent text-[14px] text-foreground placeholder:text-foreground/25 outline-none mb-3"
             />
-            <ChevronRight className="w-4 h-4 text-foreground/20 flex-shrink-0" />
+            {/* Bottom action row */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <button type="button" onClick={() => { setShowCoach(true); }} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <Sparkles className="w-4 h-4 text-foreground/40" />
+                </button>
+                <div className="flex items-center gap-1 px-3 h-9 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <Zap className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[11px] font-semibold text-foreground/50">Coach</span>
+                </div>
+              </div>
+              <button type="submit" className="h-9 px-5 rounded-full bg-foreground text-background text-[12px] font-bold hover:bg-foreground/90 transition-colors">
+                Ask
+              </button>
+            </div>
           </div>
         </form>
       </div>
