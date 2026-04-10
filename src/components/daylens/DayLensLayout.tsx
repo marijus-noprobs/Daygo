@@ -453,8 +453,13 @@ const HomeScreen = ({
         </div>
       )}
 
-      {/* ── STREAK & PROGRESS ──────────────────────────────── */}
-      <div className="card-dark fade-up d3" style={{ padding: '20px 22px' }}>
+      <motion.div
+        className="card-dark fade-up d3 cursor-pointer"
+        style={{ padding: '20px 22px' }}
+        whileTap={{ scale: 0.98 }}
+        whileHover={{ borderColor: 'rgba(255,255,255,0.12)' }}
+        onClick={onViewInsights}
+      >
         <div className="flex items-baseline gap-3 mb-1">
           <span className="font-mono text-[42px] font-bold text-foreground leading-none" style={{ letterSpacing: '-0.04em' }}>
             {streak}
@@ -470,18 +475,19 @@ const HomeScreen = ({
           {dotMatrix.map(month => (
             <div key={month.label} className="flex-1">
               <div className="label-ref text-center mb-2" style={{ fontSize: 10 }}>{month.label}</div>
-              <div className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
+              <div className="grid gap-[5px]" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
                 {month.dots.map((filled, i) => (
-                  <div key={i} className="aspect-square rounded-full" style={{
+                  <div key={i} className="rounded-full" style={{
                     background: filled ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.06)',
-                    width: '100%',
+                    width: 10,
+                    height: 10,
                   }} />
                 ))}
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* ── SUPPORTING METRICS ─────────────────────────────── */}
       <div className="grid grid-cols-3 gap-[10px] fade-up d4">
