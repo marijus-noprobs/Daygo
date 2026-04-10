@@ -101,7 +101,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background-image: var(--mesh-gradient);
+    background-image: url('/images/mesh-gradient.png');
     background-size: cover;
     background-position: center;
     opacity: 0.5;
