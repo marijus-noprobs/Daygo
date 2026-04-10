@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
-import { Plus, Target, Crown, Flame, Trophy } from "lucide-react";
+import { useState, useMemo, useRef } from "react";
+import { Plus, Target, Trophy, Check, X, ChevronRight } from "lucide-react";
 import { GlassCard, BottomSheet, SectionHeader } from "./DayLensUI";
 import type { Goal, DayEntry } from "@/lib/daylens-constants";
-import { scoreGradient, getMetricVal, calcStreak, computeBadges } from "@/lib/daylens-utils";
+import { getMetricVal, calcStreak, computeBadges } from "@/lib/daylens-utils";
 
 interface GoalsScreenProps {
   goals: Goal[];
@@ -13,25 +13,106 @@ interface GoalsScreenProps {
   onShowPricing: () => void;
 }
 
-const GOAL_COLORS = ["hsl(25,95%,58%)", "rgba(255,255,255,0.7)", "rgba(255,255,255,0.4)", "hsl(0,84%,60%)", "rgba(255,255,255,0.55)"];
+/* ── Ring arc (mini goal ring) ─────────────────────────── */
+const GoalRing = ({ pct, size = 64, thick = 5, color }: { pct: number; size?: number; thick?: number; color: string }) => {
+  const r = (size - thick * 2) / 2;
+  const circ = 2 * Math.PI * r;
+  const p = Math.max(0, Math.min(1, pct / 100));
+  return (
+    <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="transform -rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={thick} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={thick} strokeLinecap="round"
+          strokeDasharray={`${p * circ} ${circ}`} style={{ transition: "stroke-dasharray .6s ease" }} />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="font-mono text-[14px] font-bold text-foreground">{pct}%</span>
+      </div>
+    </div>
+  );
+};
+
+/* ── Dot Row (7-day success) ───────────────────────────── */
+const DotRow = ({ hits }: { hits: boolean[] }) => (
+  <div className="flex items-center gap-1.5 mt-2">
+    {hits.map((hit, i) => (
+      <div key={i} className="w-5 h-5 rounded-full flex items-center justify-center text-[9px]" style={{
+        background: hit ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.06)',
+        color: hit ? 'hsl(var(--primary-foreground))' : 'rgba(255,255,255,0.2)',
+      }}>
+        {hit ? <Check size={10} strokeWidth={3} /> : <X size={9} strokeWidth={2} />}
+      </div>
+    ))}
+  </div>
+);
+
+/* ── Badge icons map ───────────────────────────────────── */
+const BADGE_ICONS: Record<string, string> = {
+  first_log: "🎯", week_streak: "🔥", month_streak: "💎",
+  sleep_7: "🌙", steps_7: "👟", mood_5: "😊",
+  perfect_5: "⭐", workout_10: "💪", hydrated_7: "💧", perfect_10: "👑",
+};
+
+/* ── Goal templates ────────────────────────────────────── */
+const GOAL_TEMPLATES = [
+  { metric: "sleep_hrs", label: "7.5h Sleep", target: 7.5, unit: "hrs", op: "gte" as const },
+  { metric: "steps", label: "10K Steps", target: 10000, unit: "steps", op: "gte" as const },
+  { metric: "hrv", label: "HRV ≥ 50", target: 50, unit: "ms", op: "gte" as const },
+  { metric: "water", label: "2.5L Water", target: 2.5, unit: "L", op: "gte" as const },
+  { metric: "mood", label: "Mood ≥ 4", target: 4, unit: "/5", op: "gte" as const },
+];
 
 export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onShowPricing }: GoalsScreenProps) => {
   const [showAddGoal, setShowAddGoal] = useState(false);
   const [tab, setTab] = useState<"goals" | "badges">("goals");
   const [newGoal, setNewGoal] = useState<{ metric: string; label: string; target: number; unit: string; op: "gte" | "lte" }>({ metric: "sleep_hrs", label: "", target: 7.5, unit: "hrs", op: "gte" });
+  const badgeScrollRef = useRef<HTMLDivElement>(null);
 
   const badges = useMemo(() => computeBadges(entries), [entries]);
-  const earnedCount = badges.filter(b => b.earned).length;
+  const earnedBadges = badges.filter(b => b.earned);
+  const lockedBadges = badges.filter(b => !b.earned);
+
+  // AI narrative
+  const aiNarrative = useMemo(() => {
+    const activeGoals = goals.filter(g => g.active);
+    if (activeGoals.length === 0) return "Set your first goal to start tracking progress.";
+    const bestGoal = activeGoals.reduce((best, g) => {
+      const last7 = recent.slice(0, 7).filter(e => e.wearable);
+      const hits = last7.filter(e => { const val = getMetricVal(e, g.metric); return g.op === "gte" ? val >= g.target : val <= g.target; });
+      const pct = last7.length ? (hits.length / last7.length) * 100 : 0;
+      return pct > best.pct ? { pct, label: g.label } : best;
+    }, { pct: 0, label: "" });
+    const streak = calcStreak(entries, activeGoals[0].metric, activeGoals[0].target, activeGoals[0].op);
+    if (streak.current >= 7) return `You're on a ${streak.current}-day streak. Keep the momentum going.`;
+    if (bestGoal.pct >= 80) return `Strong consistency on "${bestGoal.label}" — you're hitting it most days.`;
+    return `Focus on building consistency. Small wins compound over time.`;
+  }, [goals, recent, entries]);
 
   const goalProgress = (goal: Goal) => {
     const last7 = recent.slice(0, 7).filter(e => e.wearable);
-    if (!last7.length) return 0;
-    const hits = last7.filter(e => { const val = getMetricVal(e, goal.metric); return goal.op === "gte" ? val >= goal.target : val <= goal.target; });
-    return Math.round((hits.length / last7.length) * 100);
+    if (!last7.length) return { pct: 0, hits: [] as boolean[] };
+    const hits = last7.map(e => {
+      const val = getMetricVal(e, goal.metric);
+      return goal.op === "gte" ? val >= goal.target : val <= goal.target;
+    });
+    return { pct: Math.round((hits.filter(Boolean).length / last7.length) * 100), hits };
+  };
+
+  const RING_COLORS = ["hsl(var(--primary))", "rgba(255,255,255,0.6)", "rgba(255,255,255,0.35)"];
+
+  const addFromTemplate = (t: typeof GOAL_TEMPLATES[0]) => {
+    // Don't add if already exists
+    if (goals.some(g => g.metric === t.metric && g.target === t.target && g.active)) return;
+    setGoals(gs => [...gs, { ...t, id: Date.now(), active: true }]);
   };
 
   return (
     <div className="space-y-4 pb-28 fade-up">
+      {/* AI Narrative */}
+      <div className="px-1 fade-up d1">
+        <p className="font-display text-[15px] font-bold text-foreground leading-snug">{aiNarrative}</p>
+      </div>
+
       <div className="flex justify-between items-center">
         <span className="font-display text-[22px] font-extrabold text-foreground tracking-tight">Goals</span>
         <button onClick={() => setShowAddGoal(true)}
@@ -41,12 +122,12 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
       </div>
 
       {/* Tab switcher */}
-      <div className="flex p-1 glass-card-apple !rounded-xl overflow-hidden">
+      <div className="flex p-1 card-dark !rounded-xl overflow-hidden">
         {(["goals", "badges"] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`flex-1 py-2 text-[11px] font-bold rounded-lg capitalize transition-all flex items-center justify-center gap-1.5 ${tab === t ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "text-white/[0.3]"}`}>
+            className={`flex-1 py-2 text-[11px] font-bold rounded-lg capitalize transition-all flex items-center justify-center gap-1.5 ${tab === t ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "text-muted-foreground"}`}>
             {t === "goals" ? <Target size={13} /> : <Trophy size={13} />}
-            {t === "badges" ? `Badges (${earnedCount}/${badges.length})` : "Goals"}
+            {t === "badges" ? `Badges (${earnedBadges.length}/${badges.length})` : "Goals"}
           </button>
         ))}
       </div>
@@ -54,41 +135,42 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
       {tab === "goals" && (
         <>
           {goals.filter(g => g.active).map((g, gi) => {
-            const pct = goalProgress(g);
+            const { pct, hits } = goalProgress(g);
             const streak = calcStreak(entries, g.metric, g.target, g.op);
-            const color = GOAL_COLORS[gi % GOAL_COLORS.length];
+            const color = RING_COLORS[gi % RING_COLORS.length];
             return (
-              <div key={g.id} className={`glass-card-apple rounded-[20px] p-4 cursor-pointer hover:translate-y-[-1px] transition-transform fade-up d${gi + 1}`}>
-                <div className="flex justify-between items-center mb-2.5">
-                  <span className="text-[13px] font-semibold text-foreground">{g.label}</span>
-                  <span className="font-display text-[15px] font-extrabold" style={{ color }}>{pct}%</span>
+              <div key={g.id} className={`card-dark rounded-[20px] p-5 fade-up d${gi + 1}`}>
+                <div className="flex items-center gap-4">
+                  <GoalRing pct={pct} color={color} />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-bold text-foreground">{g.label}</div>
+                    <div className="font-mono text-[28px] font-bold text-foreground leading-none mt-1" style={{ letterSpacing: '-0.04em' }}>
+                      {streak.current}<span className="text-[11px] text-muted-foreground font-normal ml-1">day streak</span>
+                    </div>
+                    <div className="text-[9px] text-muted-foreground mt-1">
+                      {g.op === "gte" ? "≥" : "≤"} {g.target} {g.unit} · Best: {streak.best} days
+                    </div>
+                  </div>
                 </div>
-                <div className="h-[3px] rounded-full bg-white/[0.08] mb-2">
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
-                </div>
-                <div className="text-[10px] text-white/[0.28]">
-                  {g.op === "gte" ? "≥" : "≤"} {g.target} {g.unit} · Streak: {streak.current} day{streak.current !== 1 ? "s" : ""} · Best: {streak.best}
-                </div>
+                <DotRow hits={hits} />
               </div>
             );
           })}
 
           {goals.filter(g => g.active).length === 0 && (
             <GlassCard className="text-center py-10">
-              <Target className="text-white/[0.22] mx-auto mb-3 w-10 h-10" />
-              <p className="text-white/[0.38] text-[11px]">No active goals.</p>
+              <Target className="text-muted-foreground mx-auto mb-3 w-10 h-10" />
+              <p className="text-muted-foreground text-[11px]">No active goals.</p>
             </GlassCard>
           )}
 
           {!isPremium && (
-            <div className="glass-card-apple rounded-[22px] p-4 flex items-center justify-between cursor-pointer" style={{ borderColor: "rgba(255,255,255,0.08)" }} onClick={onShowPricing}>
+            <div className="card-dark rounded-[22px] p-4 flex items-center justify-between cursor-pointer" onClick={onShowPricing}>
               <div>
                 <div className="font-display text-[13px] font-bold text-primary">Unlock Pro</div>
-                <div className="text-[11px] text-white/[0.28] mt-0.5">AI insights, advanced trends & more</div>
+                <div className="text-[11px] text-muted-foreground mt-0.5">AI insights, advanced trends & more</div>
               </div>
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-muted-foreground"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </div>
+              <ChevronRight size={18} className="text-muted-foreground" />
             </div>
           )}
         </>
@@ -96,52 +178,91 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
 
       {tab === "badges" && (
         <>
-          <SectionHeader title="Achievements" subtitle={`${earnedCount} of ${badges.length} unlocked`} />
-          <div className="grid grid-cols-2 gap-3">
-            {badges.map(b => (
-              <GlassCard key={b.id} className={`text-center py-5 ${!b.earned ? "opacity-40" : ""}`}>
-                <div className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center text-[11px] font-bold uppercase" style={{ background: b.earned ? 'rgba(255,127,50,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${b.earned ? 'rgba(255,127,50,0.15)' : 'rgba(255,255,255,0.06)'}`, color: b.earned ? 'hsl(25,95%,58%)' : 'rgba(255,255,255,0.2)' }}>
-                  {b.earned ? b.title.slice(0, 2) : "—"}
-                </div>
-                <h4 className="text-[12px] font-semibold mb-0.5">{b.title}</h4>
-                <p className="text-[10px] text-white/[0.28] leading-snug">{b.description}</p>
-              </GlassCard>
-            ))}
-          </div>
+          {/* Recently Earned - horizontal carousel */}
+          {earnedBadges.length > 0 && (
+            <div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold px-1 mb-3">Recently Earned</div>
+              <div ref={badgeScrollRef} className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1" style={{ scrollSnapType: 'x mandatory' }}>
+                {earnedBadges.map(b => (
+                  <div key={b.id} className="card-dark rounded-[18px] p-4 text-center flex-shrink-0" style={{ width: 140, scrollSnapAlign: 'start' }}>
+                    <div className="text-[28px] mb-2">{BADGE_ICONS[b.id] || "🏆"}</div>
+                    <h4 className="text-[12px] font-bold text-foreground mb-0.5">{b.title}</h4>
+                    <p className="text-[9px] text-muted-foreground leading-snug">{b.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Locked Achievements */}
+          {lockedBadges.length > 0 && (
+            <div>
+              <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold px-1 mb-3">Locked</div>
+              <div className="space-y-2">
+                {lockedBadges.map(b => (
+                  <div key={b.id} className="card-dark rounded-[16px] p-3.5 flex items-center gap-3 opacity-50">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-[18px]" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      🔒
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-[12px] font-semibold text-foreground">{b.title}</h4>
+                      <p className="text-[10px] text-muted-foreground">{b.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
 
       {/* Add Goal Sheet */}
       <BottomSheet open={showAddGoal} onClose={() => setShowAddGoal(false)} title="New Goal">
+        {/* Quick templates */}
+        <div className="mb-5">
+          <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold mb-3">Quick Add</div>
+          <div className="flex flex-wrap gap-2">
+            {GOAL_TEMPLATES.map(t => (
+              <button key={t.metric + t.target} onClick={() => { addFromTemplate(t); setShowAddGoal(false); }}
+                className="px-3.5 py-2 rounded-xl text-[11px] font-bold transition-colors bg-primary/[0.08] text-primary border border-primary/[0.15] hover:bg-primary/[0.15] active:scale-[0.97]">
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-px bg-white/[0.06] mb-5" />
+        <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold mb-3">Custom Goal</div>
+
         <div className="space-y-4 mb-5">
           <div>
-            <label className="text-[10px] text-white/[0.28] mb-2 block uppercase tracking-wider font-semibold">Metric</label>
+            <label className="text-[10px] text-muted-foreground mb-2 block uppercase tracking-wider font-semibold">Metric</label>
             <div className="flex flex-wrap gap-2">
               {[{ v: "sleep_hrs", l: "Sleep" }, { v: "steps", l: "Steps" }, { v: "hrv", l: "HRV" }, { v: "water", l: "Water" }, { v: "mood", l: "Mood" }, { v: "bedtime", l: "Bedtime" }].map(m => (
                 <button key={m.v} onClick={() => setNewGoal(g => ({ ...g, metric: m.v }))}
-                  className={`px-3 py-1.5 rounded-xl text-[11px] font-medium transition-colors ${newGoal.metric === m.v ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "bg-white/[0.05] text-white/[0.3] border border-white/[0.07]"}`}>
+                  className={`px-3 py-1.5 rounded-xl text-[11px] font-medium transition-colors ${newGoal.metric === m.v ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "bg-white/[0.05] text-muted-foreground border border-white/[0.07]"}`}>
                   {m.l}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label className="text-[10px] text-white/[0.28] mb-2 block uppercase tracking-wider font-semibold">Label</label>
+            <label className="text-[10px] text-muted-foreground mb-2 block uppercase tracking-wider font-semibold">Label</label>
             <input type="text" value={newGoal.label} onChange={e => setNewGoal(g => ({ ...g, label: e.target.value }))} placeholder="e.g. Sleep ≥ 8hrs"
               className="bg-white/[0.05] border border-white/[0.08] rounded-xl text-foreground w-full p-3 text-[13px] outline-none focus:border-primary/[0.3] placeholder:text-white/[0.15]" />
           </div>
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="text-[10px] text-white/[0.28] mb-2 block uppercase tracking-wider font-semibold">Target</label>
+              <label className="text-[10px] text-muted-foreground mb-2 block uppercase tracking-wider font-semibold">Target</label>
               <input type="number" value={newGoal.target} onChange={e => setNewGoal(g => ({ ...g, target: parseFloat(e.target.value) || 0 }))}
                 className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-[13px] text-foreground outline-none focus:border-primary/[0.3]" />
             </div>
             <div>
-              <label className="text-[10px] text-white/[0.28] mb-2 block uppercase tracking-wider font-semibold">Direction</label>
+              <label className="text-[10px] text-muted-foreground mb-2 block uppercase tracking-wider font-semibold">Direction</label>
               <div className="flex gap-2">
                 {([["gte", "≥"], ["lte", "≤"]] as const).map(([op, l]) => (
                   <button key={op} onClick={() => setNewGoal(g => ({ ...g, op }))}
-                    className={`px-4 py-3 rounded-xl text-[13px] font-semibold transition-colors ${newGoal.op === op ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "bg-white/[0.05] text-white/[0.3] border border-white/[0.07]"}`}>
+                    className={`px-4 py-3 rounded-xl text-[13px] font-semibold transition-colors ${newGoal.op === op ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "bg-white/[0.05] text-muted-foreground border border-white/[0.07]"}`}>
                     {l}
                   </button>
                 ))}
