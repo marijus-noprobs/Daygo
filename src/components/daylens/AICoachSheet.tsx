@@ -356,6 +356,7 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
