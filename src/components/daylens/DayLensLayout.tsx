@@ -236,7 +236,7 @@ const HomeScreen = ({
   entries, recent, todayScore, wearable, submitted, hasToday,
   onViewInsights, setWearable, setWearableRaw, nutrition, setNutrition,
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
-  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak,
+  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection,
 }: any) => {
   const latestEntry = recent[0];
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
