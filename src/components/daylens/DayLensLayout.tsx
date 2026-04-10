@@ -153,7 +153,7 @@ const DayLensApp = () => {
           </button>
         </div>
       </div>
-      <WeeklyTimeline entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
+      
 
       {/* Main content */}
       <main className="px-4 pb-28 min-h-[60vh]">
