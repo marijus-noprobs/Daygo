@@ -97,6 +97,11 @@
     overflow: hidden;
   }
 
+  .card-dark-gradient > * {
+    position: relative;
+    z-index: 1;
+  }
+
   .card-dark-gradient::before {
     content: '';
     position: absolute;
@@ -104,8 +109,9 @@
     background-image: url('/images/mesh-gradient.png');
     background-size: cover;
     background-position: center;
-    opacity: 0.5;
+    opacity: 0.45;
     pointer-events: none;
+    z-index: 0;
   }
 
   /* Slightly elevated card */
