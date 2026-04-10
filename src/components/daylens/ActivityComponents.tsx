@@ -101,14 +101,14 @@ export const AddFoodItem = ({ onAdd }: { onAdd: (item: { name: string; kcal: num
     </button>
   );
 
-  const inputClass = "w-full bg-secondary/50 border border-muted rounded-xl px-3 py-2 text-sm text-foreground placeholder-muted-foreground outline-none focus:border-dl-indigo/50";
+  const inputClass = "w-full bg-secondary/50 border border-muted rounded-xl px-3 py-2 text-sm text-foreground placeholder-muted-foreground outline-none focus:border-primary/50";
 
   return (
     <div className="bg-secondary/40 rounded-2xl p-4 space-y-3">
       <div className="flex gap-2">
         {([["quick", "From database"], ["custom", "Custom entry"]] as const).map(([m, l]) => (
           <button key={m} onClick={() => { setMode(m); setSelected(null); setQty(""); }}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === m ? "bg-dl-indigo text-foreground" : "bg-muted/60 text-muted-foreground hover:text-foreground/70"}`}>
+            className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${mode === m ? "bg-primary text-foreground" : "bg-muted/60 text-muted-foreground hover:text-foreground/70"}`}>
             {l}
           </button>
         ))}
@@ -123,7 +123,7 @@ export const AddFoodItem = ({ onAdd }: { onAdd: (item: { name: string; kcal: num
             <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
               {filtered.map(f => (
                 <button key={f.name} onClick={() => { setSelected(f); setQty(String(f.defaultQty)); setSearch(f.name); }}
-                  className="px-2.5 py-1 bg-muted/60 hover:bg-dl-indigo/30 hover:text-dl-indigo text-foreground/70 text-[11px] rounded-lg transition-colors">
+                  className="px-2.5 py-1 bg-muted/60 hover:bg-primary/30 hover:text-primary text-foreground/70 text-[11px] rounded-lg transition-colors">
                   {f.name}
                 </button>
               ))}
@@ -140,12 +140,12 @@ export const AddFoodItem = ({ onAdd }: { onAdd: (item: { name: string; kcal: num
                 <div className="flex-1">
                   <label className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 block">Amount ({selected.unit})</label>
                   <input type="number" value={qty} onChange={e => setQty(e.target.value)} placeholder={String(selected.defaultQty)}
-                    className="w-full bg-secondary/50 border border-muted rounded-xl px-3 py-2.5 text-base font-semibold text-foreground outline-none focus:border-dl-indigo/50" />
+                    className="w-full bg-secondary/50 border border-muted rounded-xl px-3 py-2.5 text-base font-semibold text-foreground outline-none focus:border-primary/50" />
                 </div>
                 {preview && (
                   <div className="text-right">
                     <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Calculated</div>
-                    <div className="text-sm font-bold text-dl-indigo">{preview.kcal} kcal</div>
+                    <div className="text-sm font-bold text-primary">{preview.kcal} kcal</div>
                     <div className="text-xs text-foreground/60">{preview.protein}g protein</div>
                   </div>
                 )}
@@ -153,13 +153,13 @@ export const AddFoodItem = ({ onAdd }: { onAdd: (item: { name: string; kcal: num
               <div className="flex gap-2">
                 {(selected.unit === "g" ? [100, 150, 200, 300, 500] : selected.unit === "ml" ? [100, 200, 250, 300, 500] : [1, 2, 3, 4, 5]).map(v => (
                   <button key={v} onClick={() => setQty(String(v))}
-                    className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${qty === String(v) ? "bg-dl-indigo text-foreground" : "bg-muted/50 text-muted-foreground hover:text-foreground/70"}`}>
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${qty === String(v) ? "bg-primary text-foreground" : "bg-muted/50 text-muted-foreground hover:text-foreground/70"}`}>
                     {selected.unit === "g" ? (v >= 1000 ? `${v / 1000}kg` : `${v}g`) : selected.unit === "ml" ? `${v}ml` : v}
                   </button>
                 ))}
               </div>
               <button onClick={() => handleQuickAdd(selected, qty)}
-                className="w-full py-2.5 bg-dl-indigo hover:opacity-90 text-foreground rounded-xl text-sm font-semibold transition-colors">
+                className="w-full py-2.5 bg-primary hover:opacity-90 text-foreground rounded-xl text-sm font-semibold transition-colors">
                 Add {selected.name} {qty && `(${qty}${selected.unit})`}
               </button>
             </div>
@@ -175,7 +175,7 @@ export const AddFoodItem = ({ onAdd }: { onAdd: (item: { name: string; kcal: num
             <input type="number" value={customProt} onChange={e => setCustomProt(e.target.value)} placeholder="protein g" className={inputClass} />
           </div>
           <button onClick={handleCustomAdd}
-            className="w-full py-2.5 bg-dl-indigo hover:opacity-90 text-foreground rounded-xl text-sm font-semibold transition-colors">
+            className="w-full py-2.5 bg-primary hover:opacity-90 text-foreground rounded-xl text-sm font-semibold transition-colors">
             Add
           </button>
         </div>
