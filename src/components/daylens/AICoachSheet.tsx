@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { X, Send, Sparkles, ChevronDown } from "lucide-react";
 import { type DayEntry, type UserProfile } from "@/lib/daylens-constants";
 import { avg, computeDayScore, getReadinessLevel, generateDailyPlan, generateHealthSuggestions } from "@/lib/daylens-utils";
@@ -251,7 +252,7 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center fade-in" onClick={onClose}
       style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
       <div
