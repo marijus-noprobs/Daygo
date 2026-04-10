@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { ScoreRing, BottomSheet } from "./DayLensUI";
 import { MealLogSection } from "./MealLogSection";
@@ -27,13 +27,14 @@ interface CheckInScreenProps {
   yesterdayEntry: DayEntry | undefined;
   profile: UserProfile;
   initialSection?: string;
+  forceOpen?: boolean;
 }
 
 export const CheckInScreen = ({
   submitted, hasToday, todayScore, wearable, setWearable, setWearableRaw,
   nutrition, setNutrition, mood, setMood,
   todayActivities, setTodayActivities, note, setNote,
-  onSubmit, onViewInsights, yesterdayEntry, profile, initialSection,
+  onSubmit, onViewInsights, yesterdayEntry, profile, initialSection, forceOpen = false,
 }: CheckInScreenProps) => {
   const [section, setSection] = useState(initialSection || "nutrition");
   const [showAddActivity, setShowAddActivity] = useState(false);
@@ -41,7 +42,11 @@ export const CheckInScreen = ({
   const sections = ["nutrition", "activities"];
   const sectionIndex = sections.indexOf(section);
 
-  if (submitted || hasToday) return (
+  useEffect(() => {
+    if (initialSection) setSection(initialSection);
+  }, [initialSection]);
+
+  if (!forceOpen && (submitted || hasToday)) return (
     <div className="flex flex-col items-center justify-center min-h-[65vh] gap-8 fade-up">
       <div className="relative">
         <div className="absolute inset-0 blur-3xl rounded-full opacity-25" style={{ background: scoreGradient(todayScore || 3.5)[0] }} />

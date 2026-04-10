@@ -29,6 +29,7 @@ const DayLensApp = () => {
   const [showPricing, setShowPricing] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [quickAddSection, setQuickAddSection] = useState<string>("nutrition");
+  const [forceCheckIn, setForceCheckIn] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
     const todayKey = new Date().toISOString().split("T")[0];
@@ -78,7 +79,28 @@ const DayLensApp = () => {
     const entry = { date: today, wearable: wearable || undefined, nutrition, mood, activities: todayActivities, note };
     setEntries(p => [...p.filter(e => e.date !== today), entry]);
     setSubmitted(true);
+    setForceCheckIn(false);
     save("dl_entries", [...entries.filter(e => e.date !== today), entry]);
+  };
+
+  const openQuickAdd = (section: "nutrition" | "activities") => {
+    if (todayEntry) {
+      const entry = typeof structuredClone === "function"
+        ? structuredClone(todayEntry)
+        : JSON.parse(JSON.stringify(todayEntry));
+
+      setWearable(entry.wearable ?? null);
+      setNutrition(entry.nutrition);
+      setMood(entry.mood);
+      setTodayActivities(entry.activities ?? []);
+      setNote(entry.note ?? "");
+    }
+
+    setQuickAddSection(section);
+    setSubmitted(false);
+    setShowQuickAdd(false);
+    setForceCheckIn(true);
+    setScreen("checkin");
   };
 
   const NAV = [
@@ -140,7 +162,7 @@ const DayLensApp = () => {
             todayActivities={todayActivities} setTodayActivities={setTodayActivities}
             note={note} setNote={setNote} onSubmit={handleSubmit} yesterdayEntry={yesterdayEntry}
             profile={profile} isPro={isPro} onShowPricing={() => setShowPricing(true)} streak={streak}
-            quickAddSection={quickAddSection}
+            quickAddSection={quickAddSection} forceCheckIn={forceCheckIn}
           />
         )}
         {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
@@ -160,7 +182,7 @@ const DayLensApp = () => {
           {NAV.map((item) => {
             const active = screen === item.id;
             return (
-              <button key={item.id} onClick={() => setScreen(item.id)}
+              <button key={item.id} onClick={() => { setForceCheckIn(false); setScreen(item.id); }}
                 className="flex flex-col items-center gap-1 px-5 py-1 transition-colors">
                 <item.icon className={`w-5 h-5 ${active ? "text-foreground" : ""}`} strokeWidth={1.8} style={active ? {} : { color: 'rgba(255,255,255,0.14)' }} />
                 <span className="text-[10px] font-bold uppercase" style={{ letterSpacing: '0.04em', color: active ? '#f2f2f3' : 'rgba(255,255,255,0.14)' }}>{item.label}</span>
@@ -183,7 +205,7 @@ const DayLensApp = () => {
                 { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", section: "activities" },
                 { icon: Users, label: "Social", desc: "Log social interaction", section: "activities" },
               ].map(item => (
-                <button key={item.label} onClick={() => { setShowQuickAdd(false); setQuickAddSection(item.section); setScreen("checkin"); }}
+                <button key={item.label} onClick={() => openQuickAdd(item.section)}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
                   style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
@@ -236,7 +258,7 @@ const HomeScreen = ({
   entries, recent, todayScore, wearable, submitted, hasToday,
   onViewInsights, setWearable, setWearableRaw, nutrition, setNutrition,
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
-  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection,
+  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection, forceCheckIn,
 }: any) => {
   const latestEntry = recent[0];
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
@@ -269,14 +291,14 @@ const HomeScreen = ({
     return months;
   }, [entries]);
 
-  if (!submitted && !hasToday) {
+  if (forceCheckIn || (!submitted && !hasToday)) {
     return (
       <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
         setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
         nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
         todayActivities={todayActivities} setTodayActivities={setTodayActivities}
         note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} />
+        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} forceOpen={forceCheckIn} />
     );
   }
 
