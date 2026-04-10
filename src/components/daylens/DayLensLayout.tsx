@@ -317,46 +317,161 @@ const HomeScreen = ({
     );
   }
 
+  const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
+  const sleepTotal = latestEntry?.wearable?.sleep?.totalHours || 7.5;
+  const avgMood = recent.length > 0 ? avg(recent.slice(0, 7).map((e: DayEntry) => e.mood.overallMood)) : 3.5;
+  const moodTrend = recent.length >= 7
+    ? avg(recent.slice(0, 3).map((e: DayEntry) => e.mood.overallMood)) - avg(recent.slice(3, 7).map((e: DayEntry) => e.mood.overallMood))
+    : 0;
+
+  const dailyPlan = useMemo(() => generateDailyPlan(entries, profile), [entries, profile]);
+  const readiness = getReadinessLevel(score);
+  const suggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
+  const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
+
+  // Best streak for messaging
+  const bestStreak = useMemo(() => {
+    const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
+    let best = 0, run = 0;
+    const now = new Date();
+    for (let i = 0; i < sorted.length; i++) {
+      const expected = new Date(now);
+      expected.setDate(expected.getDate() - i);
+      if (sorted[i]?.date === expected.toISOString().split("T")[0]) { run++; best = Math.max(best, run); }
+      else { run = 0; }
+    }
+    return best;
+  }, [entries]);
+  const streakMsg = getStreakMessage(streak, bestStreak);
+
+  // Dot matrix — last 3 months
+  const dotMatrix = useMemo(() => {
+    const months: { label: string; dots: boolean[] }[] = [];
+    const now = new Date();
+    for (let m = 2; m >= 0; m--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+      const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      const label = d.toLocaleString("default", { month: "short" });
+      const dots: boolean[] = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        dots.push(entries.some((e: DayEntry) => e.date === dateStr));
+      }
+      months.push({ label, dots });
+    }
+    return months;
+  }, [entries]);
+
+  if (!submitted && !hasToday) {
+    return (
+      <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
+        setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
+        nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
+        todayActivities={todayActivities} setTodayActivities={setTodayActivities}
+        note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
+        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} />
+    );
+  }
+
   const scoreNorm = Math.min(score, 10) / 10;
-  const ringR = 22;
+  const ringR = 38;
   const ringCirc = 2 * Math.PI * ringR;
 
+  const categoryIcons: Record<string, string> = {
+    activity: "→", sleep: "→", social: "→", recovery: "→", nutrition: "→",
+  };
+
   return (
-    <div className="space-y-[10px] fade-up">
-      {/* Top 2-col grid */}
-      <div className="grid grid-cols-2 gap-[10px] fade-up d1">
-        {/* Score card */}
-        <div className="card-dark-gradient" style={{ padding: 14 }}>
-          <div className="flex justify-between items-start mb-4">
-            <div className="relative" style={{ width: 52, height: 52 }}>
-              <svg width="52" height="52" className="transform -rotate-90">
-                <circle cx="26" cy="26" r={ringR} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
-                <circle cx="26" cy="26" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round"
-                  strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
-                  style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-[14px] font-extrabold text-foreground">{score.toFixed(0)}</span>
-              </div>
+    <div className="space-y-5 fade-up">
+
+      {/* ── HERO: Today's Optimal Day ───────────────────────── */}
+      <div className="card-dark-gradient fade-up d1" style={{ padding: '28px 22px 24px' }}>
+        {/* Score + Status */}
+        <div className="flex items-center gap-5 mb-6">
+          <div className="relative flex-shrink-0" style={{ width: 88, height: 88 }}>
+            <svg width="88" height="88" className="transform -rotate-90">
+              <circle cx="44" cy="44" r={ringR} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
+              <circle cx="44" cy="44" r={ringR} fill="none"
+                stroke={scoreNorm >= 0.6 ? 'hsl(var(--color-lime))' : scoreNorm >= 0.4 ? 'rgba(255,255,255,0.5)' : 'hsl(var(--color-red))'}
+                strokeWidth="4" strokeLinecap="round"
+                strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
+                style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="font-mono text-[26px] font-bold text-foreground" style={{ letterSpacing: '-0.04em' }}>{score.toFixed(0)}</span>
             </div>
           </div>
-          <div className="font-display text-[15px] font-bold text-foreground">{scoreLabel(score / 2)}</div>
-          <div className="label-ref mt-0.5">Wellness score</div>
+          <div className="flex-1 min-w-0">
+            <div className="font-display text-[22px] font-extrabold text-foreground leading-tight" style={{ letterSpacing: '-0.03em' }}>
+              Today's Plan
+            </div>
+            <div className="font-display text-[13px] font-bold mt-1" style={{
+              color: readiness.level === 'peak' || readiness.level === 'high_performance' ? 'hsl(var(--color-lime))' :
+                     readiness.level === 'recovering' ? 'hsl(var(--color-red))' : 'rgba(255,255,255,0.5)'
+            }}>
+              {readiness.label}
+            </div>
+            <div className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
+              {readiness.level === 'recovering' ? "Take it easy today. Your body needs rest." :
+               readiness.level === 'balanced' ? "You're in a good place. Follow the plan below." :
+               readiness.level === 'high_performance' ? "Great shape. Push a little harder today." :
+               "You're firing on all cylinders. Make it count."}
+            </div>
+          </div>
         </div>
 
-        {/* Sleep card */}
-        <div className="card-dark" style={{ padding: 14 }}>
-          <div className="big-num text-foreground" style={{ fontSize: 30 }}>{sleepTotal.toFixed(1)}<span className="unit-text">hrs</span></div>
-          <div style={{ marginTop: 6 }}>
-            <div className="text-[14px] font-bold text-foreground">Sleep</div>
-            <div className="label-ref">Last night</div>
-          </div>
+        {/* Coaching Recommendations */}
+        <div className="space-y-0">
+          {dailyPlan.map((rec, i) => (
+            <div key={rec.category + i} className="flex items-start gap-3 py-3.5" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+              <div className="w-[3px] rounded-full flex-shrink-0 mt-1" style={{
+                height: 32,
+                background: rec.category === 'recovery' ? 'hsl(var(--color-red))' :
+                           rec.category === 'activity' ? 'hsl(var(--color-lime))' :
+                           rec.category === 'sleep' ? 'rgba(255,255,255,0.3)' :
+                           rec.category === 'social' ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.15)',
+              }} />
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-bold text-foreground">{rec.label}</div>
+                <div className="text-[12px] text-foreground/80 mt-0.5 leading-relaxed">{rec.action}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">{rec.reason}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Dot matrix — consistency tracker */}
-      <div className="card-dark fade-up d2" style={{ padding: '16px 18px' }}>
-        <div className="flex justify-between">
+      {/* ── PRIMARY CTA ────────────────────────────────────── */}
+      {!hasToday && (
+        <button onClick={onGoToCheckin}
+          className="w-full py-[17px] rounded-2xl font-display font-extrabold text-[15px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d2"
+          style={{ letterSpacing: '-0.02em' }}>
+          Log Today's Progress
+        </button>
+      )}
+
+      {/* ── KEY WARNING ────────────────────────────────────── */}
+      {suggestions.length > 0 && suggestions[0].priority === 'high' && (
+        <div className="fade-up d2" style={{ padding: '14px 18px', background: 'rgba(224,80,80,0.06)', border: '1px solid rgba(224,80,80,0.12)', borderRadius: 20 }}>
+          <div className="text-[13px] font-bold text-foreground">{suggestions[0].title}</div>
+          <div className="text-[11px] text-foreground/70 mt-1 leading-relaxed">{suggestions[0].description}</div>
+        </div>
+      )}
+
+      {/* ── STREAK & PROGRESS ──────────────────────────────── */}
+      <div className="card-dark fade-up d3" style={{ padding: '20px 22px' }}>
+        <div className="flex items-baseline gap-3 mb-1">
+          <span className="font-mono text-[42px] font-bold text-foreground leading-none" style={{ letterSpacing: '-0.04em' }}>
+            {streak}
+          </span>
+          <span className="font-display text-[14px] font-bold text-foreground/60">day streak</span>
+        </div>
+        {streakMsg && (
+          <div className="text-[11px] text-muted-foreground mt-1">{streakMsg}</div>
+        )}
+
+        {/* Dot matrix */}
+        <div className="flex justify-between mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
           {dotMatrix.map(month => (
             <div key={month.label} className="flex-1">
               <div className="label-ref text-center mb-2" style={{ fontSize: 10 }}>{month.label}</div>
@@ -371,112 +486,37 @@ const HomeScreen = ({
             </div>
           ))}
         </div>
-        {streak > 1 && (
-          <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-            <span className="font-mono text-[13px] font-bold text-foreground">{streak}</span>
-            <span className="label-ref">day streak</span>
-          </div>
-        )}
       </div>
 
-      {/* Insights — correlations + suggestions combined */}
-      {(topPositive || topNegative || suggestions.length > 0) && (
-        <div className="card-dark-gradient fade-up d3" style={{ padding: '16px 18px' }}>
-          <div className="flex items-center justify-between mb-2">
-            <span className="label-ref">Insights</span>
+      {/* ── SUPPORTING METRICS ─────────────────────────────── */}
+      <div className="grid grid-cols-3 gap-[10px] fade-up d4">
+        <div className="card-dark" style={{ padding: '14px 12px', textAlign: 'center' }}>
+          <div className="font-mono text-[20px] font-bold text-foreground" style={{ letterSpacing: '-0.03em' }}>{sleepTotal.toFixed(1)}</div>
+          <div className="text-[9px] text-muted-foreground uppercase tracking-wider mt-1">hrs sleep</div>
+        </div>
+        <div className="card-dark" style={{ padding: '14px 12px', textAlign: 'center' }}>
+          <div className="font-mono text-[20px] font-bold text-foreground" style={{ letterSpacing: '-0.03em' }}>{avgMood.toFixed(1)}</div>
+          <div className="text-[9px] text-muted-foreground uppercase tracking-wider mt-1">mood /5</div>
+        </div>
+        <div className="card-dark" style={{ padding: '14px 12px', textAlign: 'center' }}>
+          <div className="font-mono text-[20px] font-bold text-foreground" style={{ letterSpacing: '-0.03em', color: moodTrend > 0.2 ? 'hsl(var(--color-lime))' : moodTrend < -0.2 ? 'hsl(var(--color-red))' : undefined }}>
+            {moodTrend > 0 ? '+' : ''}{moodTrend.toFixed(1)}
           </div>
+          <div className="text-[9px] text-muted-foreground uppercase tracking-wider mt-1">trend</div>
+        </div>
+      </div>
 
-          {topPositive && (
-            <div className="flex items-center justify-between py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-              <div>
-                <div className="text-[14px] font-bold text-foreground">More {topPositive.label.toLowerCase()}</div>
-                <div className="label-ref mt-0.5">avg {formatDuration(topPositive.avgDuration)}</div>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-mono text-[13px] font-bold" style={{ color: 'hsl(var(--color-lime))' }}>+{topPositive.diff.toFixed(1)}</span>
-                <ArrowUp size={12} style={{ color: 'hsl(var(--color-lime))' }} />
-              </div>
-            </div>
-          )}
-          {topNegative && (
-            <div className="flex items-center justify-between py-3" style={{ borderBottom: suggestions.length > 0 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <div>
-                <div className="text-[14px] font-bold text-foreground">Less {topNegative.label.toLowerCase()}</div>
-                <div className="label-ref mt-0.5">esp. late evening</div>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-mono text-[13px] font-bold" style={{ color: 'hsl(var(--color-red))' }}>{topNegative.diff.toFixed(1)}</span>
-                <ArrowDown size={12} style={{ color: 'hsl(var(--color-red))' }} />
-              </div>
-            </div>
-          )}
-
-          {suggestions.slice(0, 3).map((s, i, arr) => (
-            <div key={s.id} className="flex items-start gap-3 py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <div className="w-[3px] rounded-full flex-shrink-0 mt-0.5" style={{
-                height: 14,
-                background: s.priority === 'high' ? 'hsl(var(--destructive))' : 'rgba(255,255,255,0.25)',
-              }} />
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-bold text-foreground">{s.title}</div>
-                <div className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">{s.description}</div>
-              </div>
+      {/* ── ACTIONABLE INSIGHTS (below fold) ────────────────── */}
+      {suggestions.length > 1 && (
+        <div className="card-dark fade-up d5" style={{ padding: '16px 18px' }}>
+          <div className="label-ref mb-2">Coaching Notes</div>
+          {suggestions.slice(1, 4).map((s, i, arr) => (
+            <div key={s.id} className="py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+              <div className="text-[13px] font-bold text-foreground">{s.title}</div>
+              <div className="text-[11px] text-foreground/70 mt-0.5 leading-relaxed">{s.description}</div>
             </div>
           ))}
         </div>
-      )}
-
-      {/* Mood trend */}
-      <div className="card-dark fade-up d5" style={{ padding: '14px 18px' }}>
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <div className="text-[14px] font-bold text-foreground">Mood</div>
-            <div className="label-ref mt-0.5">
-              {moodTrend > 0.2 ? "Improving" : moodTrend < -0.2 ? "Declining" : "Steady"} · {avgMood.toFixed(1)}/5
-            </div>
-          </div>
-          <div className="font-mono text-[22px] font-bold text-foreground" style={{ letterSpacing: '-0.04em' }}>
-            {avgMood.toFixed(1)}<span className="unit-text">/5</span>
-          </div>
-        </div>
-        <div className="flex items-end gap-[5px] h-[40px]">
-          {recent.slice(0, 7).reverse().map((entry: DayEntry, i: number) => {
-            const moodVal = entry.mood.overallMood;
-            const barH = (moodVal / 5) * 100;
-            const isToday = i === Math.min(6, recent.length - 1);
-            return (
-              <div key={entry.date} className="flex-1">
-                <div
-                  className="w-full rounded-[3px] transition-all"
-                  style={{
-                    height: `${barH}%`,
-                    background: isToday ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.06)',
-                    minHeight: 3,
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex justify-between mt-1.5">
-          {recent.slice(0, 7).reverse().map((entry: DayEntry) => {
-            const d = new Date(entry.date);
-            return (
-              <span key={entry.date} className="flex-1 text-center text-[8px] text-muted-foreground font-medium uppercase">
-                {d.toLocaleDateString("en", { weekday: "narrow" })}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* CTA */}
-      {!hasToday && (
-        <button onClick={onGoToCheckin}
-          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up"
-          style={{ letterSpacing: '-0.02em' }}>
-          Start Today's Check-in
-        </button>
       )}
     </div>
   );
