@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import ParticleRing from "./ParticleRing";
-import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users, MessageCircle, HelpCircle } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
+import { AICoachSheet } from "./AICoachSheet";
 import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
 import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
@@ -289,6 +290,23 @@ const HomeScreen = ({
   const suggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
   const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
 
+  const [showCoach, setShowCoach] = useState(false);
+  const [coachQuestion, setCoachQuestion] = useState<string | null>(null);
+  const [expandedInsight, setExpandedInsight] = useState<string | null>(null);
+
+  const aiSummary = useMemo(() => {
+    const parts: string[] = [];
+    if (readiness.level === "recovering") parts.push("recovery and rest");
+    else if (readiness.level === "peak") parts.push("high-intensity training");
+    else parts.push("moderate activity");
+    const recentSocial = recent.filter((e: DayEntry) => e.activities?.some((a: any) => a.type === "social")).length;
+    if (recentSocial < 2) parts.push("social connection");
+    const avgSleep = avg(recent.map((e: DayEntry) => e.wearable?.sleep?.totalHours || 7));
+    if (avgSleep < 7) parts.push("sleep prioritization");
+    else parts.push("maintaining sleep rhythm");
+    return `Today favors ${parts.join(" and ")}.`;
+  }, [readiness, recent]);
+
   // Best streak for messaging
   const bestStreak = useMemo(() => {
     const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
@@ -399,6 +417,32 @@ const HomeScreen = ({
         </div>
       </div>
 
+      {/* ── AI SUMMARY STRIP ───────────────────────────────── */}
+      <button
+        onClick={() => { setCoachQuestion(null); setShowCoach(true); }}
+        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl fade-up d1 hover:brightness-110 active:scale-[0.98] transition-all"
+        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}
+      >
+        <Sparkles className="w-4 h-4 text-primary flex-shrink-0" />
+        <div className="flex-1 text-left">
+          <span className="text-[10px] text-primary font-bold uppercase tracking-wider">AI Summary</span>
+          <p className="text-[12px] text-foreground/70 mt-0.5 leading-snug">{aiSummary}</p>
+        </div>
+        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+      </button>
+
+      {/* ── ASK COACH PILL ─────────────────────────────────── */}
+      <div className="flex justify-center fade-up d2">
+        <button
+          onClick={() => { setCoachQuestion(null); setShowCoach(true); }}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[12px] font-bold transition-all hover:brightness-110 active:scale-[0.97]"
+          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}
+        >
+          <MessageCircle className="w-3.5 h-3.5 text-primary" />
+          Discuss Today's Plan
+        </button>
+      </div>
+
       {/* ── PRIMARY CTA ────────────────────────────────────── */}
       {!hasToday && (
         <button onClick={onGoToCheckin}
@@ -413,6 +457,13 @@ const HomeScreen = ({
         <div className="fade-up d2" style={{ padding: '14px 18px', background: 'rgba(224,80,80,0.06)', border: '1px solid rgba(224,80,80,0.12)', borderRadius: 20 }}>
           <div className="text-[13px] font-bold text-foreground">{suggestions[0].title}</div>
           <div className="text-[11px] text-foreground/70 mt-1 leading-relaxed">{suggestions[0].description}</div>
+          <button
+            onClick={() => { setCoachQuestion(`Explain why: ${suggestions[0].title}`); setShowCoach(true); }}
+            className="flex items-center gap-1.5 mt-2 text-[10px] font-semibold text-primary hover:text-primary/80 transition-colors"
+          >
+            <HelpCircle className="w-3 h-3" />
+            Ask Coach About This
+          </button>
         </div>
       )}
 
@@ -468,14 +519,55 @@ const HomeScreen = ({
       {suggestions.length > 1 && (
         <div className="card-dark fade-up d5" style={{ padding: '16px 18px' }}>
           <div className="label-ref mb-2">Coaching Notes</div>
-          {suggestions.slice(1, 4).map((s, i, arr) => (
-            <div key={s.id} className="py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <div className="text-[13px] font-bold text-foreground">{s.title}</div>
-              <div className="text-[11px] text-foreground/70 mt-0.5 leading-relaxed">{s.description}</div>
-            </div>
-          ))}
+          {suggestions.slice(1, 4).map((s: any, i: number, arr: any[]) => {
+            const isExpanded = expandedInsight === s.id;
+            return (
+              <div key={s.id} className="py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                <div className="text-[13px] font-bold text-foreground">{s.title}</div>
+                <div className="text-[11px] text-foreground/70 mt-0.5 leading-relaxed">{s.description}</div>
+                <div className="flex items-center gap-3 mt-2">
+                  <button
+                    onClick={() => setExpandedInsight(isExpanded ? null : s.id)}
+                    className="text-[10px] font-semibold text-foreground/40 hover:text-foreground/60 transition-colors flex items-center gap-1"
+                  >
+                    <HelpCircle className="w-3 h-3" />
+                    {isExpanded ? "Hide reasoning" : "View reasoning"}
+                  </button>
+                  <button
+                    onClick={() => { setCoachQuestion(`Explain in detail: ${s.title}. ${s.description}`); setShowCoach(true); }}
+                    className="text-[10px] font-semibold text-primary/70 hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    Ask Coach
+                  </button>
+                </div>
+                {isExpanded && (
+                  <div className="mt-3 px-3 py-2.5 rounded-xl text-[11px] text-foreground/60 leading-relaxed fade-up"
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)' }}>
+                    <div className="text-[10px] text-primary/70 font-bold uppercase tracking-wider mb-1.5">Why this matters</div>
+                    <div>{s.description}</div>
+                    <div className="mt-2 text-[10px] text-muted-foreground">
+                      Category: {s.category} · Priority: {s.priority}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
+
+      {/* ── AI COACH SHEET ─────────────────────────────────── */}
+      <AICoachSheet
+        open={showCoach}
+        onClose={() => { setShowCoach(false); setCoachQuestion(null); }}
+        entries={entries}
+        recent={recent}
+        profile={profile}
+        score={score}
+        streak={streak}
+        preloadedQuestion={coachQuestion}
+      />
     </div>
   );
 };
