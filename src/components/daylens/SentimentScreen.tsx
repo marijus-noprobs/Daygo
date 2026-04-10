@@ -15,22 +15,32 @@ const STEPS = [
 ] as const;
 
 const getColors = (value: number) => {
-  let h: number, s: number, l: number;
-  let fgH: number, fgS: number, fgL: number;
-  if (value <= 50) {
-    const t = value / 50;
-    h = 15 + t * 30; s = 85 - t * 10; l = 75 - t * 10;
-    fgH = 15 + t * 20; fgS = 60 - t * 10; fgL = 30 - t * 5;
+  // Restricted palette: red → neutral grey → green
+  if (value <= 35) {
+    // Red zone
+    return {
+      bg: `hsl(0, ${55 + (35 - value)}%, ${28 + value * 0.2}%)`,
+      fg: "rgba(255,255,255,0.85)",
+      fgLight: "rgba(255,255,255,0.6)",
+    };
+  } else if (value <= 65) {
+    // Neutral grey zone
+    const t = (value - 35) / 30;
+    const l = 16 + t * 4;
+    return {
+      bg: `hsl(0, 0%, ${l}%)`,
+      fg: "rgba(255,255,255,0.85)",
+      fgLight: "rgba(255,255,255,0.6)",
+    };
   } else {
-    const t = (value - 50) / 50;
-    h = 45 + t * 33; s = 75 + t * 5; l = 65;
-    fgH = 35 + t * 43; fgS = 50 + t * 10; fgL = 25 - t * 5;
+    // Green zone
+    const t = (value - 65) / 35;
+    return {
+      bg: `hsl(78, ${40 + t * 28}%, ${22 + t * 8}%)`,
+      fg: "rgba(255,255,255,0.9)",
+      fgLight: "rgba(255,255,255,0.65)",
+    };
   }
-  return {
-    bg: `hsl(${h}, ${s}%, ${l}%)`,
-    fg: `hsl(${fgH}, ${fgS}%, ${fgL}%)`,
-    fgLight: `hsl(${fgH}, ${fgS}%, ${fgL + 15}%)`,
-  };
 };
 
 const getLabel = (value: number, step: typeof STEPS[number]) => {
@@ -81,7 +91,7 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
       const toMood = (v: number) => Math.round(1 + (v / 100) * 4);
       onSubmit({
         overallMood: toMood(values[0]),
-        anxiety: 5 - toMood(values[1]) + 1, // invert: calm=1 anxiety scale
+        anxiety: 5 - toMood(values[1]) + 1,
         focus: toMood(values[2]),
         energy: toMood(values[3]),
         stressEvents: "",
@@ -109,7 +119,6 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
           <button onClick={handleBack} className="w-10 h-10 flex items-center justify-center" style={{ color: colors.fg }}>
             {stepIndex > 0 ? <ChevronLeft size={24} strokeWidth={2.5} /> : <X size={24} strokeWidth={2.5} />}
           </button>
-          {/* Step indicators */}
           <div className="flex gap-1.5">
             {STEPS.map((_, i) => (
               <div
@@ -180,7 +189,7 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
               className="flex-1 py-4 rounded-full text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
               style={{ background: colors.fg, color: colors.bg }}
             >
-              {isLast ? "Submit" : "Next"} <span>→</span>
+              {isLast ? "Submit" : "Next"} <span>{"→"}</span>
             </button>
           </div>
         </div>
