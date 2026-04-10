@@ -88,13 +88,24 @@
     overflow: hidden;
   }
 
-  /* Gradient dark card — subtle lime-tinted gradient */
+  /* Gradient dark card — mesh gradient background */
   .card-dark-gradient {
-    background: linear-gradient(145deg, #1e1f1a 0%, #181819 60%, #161616 100%);
-    border: 1px solid rgba(200, 232, 120, 0.06);
+    background: #181819;
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 20px;
     position: relative;
     overflow: hidden;
+  }
+
+  .card-dark-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--mesh-gradient);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   /* Slightly elevated card */
