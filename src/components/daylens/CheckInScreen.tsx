@@ -34,8 +34,9 @@ export const CheckInScreen = ({
   onSubmit, onViewInsights, yesterdayEntry, profile,
 }: CheckInScreenProps) => {
   const [section, setSection] = useState("nutrition");
+  const [showAddActivity, setShowAddActivity] = useState(false);
 
-  const sections = ["nutrition", "mood"];
+  const sections = ["nutrition", "activities", "mood"];
   const sectionIndex = sections.indexOf(section);
 
   if (submitted || hasToday) return (
