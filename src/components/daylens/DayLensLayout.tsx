@@ -333,7 +333,7 @@ const HomeScreen = ({
   }
 
   const scoreNorm = Math.min(score, 10) / 10;
-  const ringR = 38;
+  const ringR = 44;
   const ringCirc = 2 * Math.PI * ringR;
 
   const categoryIcons: Record<string, string> = {
