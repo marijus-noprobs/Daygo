@@ -424,14 +424,14 @@ const HomeScreen = ({
         >
           {/* Gradient border + glow */}
           <div className="absolute inset-0 rounded-2xl" style={{
-            background: 'linear-gradient(135deg, #e8956b 0%, #c97a4a 30%, #4a8fa8 60%, #f5e0c3 90%)',
+            background: 'linear-gradient(135deg, hsl(78 68% 52%) 0%, hsl(78 68% 62%) 40%, hsl(78 50% 72%) 70%, hsl(78 68% 62%) 100%)',
             opacity: 0.5,
           }} />
           {/* Inner background */}
           <div className="absolute inset-[1px] rounded-[15px]" style={{ background: '#111112' }} />
           {/* Content */}
           <div className="relative flex items-center gap-3 px-4 py-3.5">
-            <Sparkles className="w-4 h-4 flex-shrink-0" style={{ color: '#e8956b' }} />
+            <Sparkles className="w-4 h-4 flex-shrink-0 text-primary" />
             <input
               name="coachInput"
               type="text"

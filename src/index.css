@@ -322,8 +322,8 @@
 .spin-slow { animation: spin-slow 0.9s linear infinite; }
 
 @keyframes coach-pulse {
-  0%, 100% { box-shadow: 0 0 12px 2px rgba(232,149,107,0.15), 0 0 30px 4px rgba(232,149,107,0.08); }
-  50% { box-shadow: 0 0 20px 6px rgba(232,149,107,0.3), 0 0 50px 10px rgba(232,149,107,0.12); }
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(200,232,120,0.15), 0 0 30px 4px rgba(200,232,120,0.08); }
+  50% { box-shadow: 0 0 20px 6px rgba(200,232,120,0.3), 0 0 50px 10px rgba(200,232,120,0.12); }
 }
 .coach-glow-bar { animation: coach-pulse 3s ease-in-out infinite; }
 
