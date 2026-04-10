@@ -454,13 +454,7 @@ const HomeScreen = ({
         </div>
       )}
 
-      <motion.div
-        className="card-dark fade-up d3 cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_rgba(200,232,120,0.06)] active:bg-white/[0.03]"
-        style={{ padding: '20px 22px', border: '1px solid rgba(255,255,255,0.06)' }}
-        whileTap={{ scale: 0.98, backgroundColor: 'rgba(255,255,255,0.03)' }}
-        whileHover={{ borderColor: 'rgba(255,255,255,0.14)', backgroundColor: 'rgba(255,255,255,0.02)' }}
-        onClick={onViewInsights}
-      >
+      <div className="card-dark fade-up d3" style={{ padding: '20px 22px' }}>
         <div className="flex items-baseline gap-3 mb-1">
           <span className="font-mono text-[42px] font-bold text-foreground leading-none" style={{ letterSpacing: '-0.04em' }}>
             {streak}
@@ -488,7 +482,7 @@ const HomeScreen = ({
             </div>
           ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* ── SUPPORTING METRICS ─────────────────────────────── */}
       <div className="grid grid-cols-3 gap-[10px] fade-up d4">
