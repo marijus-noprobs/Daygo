@@ -201,9 +201,9 @@ const DayLensApp = () => {
             <h3 className="font-display text-base font-extrabold text-foreground mb-4">Log</h3>
             <div className="space-y-1">
               {[
-                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", section: "nutrition" },
-                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", section: "activities" },
-                { icon: Users, label: "Social", desc: "Log social interaction", section: "activities" },
+                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", section: "nutrition" as const },
+                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", section: "activities" as const },
+                { icon: Users, label: "Social", desc: "Log social interaction", section: "activities" as const },
               ].map(item => (
                 <button key={item.label} onClick={() => openQuickAdd(item.section)}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
