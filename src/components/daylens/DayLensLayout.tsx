@@ -420,14 +420,15 @@ const HomeScreen = ({
       {/* ── AI COACH ENTRY ──────────────────────────────── */}
       <button
         onClick={() => { setCoachQuestion(null); setShowCoach(true); }}
-        className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl fade-up d1 hover:brightness-110 active:scale-[0.98] transition-all"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}
+        className="w-full flex flex-col items-center gap-1.5 py-4 fade-up d1 hover:brightness-110 active:scale-[0.97] transition-all"
       >
-        <Sparkles className="w-4 h-4 text-primary flex-shrink-0" />
-        <div className="flex-1 text-left">
-          <p className="text-[12px] text-foreground/70 leading-snug">{aiSummary}</p>
-          <span className="text-[10px] text-primary font-bold mt-1 inline-block">Discuss Today's Plan →</span>
+        <div className="relative">
+          <ParticleRing size={44} progress={1} color="#a78bfa" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-primary" />
+          </div>
         </div>
+        <span className="text-[11px] font-bold text-foreground/60 tracking-wide">AI Coach</span>
       </button>
 
       {/* ── PRIMARY CTA ────────────────────────────────────── */}
