@@ -290,6 +290,23 @@ const HomeScreen = ({
   const suggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
   const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
 
+  const [showCoach, setShowCoach] = useState(false);
+  const [coachQuestion, setCoachQuestion] = useState<string | null>(null);
+  const [expandedInsight, setExpandedInsight] = useState<string | null>(null);
+
+  const aiSummary = useMemo(() => {
+    const parts: string[] = [];
+    if (readiness.level === "recovering") parts.push("recovery and rest");
+    else if (readiness.level === "peak") parts.push("high-intensity training");
+    else parts.push("moderate activity");
+    const recentSocial = recent.filter((e: DayEntry) => e.activities?.some((a: any) => a.type === "social")).length;
+    if (recentSocial < 2) parts.push("social connection");
+    const avgSleep = avg(recent.map((e: DayEntry) => e.wearable?.sleep?.totalHours || 7));
+    if (avgSleep < 7) parts.push("sleep prioritization");
+    else parts.push("maintaining sleep rhythm");
+    return `Today favors ${parts.join(" and ")}.`;
+  }, [readiness, recent]);
+
   // Best streak for messaging
   const bestStreak = useMemo(() => {
     const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
