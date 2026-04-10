@@ -476,12 +476,12 @@ const HomeScreen = ({
           {dotMatrix.map(month => (
             <div key={month.label} className="flex-1">
               <div className="label-ref text-center mb-2" style={{ fontSize: 10 }}>{month.label}</div>
-              <div className="grid gap-[5px]" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
+              <div className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
                 {month.dots.map((filled, i) => (
                   <div key={i} className="rounded-full" style={{
                     background: filled ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.06)',
-                    width: 10,
-                    height: 10,
+                    width: 6,
+                    height: 6,
                   }} />
                 ))}
               </div>
