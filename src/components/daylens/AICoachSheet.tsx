@@ -257,7 +257,7 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
       <div
         className="w-full max-w-md flex flex-col scale-in"
         style={{
-          height: "70vh",
+          maxHeight: "65vh",
           background: "#111112",
           borderRadius: "26px 26px 0 0",
           border: "1px solid rgba(255,255,255,0.06)",
