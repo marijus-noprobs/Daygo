@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import ParticleRing from "./ParticleRing";
 import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
