@@ -72,7 +72,7 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
           </div>
         ))}
         <div className="flex items-center justify-between px-[18px] py-[15px] cursor-pointer hover:bg-card/80 transition-colors border-t border-border" onClick={onReset}>
-          <span className="text-[13px] text-dl-red font-medium">Sign Out</span>
+          <span className="text-[13px] text-destructive font-medium">Sign Out</span>
           <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
         </div>
       </div>
@@ -81,10 +81,10 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
       {plan === "free" && (
         <div className="card-dark rounded-[20px] p-4 flex items-center justify-between cursor-pointer fade-up d3" onClick={onShowPricing}>
           <div>
-            <div className="font-display text-[13px] font-bold text-dl-blue">Unlock Pro</div>
+            <div className="font-display text-[13px] font-bold text-primary">Unlock Pro</div>
             <div className="text-[11px] mt-0.5 text-muted-foreground">AI insights, advanced trends & more</div>
           </div>
-          <ChevronRight className="w-4 h-4 text-dl-blue" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </div>
       )}
     </div>

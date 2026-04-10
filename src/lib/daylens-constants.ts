@@ -8,16 +8,16 @@ export interface ActivityType {
 }
 
 export const ACTIVITY_TYPES: ActivityType[] = [
-  { key: "gaming",     label: "Gaming",       emoji: "", colorClass: "text-dl-indigo",  bgClass: "bg-dl-indigo/10",  borderClass: "border-dl-indigo/20" },
-  { key: "work",       label: "Work",         emoji: "", colorClass: "text-dl-pink",    bgClass: "bg-dl-pink/10",    borderClass: "border-dl-pink/20" },
-  { key: "social",     label: "Social",       emoji: "", colorClass: "text-dl-lime",    bgClass: "bg-dl-lime/10",    borderClass: "border-dl-lime/20" },
-  { key: "exercise",   label: "Exercise",     emoji: "", colorClass: "text-dl-lime",    bgClass: "bg-dl-lime/10",    borderClass: "border-dl-lime/20" },
-  { key: "reading",    label: "Reading",      emoji: "", colorClass: "text-dl-indigo",  bgClass: "bg-dl-indigo/10",  borderClass: "border-dl-indigo/20" },
-  { key: "tv",         label: "TV/Streaming", emoji: "", colorClass: "text-dl-pink",    bgClass: "bg-dl-pink/10",    borderClass: "border-dl-pink/20" },
-  { key: "drinking",   label: "Drinking",     emoji: "", colorClass: "text-dl-pink",    bgClass: "bg-dl-pink/10",    borderClass: "border-dl-pink/20" },
-  { key: "meditation", label: "Meditation",   emoji: "", colorClass: "text-dl-indigo",  bgClass: "bg-dl-indigo/10",  borderClass: "border-dl-indigo/20" },
-  { key: "outdoor",    label: "Outdoors",     emoji: "", colorClass: "text-dl-lime",    bgClass: "bg-dl-lime/10",    borderClass: "border-dl-lime/20" },
-  { key: "other",      label: "Other",        emoji: "", colorClass: "text-muted-foreground", bgClass: "bg-muted/50", borderClass: "border-muted" },
+  { key: "gaming",     label: "Gaming",       emoji: "", colorClass: "text-foreground/60",  bgClass: "bg-white/[0.04]",  borderClass: "border-white/[0.08]" },
+  { key: "work",       label: "Work",         emoji: "", colorClass: "text-foreground/60",  bgClass: "bg-white/[0.04]",  borderClass: "border-white/[0.08]" },
+  { key: "social",     label: "Social",       emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20" },
+  { key: "exercise",   label: "Exercise",     emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20" },
+  { key: "reading",    label: "Reading",      emoji: "", colorClass: "text-foreground/60",  bgClass: "bg-white/[0.04]",  borderClass: "border-white/[0.08]" },
+  { key: "tv",         label: "TV/Streaming", emoji: "", colorClass: "text-destructive",    bgClass: "bg-destructive/10",borderClass: "border-destructive/20" },
+  { key: "drinking",   label: "Drinking",     emoji: "", colorClass: "text-destructive",    bgClass: "bg-destructive/10",borderClass: "border-destructive/20" },
+  { key: "meditation", label: "Meditation",   emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20" },
+  { key: "outdoor",    label: "Outdoors",     emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20" },
+  { key: "other",      label: "Other",        emoji: "", colorClass: "text-muted-foreground", bgClass: "bg-white/[0.04]", borderClass: "border-white/[0.08]" },
 ];
 
 export interface PlanOption {
@@ -33,8 +33,8 @@ export interface PlanOption {
 
 export const PLAN_OPTIONS: PlanOption[] = [
   { id: "free",    label: "Free",    price: "$0",  period: "",    gradientClass: "from-secondary to-secondary", borderClass: "border-muted", features: ["30-day history", "Daily check-in", "Basic insights", "Activity tracking"] },
-  { id: "pro",     label: "Pro",     price: "$9",  period: "/mo", gradientClass: "from-dl-blue/20 to-dl-indigo/20", borderClass: "border-dl-blue/40", features: ["Unlimited history", "AI analysis", "Activity impact analysis", "Goal tracking", "Anomaly alerts", "Perfect Day"], highlight: true },
-  { id: "premium", label: "Premium", price: "$19", period: "/mo", gradientClass: "from-dl-purple/20 to-dl-purple/20", borderClass: "border-dl-purple/40", features: ["Everything in Pro", "Custom categories", "Coach sharing", "Priority support"] },
+  { id: "pro",     label: "Pro",     price: "$9",  period: "/mo", gradientClass: "from-primary/20 to-primary/20", borderClass: "border-primary/40", features: ["Unlimited history", "AI analysis", "Activity impact analysis", "Goal tracking", "Anomaly alerts", "Perfect Day"], highlight: true },
+  { id: "premium", label: "Premium", price: "$19", period: "/mo", gradientClass: "from-white/20 to-white/20", borderClass: "border-white/40", features: ["Everything in Pro", "Custom categories", "Coach sharing", "Priority support"] },
 ];
 
 export interface Goal {

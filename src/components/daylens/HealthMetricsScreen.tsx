@@ -12,20 +12,20 @@ interface HealthMetricsScreenProps {
 }
 
 const HealthMetricTile = ({
-  label, value, unit, barPct, barColor, trend, trendColor,
+  label, value, unit, barPct, positive, trend,
 }: {
   label: string; value: string | number; unit: string;
-  barPct: number; barColor: string; trend: string; trendColor: string;
+  barPct: number; positive: boolean; trend: string;
 }) => (
   <div className="card-dark rounded-[18px] p-4 cursor-pointer hover:translate-y-[-2px] transition-transform">
     <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.08em] mb-2">{label}</div>
-    <div className="font-display text-[22px] font-extrabold tracking-tight leading-none" style={{ color: barColor }}>
+    <div className="font-display text-[22px] font-extrabold tracking-tight leading-none text-foreground">
       {value}<span className="text-[11px] font-normal text-muted-foreground ml-0.5">{unit}</span>
     </div>
     <div className="h-[2px] rounded-full bg-border mt-2.5 mb-1.5">
-      <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: barColor }} />
+      <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: positive ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }} />
     </div>
-    <div className="text-[10px] font-bold" style={{ color: trendColor }}>{trend}</div>
+    <div className="text-[10px] font-bold" style={{ color: positive ? 'hsl(var(--primary))' : 'hsl(var(--destructive))' }}>{trend}</div>
   </div>
 );
 
@@ -58,14 +58,14 @@ export const HealthMetricsScreen = ({ entries, recent, suggestions, detectedLeve
   return (
     <div className="space-y-4 pb-28 fade-up">
       <div className="grid grid-cols-2 gap-3 fade-up d1">
-        <HealthMetricTile label="HRV" value={body.hrv} unit=" ms" barPct={Math.min(100, body.hrv)} barColor="hsl(var(--color-lime))"
-          trend={avgHRV ? `↑ +${body.hrv - avgHRV}ms vs avg` : "Optimal"} trendColor="hsl(var(--color-lime))" />
-        <HealthMetricTile label="Resting HR" value={body.restingHR} unit=" bpm" barPct={55} barColor="hsl(var(--color-blue))"
-          trend={avgHR ? `↓ ${body.restingHR - avgHR} vs avg` : "Normal"} trendColor="hsl(var(--color-blue))" />
-        <HealthMetricTile label="SpO₂" value={body.spo2} unit=" %" barPct={body.spo2} barColor="hsl(var(--color-lime))"
-          trend={body.spo2 >= 95 ? "Optimal" : "Below normal"} trendColor="hsl(var(--color-lime))" />
-        <HealthMetricTile label="Body Battery" value={body.bodyBattery} unit="/100" barPct={body.bodyBattery} barColor="hsl(var(--color-pink))"
-          trend={getBatteryLabel(body.bodyBattery)} trendColor="hsl(var(--color-pink))" />
+        <HealthMetricTile label="HRV" value={body.hrv} unit=" ms" barPct={Math.min(100, body.hrv)} positive={body.hrv >= 40}
+          trend={avgHRV ? `${body.hrv >= avgHRV ? "↑" : "↓"} ${Math.abs(body.hrv - avgHRV)}ms vs avg` : "Optimal"} />
+        <HealthMetricTile label="Resting HR" value={body.restingHR} unit=" bpm" barPct={55} positive={body.restingHR <= 70}
+          trend={avgHR ? `${body.restingHR <= avgHR ? "↓" : "↑"} ${Math.abs(body.restingHR - avgHR)} vs avg` : "Normal"} />
+        <HealthMetricTile label="SpO2" value={body.spo2} unit=" %" barPct={body.spo2} positive={body.spo2 >= 95}
+          trend={body.spo2 >= 95 ? "Optimal" : "Below normal"} />
+        <HealthMetricTile label="Body Battery" value={body.bodyBattery} unit="/100" barPct={body.bodyBattery} positive={body.bodyBattery >= 50}
+          trend={getBatteryLabel(body.bodyBattery)} />
       </div>
 
       <HealthSuggestions suggestions={suggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />

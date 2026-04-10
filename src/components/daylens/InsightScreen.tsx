@@ -47,7 +47,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
         <TrendingUp size={32} />
       </div>
       <h2 className="font-display text-xl font-extrabold">Gathering Data</h2>
-      <p className="text-[11px] text-white/[0.38] max-w-xs leading-relaxed">Log a few more days to unlock patterns and AI insights.</p>
+      <p className="text-[11px] text-white/[0.38] max-w-xs leading-relaxed">Log a few more days to unlock patterns and insights.</p>
     </div>
   );
 
@@ -80,12 +80,12 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
             <div className="flex items-end gap-2 w-full" style={{ height: 118 }}>
               {last7.map((e, i) => {
                 const s = computeDayScore(e);
-                const [c1] = scoreGradient(s);
+                const barColor = s >= 3.25 ? "hsl(var(--primary))" : s >= 1.75 ? "rgba(255,255,255,0.15)" : "hsl(var(--destructive))";
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
                     <div className="w-full rounded-sm" style={{
                       height: `${(s / 5) * 100}%`,
-                      background: `linear-gradient(180deg, ${c1}, ${c1}88)`,
+                      background: barColor,
                       transition: "height .5s ease",
                     }} />
                     <span className="text-[9px] font-semibold text-white/[0.2]">{new Date(e.date + "T12:00").toLocaleDateString("en", { weekday: "short" }).charAt(0)}</span>
@@ -98,28 +98,28 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
           {/* Average grid */}
           <div className="grid grid-cols-2 gap-[10px] fade-up d2">
             {[
-              { label: "Day Score", val: avg(recent.map(computeDayScore)).toFixed(1), color: "#c8e878", trend: `↑ +0.4 this week` },
-              { label: "Sleep Score", val: Math.round(avg(recent.map(e => e.wearable.sleep.score))).toString(), color: "#7da8ff", trend: `↑ +5 this week` },
-              { label: "Avg Steps", val: (Math.round(avg(recent.map(e => e.wearable.activity.steps))) / 1000).toFixed(1) + "k", color: "#ffffff", trend: "Goal: 12k" },
-              { label: "Avg HRV", val: Math.round(avg(recent.map(e => e.wearable.body.hrv))) + "ms", color: "#ffb43c", trend: `↑ +7ms this week` },
+              { label: "Day Score", val: avg(recent.map(computeDayScore)).toFixed(1), color: "hsl(var(--primary))", trend: "7-day avg" },
+              { label: "Sleep Score", val: Math.round(avg(recent.map(e => e.wearable.sleep.score))).toString(), color: "rgba(255,255,255,0.7)", trend: "7-day avg" },
+              { label: "Avg Steps", val: (Math.round(avg(recent.map(e => e.wearable.activity.steps))) / 1000).toFixed(1) + "k", color: "rgba(255,255,255,0.5)", trend: "Goal: 12k" },
+              { label: "Avg HRV", val: Math.round(avg(recent.map(e => e.wearable.body.hrv))) + "ms", color: "rgba(255,255,255,0.5)", trend: "7-day avg" },
             ].map(item => (
               <div key={item.label} className="glass-card-apple rounded-[18px] p-3.5">
                 <div className="text-[10px] text-white/[0.28] uppercase tracking-[0.08em] font-semibold mb-1.5">{item.label}</div>
                 <div className="font-display text-[21px] font-extrabold tracking-tight" style={{ color: item.color }}>{item.val}</div>
-                <div className="text-[10px] font-bold mt-1" style={{ color: item.color === "#ffffff" ? "rgba(255,255,255,0.28)" : item.color }}>{item.trend}</div>
+                <div className="text-[10px] font-bold mt-1 text-white/[0.28]">{item.trend}</div>
               </div>
             ))}
           </div>
 
           {anomalies.length > 0 && (
-            <GlassCard style={{ borderLeft: `3px solid ${anomalies[0].color}` }}>
+            <GlassCard style={{ borderLeft: '3px solid hsl(var(--destructive))' }}>
               <div className="flex items-start gap-3">
-                <span className="text-lg">⚠️</span>
+                <Info size={16} className="text-destructive mt-0.5 flex-shrink-0" />
                 <div>
                   <h3 className="text-[12px] font-semibold mb-1">Anomaly Detected</h3>
                   {anomalies.map((a, i) => (
                     <p key={i} className="text-[11px] text-white/[0.38] leading-relaxed">
-                      {a.label} is <span style={{ color: a.color }} className="font-semibold">{a.direction}</span> — {a.z}σ deviation
+                      {a.label} is <span className="font-semibold text-destructive">{a.direction}</span> — {a.z}σ deviation
                     </p>
                   ))}
                 </div>
@@ -134,7 +134,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
         <>
           <div className="glass-card-apple rounded-[18px] p-4 text-[11px] text-white/[0.38] leading-relaxed">
             <div className="flex items-start gap-2.5">
-              <Info className="text-dl-indigo mt-0.5 flex-shrink-0 w-4 h-4" />
+              <Info className="text-muted-foreground mt-0.5 flex-shrink-0 w-4 h-4" />
               <p>Shows how yesterday's activities affect today's wellness score.</p>
             </div>
           </div>
@@ -145,12 +145,11 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
             </GlassCard>
           ) : activityCorrelations.map((c) => {
             const positive = c.diff > 0;
-            const [g1, g2] = positive ? ["#c8e878", "#a0d040"] : ["#ff80c8", "#e060a0"];
             return (
               <GlassCard key={c.type}>
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center text-[11px] font-bold uppercase flex-shrink-0 border ${c.bgClass} ${c.borderClass} ${c.colorClass}`}>
+                    <div className="w-10 h-10 rounded-[14px] flex items-center justify-center text-[11px] font-bold uppercase flex-shrink-0" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
                       {c.label.slice(0, 2)}
                     </div>
                     <div>
@@ -161,7 +160,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0 ml-2">
-                    <div className={`font-display text-lg font-extrabold ${positive ? "text-primary" : "text-dl-pink"}`}>
+                    <div className={`font-display text-lg font-extrabold ${positive ? "text-primary" : "text-destructive"}`}>
                       {positive ? "+" : ""}{c.diff.toFixed(2)}
                     </div>
                     <div className="text-[10px] text-white/[0.28]">next-day</div>
@@ -170,10 +169,10 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                 <div className="mb-3">
                   <div className="flex justify-between text-[10px] text-white/[0.28] mb-1.5">
                     <span>With {c.label.toLowerCase()}</span>
-                    <span className="font-semibold" style={{ color: positive ? "#c8e878" : "#ff80c8" }}>{c.avgWith} avg</span>
+                    <span className="font-semibold" style={{ color: positive ? "hsl(var(--primary))" : "hsl(var(--destructive))" }}>{c.avgWith} avg</span>
                   </div>
                   <div className="w-full h-[2px] bg-white/[0.07] rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: (c.avgWith / 5 * 100) + "%", background: `linear-gradient(90deg,${g1},${g2})` }} />
+                    <div className="h-full rounded-full" style={{ width: (c.avgWith / 5 * 100) + "%", background: positive ? "hsl(var(--primary))" : "hsl(var(--destructive))" }} />
                   </div>
                 </div>
                 <div>
@@ -198,7 +197,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
           {biometricCorrelations.map((c, i) => {
             const isPos = c.r >= 0;
             const strength = Math.abs(c.r);
-            const clr = strength > 0.5 ? (isPos ? "#c8e878" : "#ff80c8") : strength > 0.25 ? "#7da8ff" : "rgba(255,255,255,0.2)";
+            const clr = strength > 0.5 ? (isPos ? "hsl(var(--primary))" : "hsl(var(--destructive))") : "rgba(255,255,255,0.3)";
             return (
               <div key={c.label} className={`flex items-center gap-3 py-3 ${i < biometricCorrelations.length - 1 ? "border-b border-white/[0.05]" : ""}`}>
                 <span className="text-[11px] text-white/[0.45] flex-1">{c.label}</span>
@@ -218,17 +217,17 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
         <>
           <p className="text-[10px] text-white/[0.28] px-1 leading-relaxed">Comparing your last 3 days to your baseline.</p>
           {anomalies.length === 0
-            ? <GlassCard className="text-center py-8"><div className="text-3xl mb-3">✅</div><h3 className="font-display text-base font-extrabold mb-1">All Clear</h3><p className="text-[11px] text-white/[0.38]">No significant deviations detected.</p></GlassCard>
+            ? <GlassCard className="text-center py-8"><h3 className="font-display text-base font-extrabold mb-1">All Clear</h3><p className="text-[11px] text-white/[0.38]">No significant deviations detected.</p></GlassCard>
             : anomalies.map((a, i) => (
-              <GlassCard key={i} style={{ borderLeft: `3px solid ${a.color}` }}>
+              <GlassCard key={i} style={{ borderLeft: '3px solid hsl(var(--destructive))' }}>
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-display text-base font-extrabold mb-1">{a.label}</h3>
                     <p className="text-[11px] text-white/[0.38] leading-relaxed">
-                      {a.label} is <span style={{ color: a.color }} className="font-semibold">{a.direction}</span> — {a.z}σ from your baseline.
+                      {a.label} is <span className="font-semibold text-destructive">{a.direction}</span> — {a.z}σ from your baseline.
                     </p>
                   </div>
-                  <span className="text-[10px] px-2 py-1 rounded-lg font-semibold ml-3" style={{ background: a.color + "18", color: a.color }}>{a.direction.split(" ")[0]}</span>
+                  <span className="text-[10px] px-2 py-1 rounded-lg font-semibold ml-3 bg-destructive/[0.12] text-destructive">{a.direction.split(" ")[0]}</span>
                 </div>
               </GlassCard>
             ))
@@ -259,7 +258,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     <div className="flex items-center gap-3">
                       <span className="text-[10px] text-white/[0.2]">{r.lw}{r.unit}</span>
                       <ArrowRight className="text-white/[0.15] w-2.5 h-2.5" />
-                      <span className={`text-[11px] font-semibold ${up ? "text-primary" : "text-dl-pink"}`}>{r.tw}{r.unit}</span>
+                      <span className={`text-[11px] font-semibold ${up ? "text-primary" : "text-destructive"}`}>{r.tw}{r.unit}</span>
                       <span className="text-[10px]">{up ? "↑" : "↓"}</span>
                     </div>
                   </div>
@@ -280,7 +279,6 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
               <p className="text-[11px] text-white/[0.38]">Log at least 3 days to generate your first report.</p>
             </GlassCard>
           ) : weeklyReports.map((report, idx) => {
-            const [c1] = scoreGradient(report.avgScore);
             return (
               <GlassCard key={idx}>
                 <div className="flex justify-between items-start mb-4">
@@ -288,7 +286,7 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
                     <h3 className="font-display text-[13px] font-bold">{report.period}</h3>
                     <p className="text-[10px] text-white/[0.28] mt-0.5">{report.daysLogged} days logged</p>
                   </div>
-                  <div className="font-display text-xl font-extrabold" style={{ color: c1 }}>{report.avgScore.toFixed(1)}</div>
+                  <div className="font-display text-xl font-extrabold text-primary">{report.avgScore.toFixed(1)}</div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div className="bg-white/[0.04] rounded-xl py-2">
