@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { GlassCard, SectionHeader } from "./DayLensUI";
 import type { HealthSuggestion } from "@/lib/daylens-utils";
 
@@ -9,18 +8,6 @@ interface HealthSuggestionsProps {
   detectedLevelLabel: string | null;
 }
 
-const PRIORITY_ICON_BG: Record<string, string> = {
-  high: "rgba(255,128,200,0.12)",
-  medium: "rgba(125,168,255,0.12)",
-  low: "rgba(200,232,120,0.12)",
-};
-
-const PRIORITY_STROKE: Record<string, string> = {
-  high: "#ff80c8",
-  medium: "#7da8ff",
-  low: "#c8e878",
-};
-
 export const HealthSuggestions = ({ suggestions, detectedLevel, detectedLevelLabel }: HealthSuggestionsProps) => {
   if (suggestions.length === 0 && !detectedLevel) return null;
 
@@ -29,8 +16,8 @@ export const HealthSuggestions = ({ suggestions, detectedLevel, detectedLevelLab
       {detectedLevel && detectedLevelLabel && (
         <GlassCard>
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-8 rounded-[11px] flex items-center justify-center" style={{ background: "rgba(125,168,255,0.12)" }}>
-              <Sparkles size={15} style={{ color: "#7da8ff" }} />
+            <div className="w-8 h-8 rounded-[11px] flex items-center justify-center text-[10px] font-bold uppercase text-muted-foreground" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+              AL
             </div>
             <div>
               <p className="text-[10px] text-white/[0.28] uppercase tracking-wider font-semibold">Detected Activity Level</p>
@@ -57,9 +44,10 @@ export const HealthSuggestions = ({ suggestions, detectedLevel, detectedLevelLab
                 transition={{ delay: i * 0.06 }}
                 className="glass-card-apple rounded-[18px] p-4 flex gap-3 cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-[11px] flex items-center justify-center flex-shrink-0" style={{ background: PRIORITY_ICON_BG[s.priority] }}>
-                  <span className="text-sm">{s.icon}</span>
-                </div>
+                <div className="w-[3px] rounded-full flex-shrink-0 mt-0.5" style={{
+                  height: 32,
+                  background: s.priority === 'high' ? 'hsl(var(--destructive))' : s.priority === 'medium' ? 'rgba(255,255,255,0.25)' : 'hsl(var(--primary))',
+                }} />
                 <div>
                   <div className="text-[12px] font-semibold text-foreground mb-0.5">{s.title}</div>
                   <div className="text-[11px] text-white/[0.38] leading-relaxed">{s.description}</div>
