@@ -417,31 +417,18 @@ const HomeScreen = ({
         </div>
       </div>
 
-      {/* ── AI SUMMARY STRIP ───────────────────────────────── */}
+      {/* ── AI COACH ENTRY ──────────────────────────────── */}
       <button
         onClick={() => { setCoachQuestion(null); setShowCoach(true); }}
-        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl fade-up d1 hover:brightness-110 active:scale-[0.98] transition-all"
+        className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl fade-up d1 hover:brightness-110 active:scale-[0.98] transition-all"
         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}
       >
         <Sparkles className="w-4 h-4 text-primary flex-shrink-0" />
         <div className="flex-1 text-left">
-          <span className="text-[10px] text-primary font-bold uppercase tracking-wider">AI Summary</span>
-          <p className="text-[12px] text-foreground/70 mt-0.5 leading-snug">{aiSummary}</p>
+          <p className="text-[12px] text-foreground/70 leading-snug">{aiSummary}</p>
+          <span className="text-[10px] text-primary font-bold mt-1 inline-block">Discuss Today's Plan →</span>
         </div>
-        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
       </button>
-
-      {/* ── ASK COACH PILL ─────────────────────────────────── */}
-      <div className="flex justify-center fade-up d2">
-        <button
-          onClick={() => { setCoachQuestion(null); setShowCoach(true); }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full text-[12px] font-bold transition-all hover:brightness-110 active:scale-[0.97]"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}
-        >
-          <MessageCircle className="w-3.5 h-3.5 text-primary" />
-          Discuss Today's Plan
-        </button>
-      </div>
 
       {/* ── PRIMARY CTA ────────────────────────────────────── */}
       {!hasToday && (
