@@ -27,7 +27,7 @@ const DayLensApp = () => {
   const [note, setNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
     const todayKey = new Date().toISOString().split("T")[0];
     return !load(`dl_sentiment_done_${todayKey}`, false);
@@ -120,7 +120,7 @@ const DayLensApp = () => {
           </h1>
           <div className="flex items-center gap-[9px]">
             <MoodCalendar entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <button className="w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: '#1f1f21', color: 'rgba(255,255,255,0.36)' }} onClick={() => !hasToday && setScreen("checkin")}>
+            <button className="w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: '#1f1f21', color: 'rgba(255,255,255,0.36)' }} onClick={() => setShowQuickAdd(true)}>
               <Plus className="w-[18px] h-[18px]" />
             </button>
           </div>
