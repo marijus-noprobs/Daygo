@@ -411,15 +411,20 @@ const HomeScreen = ({
       {/* ── AI COACH ENTRY ──────────────────────────────── */}
       <button
         onClick={() => { setCoachQuestion(null); setShowCoach(true); }}
-        className="w-full flex flex-col items-center gap-1.5 py-4 fade-up d1 hover:brightness-110 active:scale-[0.97] transition-all"
+        className="w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl fade-up d1 hover:brightness-110 active:scale-[0.98] transition-all"
+        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}
       >
-        <div className="relative">
-          <ParticleRing size={44} progress={1} color="#a78bfa" />
+        <div className="relative flex-shrink-0">
+          <ParticleRing size={38} progress={1} color="#a78bfa" />
           <div className="absolute inset-0 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary" />
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
           </div>
         </div>
-        <span className="text-[11px] font-bold text-foreground/60 tracking-wide">AI Coach</span>
+        <div className="flex-1 text-left">
+          <div className="text-[12px] font-bold text-foreground/90">AI Coach</div>
+          <p className="text-[11px] text-foreground/50 leading-snug mt-0.5">{aiSummary}</p>
+        </div>
+        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
       </button>
 
 
