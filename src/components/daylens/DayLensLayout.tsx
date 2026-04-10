@@ -28,6 +28,7 @@ const DayLensApp = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [quickAddSection, setQuickAddSection] = useState<string>("nutrition");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
     const todayKey = new Date().toISOString().split("T")[0];
