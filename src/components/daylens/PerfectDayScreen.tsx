@@ -19,7 +19,7 @@ export const PerfectDayScreen = ({ entries, isPro, onShowPricing }: PerfectDaySc
 
   if (!isPro) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-5 fade-up">
-      <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center text-2xl">✦</div>
+      <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center font-display text-lg font-bold text-foreground">PD</div>
       <div><h2 className="text-xl font-semibold mb-2">Perfect Day Profile</h2><p className="text-sm text-muted-foreground max-w-[260px] mx-auto leading-relaxed">Unlock your personalized optimal day including ideal activity schedule.</p></div>
       <button onClick={onShowPricing} className="w-full bg-foreground text-background font-semibold py-4 rounded-2xl active:scale-95 transition-transform">Upgrade to Pro</button>
     </div>
@@ -65,7 +65,7 @@ export const PerfectDayScreen = ({ entries, isPro, onShowPricing }: PerfectDaySc
           <SectionHeader title="Activity Blueprint" subtitle="What your best days look like" />
           {topPositive && (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-dl-emerald/[0.08] border border-dl-emerald/20 mb-3">
-              <span className="text-xl">{topPositive.emoji}</span>
+              <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase ${topPositive.bgClass} ${topPositive.colorClass}`}>{topPositive.label.slice(0, 2)}</div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-dl-emerald">{topPositive.label} — Do more of this</div>
                 <div className="text-xs text-muted-foreground">+{topPositive.diff.toFixed(2)} next-day score · avg {formatDuration(topPositive.avgDuration)}</div>
@@ -75,7 +75,7 @@ export const PerfectDayScreen = ({ entries, isPro, onShowPricing }: PerfectDaySc
           )}
           {topNegative && (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-dl-red/[0.08] border border-dl-red/20 mb-3">
-              <span className="text-xl">{topNegative.emoji}</span>
+              <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase ${topNegative.bgClass} ${topNegative.colorClass}`}>{topNegative.label.slice(0, 2)}</div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-dl-red">{topNegative.label} — Watch the timing</div>
                 <div className="text-xs text-muted-foreground">{topNegative.diff.toFixed(2)} next-day score · esp. late at night</div>
