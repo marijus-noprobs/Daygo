@@ -26,15 +26,16 @@ interface CheckInScreenProps {
   onViewInsights: () => void;
   yesterdayEntry: DayEntry | undefined;
   profile: UserProfile;
+  initialSection?: string;
 }
 
 export const CheckInScreen = ({
   submitted, hasToday, todayScore, wearable, setWearable, setWearableRaw,
   nutrition, setNutrition, mood, setMood,
   todayActivities, setTodayActivities, note, setNote,
-  onSubmit, onViewInsights, yesterdayEntry, profile,
+  onSubmit, onViewInsights, yesterdayEntry, profile, initialSection,
 }: CheckInScreenProps) => {
-  const [section, setSection] = useState("nutrition");
+  const [section, setSection] = useState(initialSection || "nutrition");
   const [showAddActivity, setShowAddActivity] = useState(false);
   const [showSentiment, setShowSentiment] = useState(false);
   const sections = ["nutrition", "activities"];

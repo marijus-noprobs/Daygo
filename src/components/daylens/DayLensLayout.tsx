@@ -28,6 +28,7 @@ const DayLensApp = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [quickAddSection, setQuickAddSection] = useState<string>("nutrition");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
     const todayKey = new Date().toISOString().split("T")[0];
@@ -177,11 +178,11 @@ const DayLensApp = () => {
             <h3 className="font-display text-base font-extrabold text-foreground mb-4">Log</h3>
             <div className="space-y-1">
               {[
-                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack" },
-                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement" },
-                { icon: Users, label: "Social", desc: "Log social interaction" },
+                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", section: "nutrition" },
+                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", section: "activities" },
+                { icon: Users, label: "Social", desc: "Log social interaction", section: "activities" },
               ].map(item => (
-                <button key={item.label} onClick={() => { setShowQuickAdd(false); setScreen("checkin"); }}
+                <button key={item.label} onClick={() => { setShowQuickAdd(false); setQuickAddSection(item.section); setScreen("checkin"); }}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
                   style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
@@ -274,7 +275,7 @@ const HomeScreen = ({
         nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
         todayActivities={todayActivities} setTodayActivities={setTodayActivities}
         note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry} profile={profile} />
+        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} />
     );
   }
 
