@@ -13,7 +13,7 @@ interface GoalsScreenProps {
   onShowPricing: () => void;
 }
 
-const GOAL_COLORS = ["#c8e878", "#7da8ff", "#ffb43c", "#ff80c8", "#60efaa"];
+const GOAL_COLORS = ["hsl(78,68%,62%)", "rgba(255,255,255,0.7)", "rgba(255,255,255,0.4)", "hsl(0,84%,60%)", "rgba(255,255,255,0.55)"];
 
 export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onShowPricing }: GoalsScreenProps) => {
   const [showAddGoal, setShowAddGoal] = useState(false);
@@ -81,13 +81,13 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
           )}
 
           {!isPremium && (
-            <div className="glass-card-apple rounded-[22px] p-4 flex items-center justify-between cursor-pointer" style={{ borderColor: "rgba(125,168,255,0.15)" }} onClick={onShowPricing}>
+            <div className="glass-card-apple rounded-[22px] p-4 flex items-center justify-between cursor-pointer" style={{ borderColor: "rgba(255,255,255,0.08)" }} onClick={onShowPricing}>
               <div>
-                <div className="font-display text-[13px] font-bold text-dl-blue">Unlock Pro</div>
+                <div className="font-display text-[13px] font-bold text-primary">Unlock Pro</div>
                 <div className="text-[11px] text-white/[0.28] mt-0.5">AI insights, advanced trends & more</div>
               </div>
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(125,168,255,0.1)", border: "1px solid rgba(125,168,255,0.18)" }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7da8ff" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-muted-foreground"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </div>
             </div>
           )}
