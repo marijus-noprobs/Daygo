@@ -409,20 +409,7 @@ const HomeScreen = ({
       </div>
 
       {/* ── AI COACH ENTRY ──────────────────────────────── */}
-      <div className="fade-up d1 flex flex-col items-center gap-3">
-        <div className="relative w-[72px] h-[72px]">
-          {/* Warm glow blob */}
-          <div className="absolute inset-0 rounded-[22px]" style={{
-            background: 'linear-gradient(135deg, #e8956b 0%, #c97a4a 25%, #1a1a2e 45%, #4a8fa8 65%, #f5e0c3 85%, #f0c8a0 100%)',
-            boxShadow: '0 0 40px 8px rgba(232,149,107,0.25), 0 0 80px 16px rgba(232,149,107,0.1)',
-            filter: 'blur(0.5px)',
-          }} />
-          {/* Inner content */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-white/90 drop-shadow-lg" />
-          </div>
-        </div>
-        {/* Input bar */}
+      <div className="fade-up d1">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -433,18 +420,26 @@ const HomeScreen = ({
             setShowCoach(true);
             input.value = '';
           }}
-          className="w-full flex items-center gap-2 rounded-2xl px-4 py-3 transition-all focus-within:ring-1 focus-within:ring-primary/30"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+          className="relative w-full rounded-2xl overflow-hidden coach-glow-bar"
         >
-          <input
-            name="coachInput"
-            type="text"
-            placeholder="Ask AI Coach..."
-            className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-muted-foreground/50 outline-none"
-          />
-          <button type="submit" className="text-muted-foreground/40 hover:text-primary transition-colors">
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          {/* Gradient border + glow */}
+          <div className="absolute inset-0 rounded-2xl" style={{
+            background: 'linear-gradient(135deg, #e8956b 0%, #c97a4a 30%, #4a8fa8 60%, #f5e0c3 90%)',
+            opacity: 0.5,
+          }} />
+          {/* Inner background */}
+          <div className="absolute inset-[1px] rounded-[15px]" style={{ background: '#111112' }} />
+          {/* Content */}
+          <div className="relative flex items-center gap-3 px-4 py-3.5">
+            <Sparkles className="w-4 h-4 flex-shrink-0" style={{ color: '#e8956b' }} />
+            <input
+              name="coachInput"
+              type="text"
+              placeholder="Ask AI Coach..."
+              className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-foreground/30 outline-none"
+            />
+            <ChevronRight className="w-4 h-4 text-foreground/20 flex-shrink-0" />
+          </div>
         </form>
       </div>
 
