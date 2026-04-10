@@ -140,6 +140,7 @@ const DayLensApp = () => {
             todayActivities={todayActivities} setTodayActivities={setTodayActivities}
             note={note} setNote={setNote} onSubmit={handleSubmit} yesterdayEntry={yesterdayEntry}
             profile={profile} isPro={isPro} onShowPricing={() => setShowPricing(true)} streak={streak}
+            quickAddSection={quickAddSection}
           />
         )}
         {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
