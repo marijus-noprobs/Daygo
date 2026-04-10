@@ -268,9 +268,9 @@
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: hsl(25, 95%, 58%);
+    background: hsl(84, 100%, 50%);
     cursor: pointer;
-    box-shadow: 0 0 8px rgba(255, 127, 50, 0.4);
+    box-shadow: 0 0 8px rgba(128, 255, 0, 0.4);
   }
 
   input[type=time] {
