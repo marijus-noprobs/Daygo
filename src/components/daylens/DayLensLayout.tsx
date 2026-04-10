@@ -80,28 +80,31 @@ const DayLensApp = () => {
     const entry = { date: today, wearable: wearable || undefined, nutrition, mood, activities: todayActivities, note };
     setEntries(p => [...p.filter(e => e.date !== today), entry]);
     setSubmitted(true);
-    setForceCheckIn(false);
     save("dl_entries", [...entries.filter(e => e.date !== today), entry]);
   };
 
-  const openQuickAdd = (section: "nutrition" | "activities") => {
+  const prepareQuickAdd = () => {
     if (todayEntry) {
       const entry = typeof structuredClone === "function"
         ? structuredClone(todayEntry)
         : JSON.parse(JSON.stringify(todayEntry));
-
       setWearable(entry.wearable ?? null);
       setNutrition(entry.nutrition);
       setMood(entry.mood);
       setTodayActivities(entry.activities ?? []);
       setNote(entry.note ?? "");
     }
+  };
 
-    setQuickAddSection(section);
-    setSubmitted(false);
+  const openQuickAddModal = (modal: "food" | "activity" | "social") => {
+    prepareQuickAdd();
     setShowQuickAdd(false);
-    setForceCheckIn(true);
-    setScreen("checkin");
+    setQuickAddModal(modal);
+  };
+
+  const handleQuickAddSave = () => {
+    handleSubmit();
+    setQuickAddModal(null);
   };
 
   const NAV = [
@@ -163,7 +166,7 @@ const DayLensApp = () => {
             todayActivities={todayActivities} setTodayActivities={setTodayActivities}
             note={note} setNote={setNote} onSubmit={handleSubmit} yesterdayEntry={yesterdayEntry}
             profile={profile} isPro={isPro} onShowPricing={() => setShowPricing(true)} streak={streak}
-            quickAddSection={quickAddSection} forceCheckIn={forceCheckIn}
+            quickAddSection={quickAddSection}
           />
         )}
         {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
@@ -183,7 +186,7 @@ const DayLensApp = () => {
           {NAV.map((item) => {
             const active = screen === item.id;
             return (
-              <button key={item.id} onClick={() => { setForceCheckIn(false); setScreen(item.id); }}
+              <button key={item.id} onClick={() => { setScreen(item.id); }}
                 className="flex flex-col items-center gap-1 px-5 py-1 transition-colors">
                 <item.icon className={`w-5 h-5 ${active ? "text-foreground" : ""}`} strokeWidth={1.8} style={active ? {} : { color: 'rgba(255,255,255,0.14)' }} />
                 <span className="text-[10px] font-bold uppercase" style={{ letterSpacing: '0.04em', color: active ? '#f2f2f3' : 'rgba(255,255,255,0.14)' }}>{item.label}</span>
