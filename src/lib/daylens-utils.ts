@@ -335,16 +335,16 @@ export const computeBadges = (entries: DayEntry[]): Badge[] => {
   const waterDays = entries.filter(e => e.nutrition.waterLiters >= 2.5).length;
 
   return [
-    { id: "first_log", emoji: "🌱", title: "First Step", description: "Log your first day", earned: totalDays >= 1 },
-    { id: "week_streak", emoji: "🔥", title: "On Fire", description: "7-day logging streak", earned: totalDays >= 7 },
-    { id: "month_streak", emoji: "💎", title: "Diamond Habit", description: "30-day logging streak", earned: totalDays >= 30 },
-    { id: "sleep_7", emoji: "😴", title: "Sleep Champion", description: "7+ hrs sleep for 7 days straight", earned: sleepStreaks.best >= 7 },
-    { id: "steps_7", emoji: "🏃", title: "Step Master", description: "8K+ steps for 7 days straight", earned: stepStreaks.best >= 7 },
-    { id: "mood_5", emoji: "😊", title: "Good Vibes", description: "Mood 4+ for 5 days straight", earned: moodStreaks.best >= 5 },
-    { id: "perfect_5", emoji: "⭐", title: "Star Performer", description: "5 days with score ≥ 4.0", earned: perfectDays >= 5 },
-    { id: "workout_10", emoji: "💪", title: "Gym Rat", description: "10 days with workouts logged", earned: workoutDays >= 10 },
-    { id: "hydrated_7", emoji: "💧", title: "Hydration Hero", description: "2.5L+ water for 7 days", earned: waterDays >= 7 },
-    { id: "perfect_10", emoji: "👑", title: "Royalty", description: "10 days with score ≥ 4.0", earned: perfectDays >= 10 },
+    { id: "first_log", emoji: "", title: "First Step", description: "Log your first day", earned: totalDays >= 1 },
+    { id: "week_streak", emoji: "", title: "On Fire", description: "7-day logging streak", earned: totalDays >= 7 },
+    { id: "month_streak", emoji: "", title: "Diamond Habit", description: "30-day logging streak", earned: totalDays >= 30 },
+    { id: "sleep_7", emoji: "", title: "Sleep Champion", description: "7+ hrs sleep for 7 days straight", earned: sleepStreaks.best >= 7 },
+    { id: "steps_7", emoji: "", title: "Step Master", description: "8K+ steps for 7 days straight", earned: stepStreaks.best >= 7 },
+    { id: "mood_5", emoji: "", title: "Good Vibes", description: "Mood 4+ for 5 days straight", earned: moodStreaks.best >= 5 },
+    { id: "perfect_5", emoji: "", title: "Star Performer", description: "5 days with score ≥ 4.0", earned: perfectDays >= 5 },
+    { id: "workout_10", emoji: "", title: "Gym Rat", description: "10 days with workouts logged", earned: workoutDays >= 10 },
+    { id: "hydrated_7", emoji: "", title: "Hydration Hero", description: "2.5L+ water for 7 days", earned: waterDays >= 7 },
+    { id: "perfect_10", emoji: "", title: "Royalty", description: "10 days with score ≥ 4.0", earned: perfectDays >= 10 },
   ];
 };
 
