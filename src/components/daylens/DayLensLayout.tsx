@@ -348,9 +348,9 @@ const HomeScreen = ({
       <div className="card-dark-gradient fade-up d1" style={{ padding: '28px 22px 24px' }}>
         {/* Score + Status */}
         <div className="flex items-center gap-5 mb-6">
-          <div className="relative flex-shrink-0" style={{ width: 120, height: 120 }}>
+          <div className="relative flex-shrink-0" style={{ width: 148, height: 148 }}>
             <ParticleRing
-              size={120}
+              size={148}
               progress={scoreNorm}
               color="#ffffff"
             />
