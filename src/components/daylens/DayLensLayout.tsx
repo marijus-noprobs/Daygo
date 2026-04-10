@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import ParticleRing from "./ParticleRing";
 import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
@@ -347,72 +348,14 @@ const HomeScreen = ({
       <div className="card-dark-gradient fade-up d1" style={{ padding: '28px 22px 24px' }}>
         {/* Score + Status */}
         <div className="flex items-center gap-5 mb-6">
-          <div className="relative flex-shrink-0" style={{ width: 100, height: 100 }}>
-            <svg width="100" height="100" className="transform -rotate-90" style={{ filter: 'drop-shadow(0 0 12px rgba(200,232,120,0.15))' }}>
-              <defs>
-                {/* Noise texture */}
-                <filter id="grunge" x="-20%" y="-20%" width="140%" height="140%">
-                  <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" seed="2" result="noise" />
-                  <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G" />
-                </filter>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-                {/* Gradient for the active arc */}
-                <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor={scoreNorm >= 0.6 ? 'hsl(78,68%,72%)' : scoreNorm >= 0.4 ? 'rgba(255,255,255,0.6)' : 'hsl(0,84%,70%)'} />
-                  <stop offset="100%" stopColor={scoreNorm >= 0.6 ? 'hsl(78,68%,52%)' : scoreNorm >= 0.4 ? 'rgba(255,255,255,0.3)' : 'hsl(0,84%,50%)'} />
-                </linearGradient>
-              </defs>
-
-              {/* Outer noise ring — subtle texture halo */}
-              <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.02)" strokeWidth="8" filter="url(#grunge)" />
-
-              {/* Track — dotted/dashed for gritty feel */}
-              <circle cx="50" cy="50" r={ringR} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="5"
-                strokeDasharray="1 3" filter="url(#grunge)" />
-
-              {/* Secondary track — solid faint */}
-              <circle cx="50" cy="50" r={ringR} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="5" />
-
-              {/* Active arc — with gradient + grunge displacement */}
-              <circle cx="50" cy="50" r={ringR} fill="none"
-                stroke="url(#scoreGrad)"
-                strokeWidth="5" strokeLinecap="round"
-                strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
-                filter="url(#grunge)"
-                style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
-
-              {/* Glow layer — same arc, blurred */}
-              <circle cx="50" cy="50" r={ringR} fill="none"
-                stroke={scoreNorm >= 0.6 ? 'hsl(78,68%,62%)' : scoreNorm >= 0.4 ? 'rgba(255,255,255,0.3)' : 'hsl(0,84%,60%)'}
-                strokeWidth="2" strokeLinecap="round"
-                strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
-                filter="url(#glow)" opacity="0.5"
-                style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
-
-              {/* Tick marks around the ring for industrial feel */}
-              {Array.from({ length: 36 }).map((_, i) => {
-                const angle = (i * 10) * Math.PI / 180;
-                const isMajor = i % 9 === 0;
-                const r1 = isMajor ? 38 : 40;
-                const r2 = 43;
-                return (
-                  <line key={i}
-                    x1={50 + r1 * Math.cos(angle)} y1={50 + r1 * Math.sin(angle)}
-                    x2={50 + r2 * Math.cos(angle)} y2={50 + r2 * Math.sin(angle)}
-                    stroke={isMajor ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)'}
-                    strokeWidth={isMajor ? 1.5 : 0.5}
-                  />
-                );
-              })}
-            </svg>
+          <div className="relative flex-shrink-0" style={{ width: 120, height: 120 }}>
+            <ParticleRing
+              size={120}
+              progress={scoreNorm}
+              color={scoreNorm >= 0.6 ? '#c8e878' : scoreNorm >= 0.4 ? '#888888' : '#e85050'}
+            />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-mono text-[28px] font-bold text-foreground" style={{ letterSpacing: '-0.05em', textShadow: '0 0 20px rgba(200,232,120,0.2)' }}>{score.toFixed(0)}</span>
+              <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em', textShadow: '0 0 24px rgba(200,232,120,0.25)' }}>{score.toFixed(0)}</span>
               <span className="text-[8px] uppercase tracking-[0.15em] text-muted-foreground font-bold mt-0.5">score</span>
             </div>
           </div>
