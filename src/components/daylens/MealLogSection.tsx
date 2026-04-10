@@ -44,7 +44,6 @@ const MealCard = ({ meal, mealIndex, onUpdate }: {
   onUpdate: (fn: (n: NutritionData) => NutritionData) => void;
 }) => {
   const [expanded, setExpanded] = useState(mealIndex === 0);
-  const emoji = MEAL_EMOJIS[meal.name] || "🍽️";
   const totalCal = meal.items.reduce((s, i) => s + i.kcal, 0);
   const totalProtein = meal.items.reduce((s, i) => s + i.proteinG, 0);
   const feedback = MOCK_AI_FEEDBACK[meal.name]?.(meal.items);
@@ -76,7 +75,9 @@ const MealCard = ({ meal, mealIndex, onUpdate }: {
       <button onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-[18px] text-left">
         <div className="flex items-center gap-3">
-          <span className="text-xl">{emoji}</span>
+          <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[11px] font-bold uppercase text-muted-foreground" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            {meal.name.slice(0, 2)}
+          </div>
           <div>
             <div className="font-display text-[14px] font-extrabold text-foreground">{meal.name}</div>
             {meal.items.length > 0 && (
