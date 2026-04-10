@@ -253,16 +253,15 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end justify-center fade-in" onClick={onClose}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 fade-in" onClick={onClose}
       style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
       <div
         className="w-full max-w-md flex flex-col scale-in"
         style={{
           maxHeight: "65vh",
           background: "#111112",
-          borderRadius: "26px 26px 0 0",
+          borderRadius: "26px",
           border: "1px solid rgba(255,255,255,0.06)",
-          borderBottom: "none",
         }}
         onClick={e => e.stopPropagation()}
       >
