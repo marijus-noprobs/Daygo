@@ -206,7 +206,6 @@ const HomeScreen = ({
 }: any) => {
   const latestEntry = recent[0];
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
-  const sleepScore = latestEntry?.wearable?.sleep?.score || 82;
   const sleepTotal = latestEntry?.wearable?.sleep?.totalHours || 7.5;
   const avgMood = recent.length > 0 ? avg(recent.slice(0, 7).map((e: DayEntry) => e.mood.overallMood)) : 3.5;
   const moodTrend = recent.length >= 7
@@ -218,8 +217,23 @@ const HomeScreen = ({
   const topPositive = activityCorrelations.filter((c: any) => c.diff > 0)[0];
   const topNegative = activityCorrelations.filter((c: any) => c.diff < 0)[0];
 
-  const moodEmojis = ["", "😔", "😐", "🙂", "😄", "🤩"];
-  const moodLabel = moodEmojis[Math.round(avgMood)] || "🙂";
+  // Dot matrix — last 3 months
+  const dotMatrix = useMemo(() => {
+    const months: { label: string; dots: boolean[] }[] = [];
+    const now = new Date();
+    for (let m = 2; m >= 0; m--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
+      const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      const label = d.toLocaleString("default", { month: "short" });
+      const dots: boolean[] = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        dots.push(entries.some((e: DayEntry) => e.date === dateStr));
+      }
+      months.push({ label, dots });
+    }
+    return months;
+  }, [entries]);
 
   if (!submitted && !hasToday) {
     return (
@@ -233,137 +247,163 @@ const HomeScreen = ({
   }
 
   const scoreNorm = Math.min(score, 10) / 10;
-  const ringR = 44;
+  const ringR = 22;
   const ringCirc = 2 * Math.PI * ringR;
 
   return (
-    <div className="space-y-[14px] fade-up">
-      {/* Greeting + Wellness Score Hero */}
-      <div className="card-dark fade-up d1" style={{ padding: '20px 18px' }}>
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <div className="text-[13px] text-muted-foreground font-medium">{getGreeting()}, {profile?.name || "there"}</div>
-            <div className="font-display text-[18px] font-extrabold text-foreground tracking-tight mt-0.5">
-              {scoreLabel(score / 2)} day so far
+    <div className="space-y-[10px] fade-up">
+      {/* Top 2-col grid */}
+      <div className="grid grid-cols-2 gap-[10px] fade-up d1">
+        {/* Score card */}
+        <div className="card-dark" style={{ padding: 14 }}>
+          <div className="flex justify-between items-start mb-4">
+            <div className="relative" style={{ width: 52, height: 52 }}>
+              <svg width="52" height="52" className="transform -rotate-90">
+                <circle cx="26" cy="26" r={ringR} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+                <circle cx="26" cy="26" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
+                  style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-display text-[14px] font-extrabold text-foreground">{score.toFixed(0)}</span>
+              </div>
             </div>
+            <SlidersHorizontal size={13} style={{ color: 'rgba(255,255,255,0.14)' }} />
           </div>
-          {streak > 1 && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(212,255,94,0.08)', border: '1px solid rgba(212,255,94,0.15)' }}>
-              <span className="text-[13px]">🔥</span>
-              <span className="text-[11px] font-bold" style={{ color: '#D4FF5E' }}>{streak} days</span>
-            </div>
-          )}
+          <div className="font-display text-[15px] font-bold text-foreground">{scoreLabel(score / 2)}</div>
+          <div className="label-ref mt-0.5">Wellness score</div>
         </div>
-        <div className="flex items-center gap-6">
-          <div className="relative flex-shrink-0" style={{ width: 96, height: 96 }}>
-            <svg width="96" height="96" className="transform -rotate-90">
-              <circle cx="48" cy="48" r={ringR} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="5" />
-              <circle cx="48" cy="48" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="5" strokeLinecap="round"
-                strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
-                style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display text-[26px] font-extrabold text-foreground leading-none">{score.toFixed(0)}</span>
-              <span className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider mt-0.5">Score</span>
-            </div>
+
+        {/* Sleep card */}
+        <div className="card-dark" style={{ padding: 14 }}>
+          <div className="flex justify-end mb-2">
+            <SlidersHorizontal size={13} style={{ color: 'rgba(255,255,255,0.14)' }} />
           </div>
-          <div className="flex-1 grid grid-cols-2 gap-2.5">
-            <MiniStat emoji="😴" label="Sleep" value={`${sleepTotal.toFixed(1)}h`} sub={`${sleepScore}% quality`} />
-            <MiniStat emoji={moodLabel} label="Mood" value={avgMood.toFixed(1)} sub={moodTrend > 0.2 ? "↑ improving" : moodTrend < -0.2 ? "↓ declining" : "→ steady"} />
+          <div className="big-num text-foreground" style={{ fontSize: 30 }}>{sleepTotal.toFixed(1)}<span className="unit-text">hrs</span></div>
+          <div style={{ marginTop: 6 }}>
+            <div className="text-[14px] font-bold text-foreground">Sleep</div>
+            <div className="label-ref">Last night</div>
           </div>
         </div>
       </div>
 
-      {/* Today's Suggestions — the core value */}
-      {suggestions.length > 0 && (
-        <div className="fade-up d2">
-          <div className="flex items-center gap-2 mb-3 px-1">
-            <Sparkles size={13} className="text-primary" />
-            <span className="font-display text-[13px] font-extrabold text-foreground uppercase tracking-wider">Today's Insights</span>
-          </div>
-          <div className="space-y-[10px]">
-            {suggestions.slice(0, 3).map((s, i) => (
-              <div key={s.id} className="card-dark fade-up" style={{ padding: '14px 16px', animationDelay: `${i * 60}ms` }}>
-                <div className="flex gap-3">
-                  <div className="w-9 h-9 rounded-[12px] flex items-center justify-center flex-shrink-0"
-                    style={{
-                      background: s.priority === 'high' ? 'rgba(255,128,200,0.1)' : s.priority === 'medium' ? 'rgba(125,168,255,0.1)' : 'rgba(200,232,120,0.1)',
-                      border: `1px solid ${s.priority === 'high' ? 'rgba(255,128,200,0.15)' : s.priority === 'medium' ? 'rgba(125,168,255,0.15)' : 'rgba(200,232,120,0.15)'}`,
-                    }}>
-                    <span className="text-[15px]">{s.icon}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-bold text-foreground">{s.title}</div>
-                    <div className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">{s.description}</div>
-                  </div>
-                </div>
+      {/* Dot matrix — consistency tracker */}
+      <div className="card-dark fade-up d2" style={{ padding: '16px 18px' }}>
+        <div className="flex justify-between">
+          {dotMatrix.map(month => (
+            <div key={month.label} className="flex-1">
+              <div className="label-ref text-center mb-2" style={{ fontSize: 10 }}>{month.label}</div>
+              <div className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
+                {month.dots.map((filled, i) => (
+                  <div key={i} className="aspect-square rounded-full" style={{
+                    background: filled ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.06)',
+                    width: '100%',
+                  }} />
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      )}
+        {streak > 1 && (
+          <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+            <span className="font-mono text-[13px] font-bold text-foreground">{streak}</span>
+            <span className="label-ref">day streak</span>
+          </div>
+        )}
+      </div>
 
-      {/* Perfect Day Blueprint Preview */}
+      {/* Perfect Day Blueprint */}
       {(topPositive || topNegative) && (
         <div className="card-dark fade-up d3" style={{ padding: '16px 18px' }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Sun size={14} className="text-primary" />
-            <span className="font-display text-[13px] font-extrabold text-foreground">Your Perfect Day</span>
+          <div className="flex items-center justify-between mb-3">
+            <span className="label-ref">Your perfect day</span>
+            <SlidersHorizontal size={13} style={{ color: 'rgba(255,255,255,0.14)' }} />
           </div>
-          <p className="text-[11px] text-muted-foreground mb-3">Based on your best scoring days</p>
           {topPositive && (
-            <div className="flex items-center gap-3 p-3 rounded-[14px] mb-2" style={{ background: 'rgba(212,255,94,0.06)', border: '1px solid rgba(212,255,94,0.1)' }}>
-              <span className="text-[18px]">{topPositive.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <div className="text-[12px] font-bold" style={{ color: '#D4FF5E' }}>Do more: {topPositive.label}</div>
-                <div className="text-[10px] text-muted-foreground">+{topPositive.diff.toFixed(1)} score impact · avg {formatDuration(topPositive.avgDuration)}</div>
+            <div className="flex items-center justify-between py-3" style={{ borderBottom: topNegative ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+              <div>
+                <div className="text-[14px] font-bold text-foreground">More {topPositive.label.toLowerCase()}</div>
+                <div className="label-ref mt-0.5">avg {formatDuration(topPositive.avgDuration)}</div>
               </div>
-              <ArrowUp size={14} style={{ color: '#D4FF5E' }} />
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-[13px] font-bold" style={{ color: 'hsl(var(--color-lime))' }}>+{topPositive.diff.toFixed(1)}</span>
+                <ArrowUp size={12} style={{ color: 'hsl(var(--color-lime))' }} />
+              </div>
             </div>
           )}
           {topNegative && (
-            <div className="flex items-center gap-3 p-3 rounded-[14px]" style={{ background: 'rgba(240,107,158,0.06)', border: '1px solid rgba(240,107,158,0.1)' }}>
-              <span className="text-[18px]">{topNegative.emoji}</span>
-              <div className="flex-1 min-w-0">
-                <div className="text-[12px] font-bold" style={{ color: '#F06B9E' }}>Watch out: {topNegative.label}</div>
-                <div className="text-[10px] text-muted-foreground">{topNegative.diff.toFixed(1)} score impact · esp. late evening</div>
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <div className="text-[14px] font-bold text-foreground">Less {topNegative.label.toLowerCase()}</div>
+                <div className="label-ref mt-0.5">esp. late evening</div>
               </div>
-              <ArrowDown size={14} style={{ color: '#F06B9E' }} />
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-[13px] font-bold" style={{ color: 'hsl(var(--color-red))' }}>{topNegative.diff.toFixed(1)}</span>
+                <ArrowDown size={12} style={{ color: 'hsl(var(--color-red))' }} />
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {/* Mood Trend Card */}
-      <div className="card-dark fade-up d4" style={{ padding: '14px 18px' }}>
-        <div className="flex items-center justify-between mb-3">
-          <span className="font-display text-[13px] font-extrabold text-foreground">Mood This Week</span>
-          <span className="text-[11px] font-semibold" style={{ color: 'hsl(var(--primary))' }}>Details →</span>
+      {/* Suggestions */}
+      {suggestions.length > 0 && (
+        <div className="card-dark fade-up d4" style={{ padding: '16px 18px' }}>
+          <div className="flex items-center justify-between mb-2">
+            <span className="label-ref">Insights</span>
+          </div>
+          {suggestions.slice(0, 3).map((s, i, arr) => (
+            <div key={s.id} className="flex items-start gap-3 py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+              <div className="w-[3px] rounded-full flex-shrink-0 mt-0.5" style={{
+                height: 14,
+                background: s.priority === 'high' ? 'hsl(var(--color-pink))' : s.priority === 'medium' ? 'hsl(var(--color-blue))' : 'hsl(var(--color-lime))',
+              }} />
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-bold text-foreground">{s.title}</div>
+                <div className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">{s.description}</div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="flex items-end gap-[6px] h-[48px]">
+      )}
+
+      {/* Mood trend */}
+      <div className="card-dark fade-up d5" style={{ padding: '14px 18px' }}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <div className="text-[14px] font-bold text-foreground">Mood</div>
+            <div className="label-ref mt-0.5">
+              {moodTrend > 0.2 ? "Improving" : moodTrend < -0.2 ? "Declining" : "Steady"} · {avgMood.toFixed(1)}/5
+            </div>
+          </div>
+          <div className="font-mono text-[22px] font-bold text-foreground" style={{ letterSpacing: '-0.04em' }}>
+            {avgMood.toFixed(1)}<span className="unit-text">/5</span>
+          </div>
+        </div>
+        <div className="flex items-end gap-[5px] h-[40px]">
           {recent.slice(0, 7).reverse().map((entry: DayEntry, i: number) => {
             const moodVal = entry.mood.overallMood;
             const barH = (moodVal / 5) * 100;
             const isToday = i === Math.min(6, recent.length - 1);
             return (
-              <div key={entry.date} className="flex-1 flex flex-col items-center gap-1">
+              <div key={entry.date} className="flex-1">
                 <div
-                  className="w-full rounded-[4px] transition-all"
+                  className="w-full rounded-[3px] transition-all"
                   style={{
                     height: `${barH}%`,
-                    background: isToday ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.08)',
-                    minHeight: 4,
+                    background: isToday ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.06)',
+                    minHeight: 3,
                   }}
                 />
               </div>
             );
           })}
         </div>
-        <div className="flex justify-between mt-2">
-          {recent.slice(0, 7).reverse().map((entry: DayEntry, i: number) => {
+        <div className="flex justify-between mt-1.5">
+          {recent.slice(0, 7).reverse().map((entry: DayEntry) => {
             const d = new Date(entry.date);
             return (
-              <span key={entry.date} className="flex-1 text-center text-[8px] text-muted-foreground font-medium">
+              <span key={entry.date} className="flex-1 text-center text-[8px] text-muted-foreground font-medium uppercase">
                 {d.toLocaleDateString("en", { weekday: "narrow" })}
               </span>
             );
@@ -374,31 +414,19 @@ const HomeScreen = ({
       {/* CTA */}
       {!hasToday ? (
         <button onClick={onGoToCheckin}
-          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d5"
+          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up"
           style={{ letterSpacing: '-0.02em' }}>
           Start Today's Check-in
         </button>
       ) : (
         <button onClick={onViewInsights}
-          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d5"
+          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up"
           style={{ letterSpacing: '-0.02em' }}>
-          View Full Insights →
+          View Insights
         </button>
       )}
     </div>
   );
 };
-
-/* ─── Mini Stat ─────────────────────────────────────────── */
-const MiniStat = ({ emoji, label, value, sub }: { emoji: string; label: string; value: string; sub: string }) => (
-  <div className="rounded-[14px] p-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}>
-    <div className="flex items-center gap-1.5 mb-1">
-      <span className="text-[12px]">{emoji}</span>
-      <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">{label}</span>
-    </div>
-    <div className="font-display text-[16px] font-extrabold text-foreground leading-none">{value}</div>
-    <div className="text-[9px] text-muted-foreground mt-1">{sub}</div>
-  </div>
-);
 
 export default DayLensApp;
