@@ -268,7 +268,6 @@ const HomeScreen = ({
                 <span className="font-display text-[14px] font-extrabold text-foreground">{score.toFixed(0)}</span>
               </div>
             </div>
-            <SlidersHorizontal size={13} style={{ color: 'rgba(255,255,255,0.14)' }} />
           </div>
           <div className="font-display text-[15px] font-bold text-foreground">{scoreLabel(score / 2)}</div>
           <div className="label-ref mt-0.5">Wellness score</div>
@@ -276,9 +275,6 @@ const HomeScreen = ({
 
         {/* Sleep card */}
         <div className="card-dark" style={{ padding: 14 }}>
-          <div className="flex justify-end mb-2">
-            <SlidersHorizontal size={13} style={{ color: 'rgba(255,255,255,0.14)' }} />
-          </div>
           <div className="big-num text-foreground" style={{ fontSize: 30 }}>{sleepTotal.toFixed(1)}<span className="unit-text">hrs</span></div>
           <div style={{ marginTop: 6 }}>
             <div className="text-[14px] font-bold text-foreground">Sleep</div>
@@ -317,7 +313,7 @@ const HomeScreen = ({
         <div className="card-dark fade-up d3" style={{ padding: '16px 18px' }}>
           <div className="flex items-center justify-between mb-3">
             <span className="label-ref">Your perfect day</span>
-            <SlidersHorizontal size={13} style={{ color: 'rgba(255,255,255,0.14)' }} />
+            
           </div>
           {topPositive && (
             <div className="flex items-center justify-between py-3" style={{ borderBottom: topNegative ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
