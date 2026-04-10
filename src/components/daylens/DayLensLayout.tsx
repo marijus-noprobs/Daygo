@@ -143,19 +143,17 @@ const DayLensApp = () => {
   return (
     <div className="max-w-md mx-auto min-h-screen relative" style={{ background: '#0e0e0f' }}>
       {/* Header */}
-      <div className="px-4 pt-14 pb-3">
+      <div className="px-4 pt-14 pb-2">
         <div className="flex justify-between items-center">
           <h1 className="font-display text-[30px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>
             {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Insights" : screen === "goals" ? "Goals" : "Profile"}
           </h1>
-          <div className="flex items-center gap-[9px]">
-            <MoodCalendar entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)}>
-              <Plus className="w-[28px] h-[28px] text-white" strokeWidth={3} />
-            </button>
-          </div>
+          <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)}>
+            <Plus className="w-[28px] h-[28px] text-white" strokeWidth={3} />
+          </button>
         </div>
       </div>
+      <WeeklyTimeline entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
 
       {/* Main content */}
       <main className="px-4 pb-28 min-h-[60vh]">
