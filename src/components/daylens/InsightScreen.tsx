@@ -150,8 +150,8 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
               <GlassCard key={c.type}>
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center text-xl flex-shrink-0 border ${c.bgClass} ${c.borderClass}`}>
-                      {c.emoji}
+                    <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center text-[11px] font-bold uppercase flex-shrink-0 border ${c.bgClass} ${c.borderClass} ${c.colorClass}`}>
+                      {c.label.slice(0, 2)}
                     </div>
                     <div>
                       <div className="text-[12px] font-semibold">{c.label}</div>

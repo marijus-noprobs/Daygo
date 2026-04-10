@@ -3,40 +3,33 @@ import { Camera, Plus, Trash2, ChevronDown, ChevronUp, Sparkles, Droplets } from
 import { AddFoodItem } from "./ActivityComponents";
 import type { NutritionData, MealData, FoodItem } from "@/lib/daylens-constants";
 
-const MEAL_EMOJIS: Record<string, string> = {
-  Breakfast: "🌅",
-  Lunch: "☀️",
-  Dinner: "🌙",
-  Snacks: "🍿",
-};
-
 const MOCK_AI_FEEDBACK: Record<string, (items: FoodItem[]) => string | null> = {
   Breakfast: (items) => {
     if (items.length === 0) return null;
     const totalProtein = items.reduce((s, i) => s + i.proteinG, 0);
-    if (totalProtein < 15) return "💡 Low protein breakfast — try adding eggs or Greek yogurt to sustain energy longer.";
-    if (totalProtein >= 25) return "💪 Great protein-rich start! This will keep you full and focused.";
-    return "👍 Solid breakfast. Good balance of nutrients.";
+    if (totalProtein < 15) return "Low protein — try adding eggs or Greek yogurt to sustain energy longer.";
+    if (totalProtein >= 25) return "Great protein-rich start. This will keep you full and focused.";
+    return "Solid breakfast. Good balance of nutrients.";
   },
   Lunch: (items) => {
     if (items.length === 0) return null;
     const totalCal = items.reduce((s, i) => s + i.kcal, 0);
-    if (totalCal > 1000) return "⚠️ Heavy lunch — you might feel sluggish this afternoon. Consider a lighter option next time.";
+    if (totalCal > 1000) return "Heavy lunch — you might feel sluggish this afternoon.";
     const hasProcessed = items.some(i => ["pizza", "burger"].some(f => i.name.toLowerCase().includes(f)));
-    if (hasProcessed) return "🤔 Processed foods can cause energy crashes. Watch how you feel in 2-3 hours.";
-    return "✅ Well-balanced lunch!";
+    if (hasProcessed) return "Processed foods can cause energy crashes. Watch how you feel in 2-3 hours.";
+    return "Well-balanced lunch.";
   },
   Dinner: (items) => {
     if (items.length === 0) return null;
     const totalCal = items.reduce((s, i) => s + i.kcal, 0);
-    if (totalCal > 800) return "🌙 Large dinner may affect sleep quality. Try eating lighter in the evening.";
-    return "✅ Good dinner portion size.";
+    if (totalCal > 800) return "Large dinner may affect sleep quality. Try eating lighter in the evening.";
+    return "Good dinner portion size.";
   },
   Snacks: (items) => {
     if (items.length === 0) return null;
     const totalCal = items.reduce((s, i) => s + i.kcal, 0);
-    if (totalCal > 500) return "⚠️ Snacks adding up — that's a lot of extra calories. Try swapping for lower-cal options.";
-    return "👌 Reasonable snacking.";
+    if (totalCal > 500) return "Snacks adding up — consider swapping for lower-cal options.";
+    return "Reasonable snacking.";
   },
 };
 
@@ -51,7 +44,6 @@ const MealCard = ({ meal, mealIndex, onUpdate }: {
   onUpdate: (fn: (n: NutritionData) => NutritionData) => void;
 }) => {
   const [expanded, setExpanded] = useState(mealIndex === 0);
-  const emoji = MEAL_EMOJIS[meal.name] || "🍽️";
   const totalCal = meal.items.reduce((s, i) => s + i.kcal, 0);
   const totalProtein = meal.items.reduce((s, i) => s + i.proteinG, 0);
   const feedback = MOCK_AI_FEEDBACK[meal.name]?.(meal.items);
@@ -83,7 +75,9 @@ const MealCard = ({ meal, mealIndex, onUpdate }: {
       <button onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between p-[18px] text-left">
         <div className="flex items-center gap-3">
-          <span className="text-xl">{emoji}</span>
+          <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[11px] font-bold uppercase text-muted-foreground" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            {meal.name.slice(0, 2)}
+          </div>
           <div>
             <div className="font-display text-[14px] font-extrabold text-foreground">{meal.name}</div>
             {meal.items.length > 0 && (

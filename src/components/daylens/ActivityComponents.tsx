@@ -14,7 +14,9 @@ export const ActivityCard = ({ activity, onUpdate, onRemove }: {
     <div className={`rounded-2xl p-4 mb-3 border ${at.bgClass} ${at.borderClass}`}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5">
-          <span className="text-xl">{at.emoji}</span>
+          <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center text-[11px] font-bold uppercase ${at.bgClass} ${at.colorClass}`} style={{ border: '1px solid currentColor', opacity: 0.8 }}>
+            {at.label.slice(0, 2)}
+          </div>
           <div>
             <span className={`text-sm font-semibold ${at.colorClass}`}>{at.label}</span>
             <div className="flex items-center gap-2 mt-0.5">
@@ -51,8 +53,8 @@ export const ActivityTypePicker = ({ onSelect }: { onSelect: (type: string) => v
   <div className="grid grid-cols-5 gap-2 mb-4">
     {ACTIVITY_TYPES.map(at => (
       <button key={at.key} onClick={() => onSelect(at.key)}
-        className={`flex flex-col items-center gap-1 p-2.5 rounded-2xl border transition-all hover:scale-105 active:scale-95 ${at.bgClass} ${at.borderClass}`}>
-        <span className="text-xl">{at.emoji}</span>
+        className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border transition-all hover:scale-105 active:scale-95 ${at.bgClass} ${at.borderClass}`}>
+        <div className={`text-[11px] font-bold uppercase ${at.colorClass}`}>{at.label.slice(0, 2)}</div>
         <span className={`text-[10px] font-medium ${at.colorClass}`}>{at.label.split("/")[0]}</span>
       </button>
     ))}
