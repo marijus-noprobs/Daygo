@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
@@ -27,6 +27,7 @@ const DayLensApp = () => {
   const [note, setNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
     const todayKey = new Date().toISOString().split("T")[0];
@@ -120,7 +121,7 @@ const DayLensApp = () => {
           </h1>
           <div className="flex items-center gap-[9px]">
             <MoodCalendar entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <button className="w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: '#1f1f21', color: 'rgba(255,255,255,0.36)' }} onClick={() => !hasToday && setScreen("checkin")}>
+            <button className="w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: '#1f1f21', color: 'rgba(255,255,255,0.36)' }} onClick={() => setShowQuickAdd(true)}>
               <Plus className="w-[18px] h-[18px]" />
             </button>
           </div>
@@ -166,6 +167,30 @@ const DayLensApp = () => {
           })}
         </nav>
       </div>
+
+      {/* Quick Add Sheet */}
+      <BottomSheet open={showQuickAdd} onClose={() => setShowQuickAdd(false)} title="Log">
+        <div className="space-y-1 -mt-1">
+          {[
+            { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack" },
+            { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement" },
+            { icon: Users, label: "Social", desc: "Log social interaction" },
+          ].map(item => (
+            <button key={item.label} onClick={() => { setShowQuickAdd(false); setScreen("checkin"); }}
+              className="w-full flex items-center gap-4 px-2 py-4 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                <item.icon className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
+              </div>
+              <div className="text-left">
+                <div className="text-[14px] font-bold text-foreground">{item.label}</div>
+                <div className="text-[11px] text-muted-foreground">{item.desc}</div>
+              </div>
+              <ChevronRight className="ml-auto w-4 h-4 text-muted-foreground" />
+            </button>
+          ))}
+        </div>
+      </BottomSheet>
 
       {/* Pricing Sheet */}
       <BottomSheet open={showPricing} onClose={() => setShowPricing(false)} title="Unlock DayLens">
