@@ -19,10 +19,11 @@ export const ActivityCard = ({ activity, onUpdate, onRemove }: {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5">
           <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center text-[11px] font-bold uppercase ${at.bgClass} ${at.colorClass}`} style={{ border: '1px solid currentColor', opacity: 0.8 }}>
-            {at.label.slice(0, 2)}
+            {displayLabel.slice(0, 2)}
           </div>
           <div>
-            <span className={`text-sm font-semibold ${at.colorClass}`}>{at.label}</span>
+            <span className={`text-sm font-semibold ${at.colorClass}`}>{displayLabel}</span>
+            {subLabel && <span className="text-[10px] text-muted-foreground ml-1.5">({at.label})</span>}
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-xs text-muted-foreground">{activity.startTime} – {activity.endTime}</span>
               <span className="text-xs text-muted-foreground/50">·</span>
