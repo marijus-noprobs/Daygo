@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Home, TrendingUp, ClipboardList, Heart, User, Zap, SlidersHorizontal, Plus, ChevronRight } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Zap, SlidersHorizontal, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
@@ -10,7 +10,7 @@ import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
 import { HealthMetricsScreen } from "./HealthMetricsScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
-import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions } from "@/lib/daylens-utils";
+import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions, scoreLabel, computeActivityCorrelations, avg, formatDuration } from "@/lib/daylens-utils";
 import { ACTIVITY_LEVEL_LABELS } from "@/lib/daylens-constants";
 
 const DayLensApp = () => {
@@ -205,34 +205,21 @@ const HomeScreen = ({
   onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak,
 }: any) => {
   const latestEntry = recent[0];
-  const steps = latestEntry?.wearable?.activity?.steps || 12482;
-  const kcal = latestEntry?.wearable?.activity?.activeKcal || 482;
-  const hrv = latestEntry?.wearable?.body?.hrv || 72;
-  const restingHR = latestEntry?.wearable?.body?.restingHR || 62;
+  const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
   const sleepScore = latestEntry?.wearable?.sleep?.score || 82;
   const sleepTotal = latestEntry?.wearable?.sleep?.totalHours || 7.5;
-  const deepSleep = latestEntry?.wearable?.sleep?.deepHours || 1.75;
-  const remSleep = latestEntry?.wearable?.sleep?.remHours || 1.5;
-  const bodyWeight = profile?.weightKg || 75;
-  const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
+  const avgMood = recent.length > 0 ? avg(recent.slice(0, 7).map((e: DayEntry) => e.mood.overallMood)) : 3.5;
+  const moodTrend = recent.length >= 7
+    ? avg(recent.slice(0, 3).map((e: DayEntry) => e.mood.overallMood)) - avg(recent.slice(3, 7).map((e: DayEntry) => e.mood.overallMood))
+    : 0;
 
-  // Generate dot matrix for last 3 months (must be before any early returns)
-  const dotMatrix = useMemo(() => {
-    const months: { label: string; dots: boolean[] }[] = [];
-    const now = new Date();
-    for (let m = 2; m >= 0; m--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
-      const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-      const label = d.toLocaleString("default", { month: "short" });
-      const dots: boolean[] = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        dots.push(entries.some((e: DayEntry) => e.date === dateStr));
-      }
-      months.push({ label, dots });
-    }
-    return months;
-  }, [entries]);
+  const suggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
+  const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
+  const topPositive = activityCorrelations.filter((c: any) => c.diff > 0)[0];
+  const topNegative = activityCorrelations.filter((c: any) => c.diff < 0)[0];
+
+  const moodEmojis = ["", "😔", "😐", "🙂", "😄", "🤩"];
+  const moodLabel = moodEmojis[Math.round(avgMood)] || "🙂";
 
   if (!submitted && !hasToday) {
     return (
@@ -245,94 +232,143 @@ const HomeScreen = ({
     );
   }
 
-  const goalPct = Math.min(100, Math.round((steps / 15000) * 100));
   const scoreNorm = Math.min(score, 10) / 10;
-  const ringR = 28;
+  const ringR = 44;
   const ringCirc = 2 * Math.PI * ringR;
 
-
   return (
-    <div className="space-y-[10px] fade-up">
-      {/* Top 2-col grid */}
-      <div className="grid grid-cols-2 gap-[10px] fade-up d1">
-        {/* Score + steps card */}
-        <div className="card-dark" style={{ padding: 14 }}>
-          <div className="flex justify-between items-start mb-[18px]">
-            <div className="relative" style={{ width: 56, height: 56 }}>
-              <svg width="56" height="56" className="transform -rotate-90">
-                <circle cx="28" cy="28" r={ringR} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3.5" />
-                <circle cx="28" cy="28" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="3.5" strokeLinecap="round"
-                  strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
-                  style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-display text-[15px] font-extrabold text-foreground">{score.toFixed(0)}</span>
-              </div>
-            </div>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.14)' }}>⊞</span>
-          </div>
-          <div className="big-num text-foreground">{steps >= 1000 ? `${(steps/1000).toFixed(1)}k` : steps}</div>
-          <div className="label-ref mt-1.5">Steps today</div>
-        </div>
-
-        {/* Body weight / sleep card */}
-        <div className="card-dark" style={{ padding: 14 }}>
-          <div className="flex justify-end mb-2">
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.14)' }}>⊞</span>
-          </div>
-          <div className="big-num text-foreground">{sleepScore}<span className="unit-text">%</span></div>
-          <div style={{ marginTop: 6 }}>
-            <div className="text-[14px] font-bold text-foreground">Sleep quality</div>
-            <div className="label-ref">{sleepTotal.toFixed(1)}h total</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent check-ins list */}
-      <div className="card-dark fade-up d2" style={{ padding: '14px 16px' }}>
-        <div className="flex justify-between items-center mb-2">
-          <span className="label-ref">Recent Sessions</span>
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'hsl(var(--primary))' }}>See all</span>
-        </div>
-        {recent.slice(0, 3).map((entry: DayEntry, i: number) => {
-          const entryScore = computeDayScore(entry);
-          const d = new Date(entry.date);
-          const label = i === 0 ? "Today" : i === 1 ? "Yesterday" : d.toLocaleDateString("en", { month: "short", day: "numeric" });
-          return (
-            <div key={entry.date} className="flex items-center justify-between" style={{ padding: '13px 0', borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ border: '2px solid rgba(255,255,255,0.15)' }}>
-                  <span className="font-display text-[13px] font-extrabold text-foreground">{entryScore.toFixed(0)}</span>
-                </div>
-                <div>
-                  <div className="text-[15px] font-bold text-foreground">{label}</div>
-                  <div className="label-ref">{entry.wearable?.activity?.steps || 0} steps</div>
-                </div>
-              </div>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.14)' }}>⊞</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Stats row */}
-      <div className="card-dark fade-up d3" style={{ padding: '14px 16px' }}>
-        <div className="flex justify-between items-center">
+    <div className="space-y-[14px] fade-up">
+      {/* Greeting + Wellness Score Hero */}
+      <div className="card-dark fade-up d1" style={{ padding: '20px 18px' }}>
+        <div className="flex items-center justify-between mb-5">
           <div>
-            <div className="text-[14px] font-bold text-foreground">Active calories</div>
-            <div className="label-ref">Today</div>
+            <div className="text-[13px] text-muted-foreground font-medium">{getGreeting()}, {profile?.name || "there"}</div>
+            <div className="font-display text-[18px] font-extrabold text-foreground tracking-tight mt-0.5">
+              {scoreLabel(score / 2)} day so far
+            </div>
           </div>
-          <div className="flex items-baseline gap-1">
-            <span className="font-display text-[28px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>{kcal}</span>
-            <span className="unit-text">kcal</span>
+          {streak > 1 && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(212,255,94,0.08)', border: '1px solid rgba(212,255,94,0.15)' }}>
+              <span className="text-[13px]">🔥</span>
+              <span className="text-[11px] font-bold" style={{ color: '#D4FF5E' }}>{streak} days</span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-6">
+          <div className="relative flex-shrink-0" style={{ width: 96, height: 96 }}>
+            <svg width="96" height="96" className="transform -rotate-90">
+              <circle cx="48" cy="48" r={ringR} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="5" />
+              <circle cx="48" cy="48" r={ringR} fill="none" stroke="hsl(var(--primary))" strokeWidth="5" strokeLinecap="round"
+                strokeDasharray={`${scoreNorm * ringCirc} ${ringCirc}`}
+                style={{ transition: "stroke-dasharray .7s cubic-bezier(.4,0,.2,1)" }} />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="font-display text-[26px] font-extrabold text-foreground leading-none">{score.toFixed(0)}</span>
+              <span className="text-[9px] text-muted-foreground font-semibold uppercase tracking-wider mt-0.5">Score</span>
+            </div>
+          </div>
+          <div className="flex-1 grid grid-cols-2 gap-2.5">
+            <MiniStat emoji="😴" label="Sleep" value={`${sleepTotal.toFixed(1)}h`} sub={`${sleepScore}% quality`} />
+            <MiniStat emoji={moodLabel} label="Mood" value={avgMood.toFixed(1)} sub={moodTrend > 0.2 ? "↑ improving" : moodTrend < -0.2 ? "↓ declining" : "→ steady"} />
           </div>
         </div>
       </div>
 
-      {/* Bento grid — HR, HRV, Sleep, Battery */}
-      <div className="grid grid-cols-2 gap-[10px] fade-up d4">
-        <MetricCard label="Resting HR" value={String(restingHR)} unit="bpm" accentVar="--color-blue" />
-        <MetricCard label="HRV" value={String(hrv)} unit="ms" accentVar="--color-lime" />
+      {/* Today's Suggestions — the core value */}
+      {suggestions.length > 0 && (
+        <div className="fade-up d2">
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <Sparkles size={13} className="text-primary" />
+            <span className="font-display text-[13px] font-extrabold text-foreground uppercase tracking-wider">Today's Insights</span>
+          </div>
+          <div className="space-y-[10px]">
+            {suggestions.slice(0, 3).map((s, i) => (
+              <div key={s.id} className="card-dark fade-up" style={{ padding: '14px 16px', animationDelay: `${i * 60}ms` }}>
+                <div className="flex gap-3">
+                  <div className="w-9 h-9 rounded-[12px] flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: s.priority === 'high' ? 'rgba(255,128,200,0.1)' : s.priority === 'medium' ? 'rgba(125,168,255,0.1)' : 'rgba(200,232,120,0.1)',
+                      border: `1px solid ${s.priority === 'high' ? 'rgba(255,128,200,0.15)' : s.priority === 'medium' ? 'rgba(125,168,255,0.15)' : 'rgba(200,232,120,0.15)'}`,
+                    }}>
+                    <span className="text-[15px]">{s.icon}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-bold text-foreground">{s.title}</div>
+                    <div className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">{s.description}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Perfect Day Blueprint Preview */}
+      {(topPositive || topNegative) && (
+        <div className="card-dark fade-up d3" style={{ padding: '16px 18px' }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Sun size={14} className="text-primary" />
+            <span className="font-display text-[13px] font-extrabold text-foreground">Your Perfect Day</span>
+          </div>
+          <p className="text-[11px] text-muted-foreground mb-3">Based on your best scoring days</p>
+          {topPositive && (
+            <div className="flex items-center gap-3 p-3 rounded-[14px] mb-2" style={{ background: 'rgba(212,255,94,0.06)', border: '1px solid rgba(212,255,94,0.1)' }}>
+              <span className="text-[18px]">{topPositive.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-bold" style={{ color: '#D4FF5E' }}>Do more: {topPositive.label}</div>
+                <div className="text-[10px] text-muted-foreground">+{topPositive.diff.toFixed(1)} score impact · avg {formatDuration(topPositive.avgDuration)}</div>
+              </div>
+              <ArrowUp size={14} style={{ color: '#D4FF5E' }} />
+            </div>
+          )}
+          {topNegative && (
+            <div className="flex items-center gap-3 p-3 rounded-[14px]" style={{ background: 'rgba(240,107,158,0.06)', border: '1px solid rgba(240,107,158,0.1)' }}>
+              <span className="text-[18px]">{topNegative.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-bold" style={{ color: '#F06B9E' }}>Watch out: {topNegative.label}</div>
+                <div className="text-[10px] text-muted-foreground">{topNegative.diff.toFixed(1)} score impact · esp. late evening</div>
+              </div>
+              <ArrowDown size={14} style={{ color: '#F06B9E' }} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Mood Trend Card */}
+      <div className="card-dark fade-up d4" style={{ padding: '14px 18px' }}>
+        <div className="flex items-center justify-between mb-3">
+          <span className="font-display text-[13px] font-extrabold text-foreground">Mood This Week</span>
+          <span className="text-[11px] font-semibold" style={{ color: 'hsl(var(--primary))' }}>Details →</span>
+        </div>
+        <div className="flex items-end gap-[6px] h-[48px]">
+          {recent.slice(0, 7).reverse().map((entry: DayEntry, i: number) => {
+            const moodVal = entry.mood.overallMood;
+            const barH = (moodVal / 5) * 100;
+            const isToday = i === Math.min(6, recent.length - 1);
+            return (
+              <div key={entry.date} className="flex-1 flex flex-col items-center gap-1">
+                <div
+                  className="w-full rounded-[4px] transition-all"
+                  style={{
+                    height: `${barH}%`,
+                    background: isToday ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.08)',
+                    minHeight: 4,
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex justify-between mt-2">
+          {recent.slice(0, 7).reverse().map((entry: DayEntry, i: number) => {
+            const d = new Date(entry.date);
+            return (
+              <span key={entry.date} className="flex-1 text-center text-[8px] text-muted-foreground font-medium">
+                {d.toLocaleDateString("en", { weekday: "narrow" })}
+              </span>
+            );
+          })}
+        </div>
       </div>
 
       {/* CTA */}
@@ -340,28 +376,28 @@ const HomeScreen = ({
         <button onClick={onGoToCheckin}
           className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d5"
           style={{ letterSpacing: '-0.02em' }}>
-          Start a New Check-in
+          Start Today's Check-in
         </button>
       ) : (
         <button onClick={onViewInsights}
           className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d5"
           style={{ letterSpacing: '-0.02em' }}>
-          View Insights
+          View Full Insights →
         </button>
       )}
     </div>
   );
 };
 
-/* ─── Metric Card ───────────────────────────────────────── */
-const MetricCard = ({ label, value, unit, accentVar }: {
-  label: string; value: string; unit: string; accentVar: string;
-}) => (
-  <div className="card-sm">
-    <div className="label-ref mb-1.5">{label}</div>
-    <div className="med-num" style={{ color: `hsl(var(${accentVar}))` }}>
-      {value}<span className="unit-text">{unit}</span>
+/* ─── Mini Stat ─────────────────────────────────────────── */
+const MiniStat = ({ emoji, label, value, sub }: { emoji: string; label: string; value: string; sub: string }) => (
+  <div className="rounded-[14px] p-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.04)' }}>
+    <div className="flex items-center gap-1.5 mb-1">
+      <span className="text-[12px]">{emoji}</span>
+      <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">{label}</span>
     </div>
+    <div className="font-display text-[16px] font-extrabold text-foreground leading-none">{value}</div>
+    <div className="text-[9px] text-muted-foreground mt-1">{sub}</div>
   </div>
 );
 
