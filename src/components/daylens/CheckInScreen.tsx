@@ -1,13 +1,8 @@
 import { useState } from "react";
-import { Moon, Star, Zap, Activity as ActivityIcon, Heart, Wind, BatteryCharging, Footprints, Flame, CheckCircle, Plus, Trash2, Calendar, X, UtensilsCrossed, ChevronLeft } from "lucide-react";
-import { GlassCard, SectionHeader, ScoreRing, StatTile, ListInput, MoodRow, BottomSheet } from "./DayLensUI";
-import { ActivityCard, ActivityTypePicker, AddFoodItem } from "./ActivityComponents";
+import { ScoreRing } from "./DayLensUI";
+import { MealLogSection } from "./MealLogSection";
 import type { WearableData, NutritionData, MoodData, Activity, DayEntry, UserProfile } from "@/lib/daylens-constants";
-import { ACTIVITY_TYPES } from "@/lib/daylens-constants";
-import {
-  simulateWearable, durationHours, formatDuration, isLateNight,
-  computeDayScore, scoreGradient, newActivityBlank, calcCalorieRecommendation,
-} from "@/lib/daylens-utils";
+import { scoreGradient } from "@/lib/daylens-utils";
 
 interface CheckInScreenProps {
   submitted: boolean;
@@ -37,8 +32,6 @@ export const CheckInScreen = ({
   onSubmit, onViewInsights, yesterdayEntry, profile,
 }: CheckInScreenProps) => {
   const [section, setSection] = useState("nutrition");
-  const [syncing, setSyncing] = useState(false);
-  const [showAddActivity, setShowAddActivity] = useState(false);
 
   const sections = ["nutrition", "mood"];
   const sectionIndex = sections.indexOf(section);
@@ -59,7 +52,6 @@ export const CheckInScreen = ({
 
   return (
     <div className="space-y-4 pb-28 fade-up">
-      {/* Header */}
       <div className="font-display text-[18px] font-extrabold text-foreground tracking-tight">Daily Check-in</div>
 
       {/* Progress bar */}
@@ -83,33 +75,10 @@ export const CheckInScreen = ({
         ))}
       </div>
 
-      {/* NUTRITION */}
+      {/* NUTRITION — Meal-by-meal logging */}
       {section === "nutrition" && (
         <div className="space-y-3 slide-in">
-          <div className="card-dark rounded-[22px] p-[18px]">
-            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Nutrition</div>
-            <SliderRow label="Calories" value={nutrition.calories} min={0} max={5000} step={50} unit=" kcal"
-              onChange={v => setNutrition(n => ({ ...n, calories: v }))} />
-            <SliderRow label="Protein" value={nutrition.proteinG} min={0} max={300} step={5} unit="g"
-              onChange={v => setNutrition(n => ({ ...n, proteinG: v }))} />
-            <SliderRow label="Water" value={nutrition.waterLiters} min={0} max={5} step={0.25} unit="L"
-              onChange={v => setNutrition(n => ({ ...n, waterLiters: v }))} />
-            <SliderRow label="Alcohol" value={nutrition.alcoholUnits} min={0} max={10} step={1} unit=" units"
-              onChange={v => setNutrition(n => ({ ...n, alcoholUnits: v }))} />
-          </div>
-          <div className="card-dark rounded-[22px] p-[18px]">
-            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Meal Quality</div>
-            <div className="grid grid-cols-5 gap-[6px]">
-              {["😔","😐","🙂","😊","🥗"].map((e, i) => (
-                <button key={i} onClick={() => setNutrition(n => ({ ...n, meals: n.meals.map((m, mi) => mi === 0 ? { ...m, quality: i + 1 } : m) }))}
-                  className={`py-2.5 rounded-xl text-[17px] text-center transition-all ${
-                    nutrition.meals[0]?.quality === i + 1
-                      ? "bg-primary/[0.12] border border-primary/[0.25] scale-110"
-                      : "bg-card border border-border"
-                  }`}>{e}</button>
-              ))}
-            </div>
-          </div>
+          <MealLogSection nutrition={nutrition} setNutrition={setNutrition} />
           <button onClick={() => setSection("mood")} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Next: Mood →</button>
         </div>
       )}
