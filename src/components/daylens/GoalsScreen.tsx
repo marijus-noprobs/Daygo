@@ -100,7 +100,9 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
           <div className="grid grid-cols-2 gap-3">
             {badges.map(b => (
               <GlassCard key={b.id} className={`text-center py-5 ${!b.earned ? "opacity-40" : ""}`}>
-                <div className="text-3xl mb-2">{b.earned ? b.emoji : "🔒"}</div>
+                <div className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center text-[11px] font-bold uppercase" style={{ background: b.earned ? 'rgba(212,255,94,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${b.earned ? 'rgba(212,255,94,0.15)' : 'rgba(255,255,255,0.06)'}`, color: b.earned ? 'hsl(78,68%,62%)' : 'rgba(255,255,255,0.2)' }}>
+                  {b.earned ? b.title.slice(0, 2) : "—"}
+                </div>
                 <h4 className="text-[12px] font-semibold mb-0.5">{b.title}</h4>
                 <p className="text-[10px] text-white/[0.28] leading-snug">{b.description}</p>
               </GlassCard>

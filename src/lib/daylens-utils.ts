@@ -175,7 +175,7 @@ export const computeActivityCorrelations = (entries: DayEntry[]): ActivityCorrel
   const normalPairs = pairs.filter(p => !p.yesterday.activities.some(a => isLateNight(a.startTime)));
   if (lateNightPairs.length >= 3 && normalPairs.length >= 3) {
     results.push({
-      type: "late_night", label: "Late Night (past 10pm)", emoji: "🌙",
+      type: "late_night", label: "Late Night (past 10pm)", emoji: "",
       colorClass: "text-dl-indigo", bgClass: "bg-dl-indigo/10", borderClass: "border-dl-indigo/20",
       diff: avg(lateNightPairs.map(p => computeDayScore(p.today))) - avg(normalPairs.map(p => computeDayScore(p.today))),
       avgWith: +avg(lateNightPairs.map(p => computeDayScore(p.today))).toFixed(2),
