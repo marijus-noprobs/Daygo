@@ -5,13 +5,29 @@ export interface ActivityType {
   colorClass: string;
   bgClass: string;
   borderClass: string;
+  subcategories?: { key: string; label: string }[];
 }
+
+export const EXERCISE_SUBCATEGORIES = [
+  { key: "running",    label: "Running" },
+  { key: "cycling",    label: "Cycling" },
+  { key: "swimming",   label: "Swimming" },
+  { key: "gym",        label: "Gym" },
+  { key: "yoga",       label: "Yoga" },
+  { key: "tennis",     label: "Tennis" },
+  { key: "basketball", label: "Basketball" },
+  { key: "football",   label: "Football" },
+  { key: "hiking",     label: "Hiking" },
+  { key: "dancing",    label: "Dancing" },
+  { key: "martial_arts", label: "Martial Arts" },
+  { key: "other_exercise", label: "Other" },
+];
 
 export const ACTIVITY_TYPES: ActivityType[] = [
   { key: "gaming",     label: "Gaming",       emoji: "", colorClass: "text-foreground/60",  bgClass: "bg-white/[0.04]",  borderClass: "border-white/[0.08]" },
   { key: "work",       label: "Work",         emoji: "", colorClass: "text-foreground/60",  bgClass: "bg-white/[0.04]",  borderClass: "border-white/[0.08]" },
   { key: "social",     label: "Social",       emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20" },
-  { key: "exercise",   label: "Exercise",     emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20" },
+  { key: "exercise",   label: "Exercise",     emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20", subcategories: EXERCISE_SUBCATEGORIES },
   { key: "reading",    label: "Reading",      emoji: "", colorClass: "text-foreground/60",  bgClass: "bg-white/[0.04]",  borderClass: "border-white/[0.08]" },
   { key: "tv",         label: "TV/Streaming", emoji: "", colorClass: "text-destructive",    bgClass: "bg-destructive/10",borderClass: "border-destructive/20" },
   { key: "drinking",   label: "Drinking",     emoji: "", colorClass: "text-destructive",    bgClass: "bg-destructive/10",borderClass: "border-destructive/20" },
@@ -19,7 +35,6 @@ export const ACTIVITY_TYPES: ActivityType[] = [
   { key: "outdoor",    label: "Outdoors",     emoji: "", colorClass: "text-primary",        bgClass: "bg-primary/10",    borderClass: "border-primary/20" },
   { key: "other",      label: "Other",        emoji: "", colorClass: "text-muted-foreground", bgClass: "bg-white/[0.04]", borderClass: "border-white/[0.08]" },
 ];
-
 export interface PlanOption {
   id: string;
   label: string;
