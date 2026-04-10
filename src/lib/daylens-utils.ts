@@ -608,3 +608,92 @@ export const generateHealthSuggestions = (entries: DayEntry[], profile: UserProf
     return p[a.priority] - p[b.priority];
   });
 };
+
+// ─── DAILY COACHING ENGINE ───────────────────────────────────────────────────
+
+export interface CoachingRec {
+  category: "activity" | "sleep" | "social" | "recovery" | "nutrition";
+  label: string;
+  action: string;
+  reason: string;
+}
+
+export type ReadinessLevel = "recovering" | "balanced" | "high_performance" | "peak";
+
+export const getReadinessLevel = (score: number): { level: ReadinessLevel; label: string } => {
+  const norm = score / 10;
+  if (norm >= 0.8) return { level: "peak", label: "Peak Performance" };
+  if (norm >= 0.6) return { level: "high_performance", label: "High Performance" };
+  if (norm >= 0.4) return { level: "balanced", label: "Balanced" };
+  return { level: "recovering", label: "Recovering" };
+};
+
+export const generateDailyPlan = (entries: DayEntry[], profile: UserProfile): CoachingRec[] => {
+  const recs: CoachingRec[] = [];
+  if (entries.length < 3) {
+    recs.push(
+      { category: "activity", label: "Move today", action: "Aim for a 30-minute walk or workout", reason: "Building baseline data" },
+      { category: "sleep", label: "Wind down by 11pm", action: "Set a bedtime alarm for 10:45pm", reason: "Consistent sleep improves recovery" },
+      { category: "social", label: "Connect with someone", action: "Call or meet a friend today", reason: "Social connection boosts mood" },
+    );
+    return recs;
+  }
+
+  const recent = [...entries].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 7);
+  const yesterday = recent[0];
+  const avgSleep = avg(recent.map(e => e.wearable?.sleep?.totalHours || 7));
+  const avgSteps = avg(recent.map(e => e.wearable?.activity?.steps || 5000));
+  const avgHRV = avg(recent.map(e => e.wearable?.body?.hrv || 50));
+  const avgMoodVal = avg(recent.map(e => e.mood?.overallMood || 3));
+  const hadLateNight = yesterday?.activities?.some(a => isLateNight(a.startTime));
+  const hadExercise = yesterday?.activities?.some(a => a.type === "exercise");
+  const workoutDays = recent.filter(e => e.wearable?.activity?.workouts?.length > 0).length;
+  const avgWater = avg(recent.map(e => e.nutrition?.waterLiters || 1.5));
+
+  // Activity recommendation
+  if (avgHRV < 40 || hadLateNight) {
+    recs.push({ category: "recovery", label: "Recovery day", action: "Light stretching or yoga — skip intense exercise", reason: avgHRV < 40 ? `HRV is low (${Math.round(avgHRV)}ms)` : "Late night detected yesterday" });
+  } else if (workoutDays < 3) {
+    recs.push({ category: "activity", label: "Active day", action: "30-min moderate workout — running, cycling, or gym", reason: `Only ${workoutDays} workout days this week` });
+  } else if (hadExercise) {
+    recs.push({ category: "activity", label: "Active recovery", action: "Light walk or mobility work — let muscles recover", reason: "You exercised yesterday" });
+  } else {
+    recs.push({ category: "activity", label: "Move today", action: `Target ${Math.round(avgSteps / 1000)}K+ steps with a workout`, reason: "Maintain your momentum" });
+  }
+
+  // Sleep recommendation
+  if (avgSleep < 7) {
+    recs.push({ category: "sleep", label: "Sleep priority", action: "In bed by 10:30pm — aim for 7.5+ hours tonight", reason: `Averaging only ${avgSleep.toFixed(1)} hrs` });
+  } else if (yesterday?.wearable?.sleep?.totalHours < 6.5) {
+    recs.push({ category: "sleep", label: "Catch up tonight", action: "Go to bed 30 minutes earlier than usual", reason: `Only ${yesterday.wearable.sleep.totalHours.toFixed(1)} hrs last night` });
+  } else {
+    recs.push({ category: "sleep", label: "Maintain rhythm", action: "Keep your bedtime consistent tonight", reason: `Sleep is on track (${avgSleep.toFixed(1)} hrs avg)` });
+  }
+
+  // Social / mental
+  const recentSocial = recent.filter(e => e.activities?.some(a => a.type === "social")).length;
+  if (recentSocial < 2) {
+    recs.push({ category: "social", label: "Social connection", action: "Reach out to a friend or plan an evening out", reason: `Only ${recentSocial} social day${recentSocial === 1 ? '' : 's'} this week` });
+  } else if (avgMoodVal < 3) {
+    recs.push({ category: "social", label: "Mental wellness", action: "Journal for 5 minutes or try a breathing exercise", reason: `Mood has been low (${avgMoodVal.toFixed(1)}/5)` });
+  } else {
+    recs.push({ category: "social", label: "Stay connected", action: "Quality time with someone you care about", reason: "Social health is strong" });
+  }
+
+  // Nutrition / hydration
+  if (avgWater < 2.0) {
+    recs.push({ category: "nutrition", label: "Hydration focus", action: `Drink at least 2.5L of water today`, reason: `Averaging only ${avgWater.toFixed(1)}L/day` });
+  }
+
+  return recs;
+};
+
+export const getStreakMessage = (streak: number, bestStreak: number): string | null => {
+  if (streak === 0) return "Start your streak today";
+  if (bestStreak > streak && bestStreak - streak <= 2) return `${bestStreak - streak} day${bestStreak - streak === 1 ? '' : 's'} from your best streak`;
+  if (streak >= 30) return "Unstoppable. 30+ day streak";
+  if (streak >= 14) return "Two weeks strong";
+  if (streak >= 7) return "One week locked in";
+  if (streak >= 3) return "Building momentum";
+  return null;
+};
