@@ -79,8 +79,8 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
       });
     }
 
-    // Outer scattered halo particles
-    const haloCount = 800;
+    // Outer scattered halo particles — close scatter
+    const haloCount = 1200;
     const haloParticles: {
       angle: number;
       dist: number;
@@ -92,16 +92,44 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
 
     for (let i = 0; i < haloCount; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const dist = ringThickness + Math.random() * size * 0.12;
+      const dist = ringThickness + Math.random() * size * 0.16;
       const sign = Math.random() > 0.5 ? 1 : -1;
       
       haloParticles.push({
         angle,
         dist: dist * sign,
-        size: 0.2 + Math.random() * 0.4,
-        opacity: 0.02 + Math.random() * 0.08,
-        speed: 0.00003 + Math.random() * 0.0001,
+        size: 0.2 + Math.random() * 0.5,
+        opacity: 0.02 + Math.random() * 0.1,
+        speed: 0.00003 + Math.random() * 0.00012,
         phase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    // Far-flung stray particles that escape the ring
+    const strayCount = 500;
+    const strayParticles: {
+      angle: number;
+      dist: number;
+      size: number;
+      opacity: number;
+      speed: number;
+      phase: number;
+      driftR: number;
+    }[] = [];
+
+    for (let i = 0; i < strayCount; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = ringThickness * 1.5 + Math.random() * size * 0.25;
+      const sign = Math.random() > 0.4 ? 1 : -1; // bias outward
+      
+      strayParticles.push({
+        angle,
+        dist: dist * sign,
+        size: 0.15 + Math.random() * 0.4,
+        opacity: 0.01 + Math.random() * 0.06,
+        speed: 0.00002 + Math.random() * 0.00008,
+        phase: Math.random() * Math.PI * 2,
+        driftR: (Math.random() - 0.5) * 2,
       });
     }
 
@@ -144,7 +172,18 @@ const ParticleRing: React.FC<ParticleRingProps> = ({ size, progress, color, clas
         ctx.fillRect(x, y, h.size, h.size);
       }
 
-      // Main ring particles
+      // Far stray particles
+      for (const s of strayParticles) {
+        const a = s.angle + time * s.speed;
+        const drift = Math.sin(time * 0.0005 + s.phase) * s.driftR;
+        const r = ringR + s.dist + drift;
+        const x = cx + Math.cos(a) * r;
+        const y = cy + Math.sin(a) * r;
+        const flicker = 0.3 + 0.7 * Math.sin(time * 0.0006 + s.phase);
+        ctx.fillStyle = `rgba(${cr},${cg},${cb},${s.opacity * flicker})`;
+        ctx.fillRect(x, y, s.size, s.size);
+      }
+
       const progressAngle = progress * Math.PI * 2;
 
       for (const p of particles) {
