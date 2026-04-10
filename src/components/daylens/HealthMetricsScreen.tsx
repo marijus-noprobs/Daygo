@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Heart, Moon, Activity } from "lucide-react";
 import { HealthSuggestions } from "./HealthSuggestions";
+import ParticleRing from "./ParticleRing";
 import type { DayEntry } from "@/lib/daylens-constants";
 import type { HealthSuggestion } from "@/lib/daylens-utils";
 import { avg, computeDayScore } from "@/lib/daylens-utils";
@@ -30,18 +31,12 @@ const Sparkline = ({ data, color, height = 28, width = 80 }: { data: number[]; c
   );
 };
 
-/* ── Sleep ring chart (SVG arc) ────────────────────────── */
-const SleepRing = ({ score, size = 90, thick = 8 }: { score: number; size?: number; thick?: number }) => {
-  const r = (size - thick * 2) / 2;
-  const circ = 2 * Math.PI * r;
+/* ── Sleep ring chart (particle-based) ────────────────────── */
+const SleepRing = ({ score, size = 90 }: { score: number; size?: number }) => {
   const pct = Math.max(0, Math.min(1, score / 100));
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="transform -rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={thick} />
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="hsl(var(--primary))" strokeWidth={thick} strokeLinecap="round"
-          strokeDasharray={`${pct * circ} ${circ}`} style={{ transition: "stroke-dasharray .8s ease" }} />
-      </svg>
+      <ParticleRing size={size} progress={pct} color="#ffffff" />
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="font-mono text-[22px] font-bold text-foreground" style={{ letterSpacing: '-0.04em' }}>{score}</span>
         <span className="text-[8px] text-muted-foreground uppercase tracking-widest font-semibold">score</span>

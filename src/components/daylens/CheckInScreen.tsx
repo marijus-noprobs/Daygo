@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { ScoreRing, BottomSheet } from "./DayLensUI";
+import { BottomSheet } from "./DayLensUI";
+import ParticleRing from "./ParticleRing";
 import { MealLogSection } from "./MealLogSection";
 import { ActivityCard, ActivityTypePicker } from "./ActivityComponents";
 import { SentimentScreen } from "./SentimentScreen";
@@ -48,9 +49,13 @@ export const CheckInScreen = ({
 
   if (!forceOpen && (submitted || hasToday)) return (
     <div className="flex flex-col items-center justify-center min-h-[65vh] gap-8 fade-up">
-      <div className="relative">
+      <div className="relative" style={{ width: 180, height: 180 }}>
         <div className="absolute inset-0 blur-3xl rounded-full opacity-25" style={{ background: scoreGradient(todayScore || 3.5)[0] }} />
-        <ScoreRing score={todayScore || 3.5} size={180} thick={12} />
+        <ParticleRing size={180} progress={Math.min(1, (todayScore || 3.5) / 5)} color="#ffffff" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em' }}>{(todayScore || 3.5).toFixed(1)}</span>
+          <span className="text-[8px] uppercase tracking-[0.15em] text-muted-foreground font-bold mt-0.5">score</span>
+        </div>
       </div>
       <div className="text-center">
         <h2 className="font-display text-2xl font-extrabold tracking-tight">Log Complete</h2>
