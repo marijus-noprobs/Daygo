@@ -352,7 +352,7 @@ const HomeScreen = ({
             <ParticleRing
               size={120}
               progress={scoreNorm}
-              color={scoreNorm >= 0.6 ? '#c8e878' : scoreNorm >= 0.4 ? '#888888' : '#e85050'}
+              color="#ffffff"
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em', textShadow: '0 0 24px rgba(200,232,120,0.25)' }}>{score.toFixed(0)}</span>
