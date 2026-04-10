@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Plus } from "lucide-react";
+import { X, Plus, ChevronLeft } from "lucide-react";
 import { ACTIVITY_TYPES, FOOD_DB, type Activity, type FoodDBEntry } from "@/lib/daylens-constants";
 import { durationHours, formatDuration, isLateNight } from "@/lib/daylens-utils";
 
@@ -49,17 +49,43 @@ export const ActivityCard = ({ activity, onUpdate, onRemove }: {
 };
 
 // ─── Activity Type Picker ─────────────────────────────────────────────────────
-export const ActivityTypePicker = ({ onSelect }: { onSelect: (type: string) => void }) => (
-  <div className="grid grid-cols-5 gap-2 mb-4">
-    {ACTIVITY_TYPES.map(at => (
-      <button key={at.key} onClick={() => onSelect(at.key)}
-        className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border transition-all hover:scale-105 active:scale-95 ${at.bgClass} ${at.borderClass}`}>
-        <div className={`text-[11px] font-bold uppercase ${at.colorClass}`}>{at.label.slice(0, 2)}</div>
-        <span className={`text-[10px] font-medium ${at.colorClass}`}>{at.label.split("/")[0]}</span>
-      </button>
-    ))}
-  </div>
-);
+export const ActivityTypePicker = ({ onSelect }: { onSelect: (type: string) => void }) => {
+  const [expandedType, setExpandedType] = useState<string | null>(null);
+  const expandedAt = ACTIVITY_TYPES.find(t => t.key === expandedType);
+
+  if (expandedAt?.subcategories) {
+    return (
+      <div className="mb-4">
+        <button onClick={() => setExpandedType(null)}
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-3 transition-colors">
+          <ChevronLeft size={14} /> Back
+        </button>
+        <div className="text-xs font-semibold text-foreground/70 mb-2 uppercase tracking-wider">{expandedAt.label} type</div>
+        <div className="grid grid-cols-3 gap-2">
+          {expandedAt.subcategories.map(sub => (
+            <button key={sub.key} onClick={() => { onSelect(`${expandedAt.key}:${sub.key}`); setExpandedType(null); }}
+              className={`flex flex-col items-center gap-1 p-3 rounded-2xl border transition-all hover:scale-105 active:scale-95 ${expandedAt.bgClass} ${expandedAt.borderClass}`}>
+              <div className={`text-[11px] font-bold uppercase ${expandedAt.colorClass}`}>{sub.label.slice(0, 2)}</div>
+              <span className={`text-[10px] font-medium ${expandedAt.colorClass}`}>{sub.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-5 gap-2 mb-4">
+      {ACTIVITY_TYPES.map(at => (
+        <button key={at.key} onClick={() => at.subcategories ? setExpandedType(at.key) : onSelect(at.key)}
+          className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border transition-all hover:scale-105 active:scale-95 ${at.bgClass} ${at.borderClass}`}>
+          <div className={`text-[11px] font-bold uppercase ${at.colorClass}`}>{at.label.slice(0, 2)}</div>
+          <span className={`text-[10px] font-medium ${at.colorClass}`}>{at.label.split("/")[0]}</span>
+        </button>
+      ))}
+    </div>
+  );
+};
 
 // ─── Add Food Item ────────────────────────────────────────────────────────────
 export const AddFoodItem = ({ onAdd }: { onAdd: (item: { name: string; kcal: number; proteinG: number }) => void }) => {
