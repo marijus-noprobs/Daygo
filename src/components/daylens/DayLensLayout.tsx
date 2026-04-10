@@ -140,6 +140,7 @@ const DayLensApp = () => {
             todayActivities={todayActivities} setTodayActivities={setTodayActivities}
             note={note} setNote={setNote} onSubmit={handleSubmit} yesterdayEntry={yesterdayEntry}
             profile={profile} isPro={isPro} onShowPricing={() => setShowPricing(true)} streak={streak}
+            quickAddSection={quickAddSection}
           />
         )}
         {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
@@ -235,7 +236,7 @@ const HomeScreen = ({
   entries, recent, todayScore, wearable, submitted, hasToday,
   onViewInsights, setWearable, setWearableRaw, nutrition, setNutrition,
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
-  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak,
+  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection,
 }: any) => {
   const latestEntry = recent[0];
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
