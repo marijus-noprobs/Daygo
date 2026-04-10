@@ -27,7 +27,7 @@
     --accent: 84 100% 50%;
     --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 35 95% 55%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 100% / 0.04;
@@ -44,7 +44,7 @@
     --nav-bg: 0 0% 5.5%;
     --header-bg: 0 0% 5.5%;
 
-    --color-red: 0 84% 60%;
+    --color-red: 35 95% 55%;
     --color-lime: 84 100% 50%;
 
     --sidebar-background: 0 0% 5.5%;
