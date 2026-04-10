@@ -356,7 +356,7 @@ const HomeScreen = ({
             <div key={s.id} className="flex items-start gap-3 py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
               <div className="w-[3px] rounded-full flex-shrink-0 mt-0.5" style={{
                 height: 14,
-                background: s.priority === 'high' ? 'hsl(var(--color-pink))' : s.priority === 'medium' ? 'hsl(var(--color-blue))' : 'hsl(var(--color-lime))',
+                background: s.priority === 'high' ? 'hsl(var(--destructive))' : 'rgba(255,255,255,0.25)',
               }} />
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-bold text-foreground">{s.title}</div>

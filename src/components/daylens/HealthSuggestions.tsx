@@ -46,7 +46,7 @@ export const HealthSuggestions = ({ suggestions, detectedLevel, detectedLevelLab
               >
                 <div className="w-[3px] rounded-full flex-shrink-0 mt-0.5" style={{
                   height: 32,
-                  background: s.priority === 'high' ? 'hsl(var(--destructive))' : s.priority === 'medium' ? 'rgba(255,255,255,0.25)' : 'hsl(var(--primary))',
+                  background: s.priority === 'high' ? 'hsl(var(--destructive))' : 'rgba(255,255,255,0.25)',
                 }} />
                 <div>
                   <div className="text-[12px] font-semibold text-foreground mb-0.5">{s.title}</div>
