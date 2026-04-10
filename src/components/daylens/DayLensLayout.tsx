@@ -423,19 +423,16 @@ const HomeScreen = ({
           className="w-full"
         >
           {/* Main input area */}
-          <div className="rounded-[20px] px-5 pt-4 pb-3" style={{ background: '#1a1a1b', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="rounded-[16px] flex items-center gap-3 px-4 py-2.5" style={{ background: '#1a1a1b', border: '1px solid rgba(255,255,255,0.06)' }}>
             <input
               name="coachInput"
               type="text"
               placeholder="How can Coach help?"
-              className="w-full bg-transparent text-[14px] text-foreground placeholder:text-foreground/25 outline-none mb-3"
+              className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-foreground/25 outline-none"
             />
-            {/* Bottom action row */}
-            <div className="flex items-center justify-end">
-              <button type="submit" className="h-9 px-5 rounded-full bg-foreground text-background text-[12px] font-bold hover:bg-foreground/90 transition-colors">
-                Ask
-              </button>
-            </div>
+            <button type="submit" className="h-7 px-4 rounded-full bg-foreground text-background text-[11px] font-bold hover:bg-foreground/90 transition-colors flex-shrink-0">
+              Ask
+            </button>
           </div>
         </form>
       </div>
