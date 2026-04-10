@@ -57,20 +57,10 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
   const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
   const anomalies = useMemo(() => detectAnomalies(recent), [recent]);
 
-  if (entries.length < 3) return (
-    <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-4 fade-up">
-      <div className="w-16 h-16 bg-white/[0.05] rounded-full flex items-center justify-center text-muted-foreground">
-        <TrendingUp size={32} />
-      </div>
-      <h2 className="font-display text-xl font-extrabold">Gathering Data</h2>
-      <p className="text-[11px] text-muted-foreground max-w-xs leading-relaxed">Log a few more days to unlock patterns and insights.</p>
-    </div>
-  );
-
   const thisWeek = recent.slice(0, 7);
   const lastWeek = recent.slice(7, 14);
-  const last7 = [...thisWeek].reverse();
-  const scores = last7.map(computeDayScore);
+  const last7 = useMemo(() => [...thisWeek].reverse(), [thisWeek]);
+  const scores = useMemo(() => last7.map(computeDayScore), [last7]);
 
   const avgScore = avg(thisWeek.map(computeDayScore));
   const prevAvgScore = lastWeek.length >= 3 ? avg(lastWeek.map(computeDayScore)) : null;
@@ -84,7 +74,6 @@ export const InsightScreen = ({ entries, recent, isPro, onShowPricing }: Insight
   const avgSteps = avg(thisWeek.map(e => e.wearable?.activity?.steps || 0));
   const prevSteps = lastWeek.length >= 3 ? avg(lastWeek.map(e => e.wearable?.activity?.steps || 0)) : null;
 
-  // AI narrative
   const aiNarrative = useMemo(() => {
     const parts: string[] = [];
     const scoreDelta = prevAvgScore ? avgScore - prevAvgScore : 0;
