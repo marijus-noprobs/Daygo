@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
+import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
 import { MoodCalendar } from "./MoodCalendar";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
@@ -28,8 +29,8 @@ const DayLensApp = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [quickAddModal, setQuickAddModal] = useState<"food" | "activity" | "social" | null>(null);
   const [quickAddSection, setQuickAddSection] = useState<string>("nutrition");
-  const [forceCheckIn, setForceCheckIn] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
     const todayKey = new Date().toISOString().split("T")[0];
@@ -79,28 +80,31 @@ const DayLensApp = () => {
     const entry = { date: today, wearable: wearable || undefined, nutrition, mood, activities: todayActivities, note };
     setEntries(p => [...p.filter(e => e.date !== today), entry]);
     setSubmitted(true);
-    setForceCheckIn(false);
     save("dl_entries", [...entries.filter(e => e.date !== today), entry]);
   };
 
-  const openQuickAdd = (section: "nutrition" | "activities") => {
+  const prepareQuickAdd = () => {
     if (todayEntry) {
       const entry = typeof structuredClone === "function"
         ? structuredClone(todayEntry)
         : JSON.parse(JSON.stringify(todayEntry));
-
       setWearable(entry.wearable ?? null);
       setNutrition(entry.nutrition);
       setMood(entry.mood);
       setTodayActivities(entry.activities ?? []);
       setNote(entry.note ?? "");
     }
+  };
 
-    setQuickAddSection(section);
-    setSubmitted(false);
+  const openQuickAddModal = (modal: "food" | "activity" | "social") => {
+    prepareQuickAdd();
     setShowQuickAdd(false);
-    setForceCheckIn(true);
-    setScreen("checkin");
+    setQuickAddModal(modal);
+  };
+
+  const handleQuickAddSave = () => {
+    handleSubmit();
+    setQuickAddModal(null);
   };
 
   const NAV = [
@@ -162,7 +166,7 @@ const DayLensApp = () => {
             todayActivities={todayActivities} setTodayActivities={setTodayActivities}
             note={note} setNote={setNote} onSubmit={handleSubmit} yesterdayEntry={yesterdayEntry}
             profile={profile} isPro={isPro} onShowPricing={() => setShowPricing(true)} streak={streak}
-            quickAddSection={quickAddSection} forceCheckIn={forceCheckIn}
+            quickAddSection={quickAddSection}
           />
         )}
         {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
@@ -182,7 +186,7 @@ const DayLensApp = () => {
           {NAV.map((item) => {
             const active = screen === item.id;
             return (
-              <button key={item.id} onClick={() => { setForceCheckIn(false); setScreen(item.id); }}
+              <button key={item.id} onClick={() => { setScreen(item.id); }}
                 className="flex flex-col items-center gap-1 px-5 py-1 transition-colors">
                 <item.icon className={`w-5 h-5 ${active ? "text-foreground" : ""}`} strokeWidth={1.8} style={active ? {} : { color: 'rgba(255,255,255,0.14)' }} />
                 <span className="text-[10px] font-bold uppercase" style={{ letterSpacing: '0.04em', color: active ? '#f2f2f3' : 'rgba(255,255,255,0.14)' }}>{item.label}</span>
@@ -201,11 +205,11 @@ const DayLensApp = () => {
             <h3 className="font-display text-base font-extrabold text-foreground mb-4">Log</h3>
             <div className="space-y-1">
               {[
-                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", section: "nutrition" as const },
-                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", section: "activities" as const },
-                { icon: Users, label: "Social", desc: "Log social interaction", section: "activities" as const },
+                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", modal: "food" as const },
+                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", modal: "activity" as const },
+                { icon: Users, label: "Social", desc: "Log social interaction", modal: "social" as const },
               ].map(item => (
-                <button key={item.label} onClick={() => openQuickAdd(item.section)}
+                <button key={item.label} onClick={() => openQuickAddModal(item.modal)}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
                   style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
@@ -221,6 +225,17 @@ const DayLensApp = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Quick Add Category Modals */}
+      {quickAddModal === "food" && (
+        <FoodModal nutrition={nutrition} setNutrition={setNutrition} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
+      )}
+      {quickAddModal === "activity" && (
+        <ActivityModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
+      )}
+      {quickAddModal === "social" && (
+        <SocialModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
       )}
 
       {/* Pricing Sheet */}
@@ -258,7 +273,7 @@ const HomeScreen = ({
   entries, recent, todayScore, wearable, submitted, hasToday,
   onViewInsights, setWearable, setWearableRaw, nutrition, setNutrition,
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
-  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection, forceCheckIn,
+  onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection,
 }: any) => {
   const latestEntry = recent[0];
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
@@ -291,14 +306,14 @@ const HomeScreen = ({
     return months;
   }, [entries]);
 
-  if (forceCheckIn || (!submitted && !hasToday)) {
+  if (!submitted && !hasToday) {
     return (
       <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
         setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
         nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
         todayActivities={todayActivities} setTodayActivities={setTodayActivities}
         note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} forceOpen={forceCheckIn} />
+        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} />
     );
   }
 
