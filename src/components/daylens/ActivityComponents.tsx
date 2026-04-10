@@ -23,7 +23,7 @@ export const ActivityCard = ({ activity, onUpdate, onRemove }: {
               <span className="text-xs text-muted-foreground">{activity.startTime} – {activity.endTime}</span>
               <span className="text-xs text-muted-foreground/50">·</span>
               <span className="text-xs text-foreground/60 font-medium">{formatDuration(dur)}</span>
-              {late && <span className="text-[10px] px-1.5 py-0.5 rounded bg-dl-orange/15 text-dl-orange border border-dl-orange/20 font-medium">Late night</span>}
+              {late && <span className="text-[10px] px-1.5 py-0.5 rounded bg-destructive/15 text-destructive border border-destructive/20 font-medium">Late night</span>}
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@ export const ActivityCard = ({ activity, onUpdate, onRemove }: {
       </div>
       <input type="text" value={activity.notes || ""} onChange={e => onUpdate({ ...activity, notes: e.target.value })}
         placeholder="Notes (optional)"
-        className="text-sm py-2 px-3 bg-foreground/[0.06] border border-foreground/[0.08] rounded-xl text-foreground w-full outline-none focus:border-dl-indigo/50 placeholder:text-foreground/20" />
+        className="text-sm py-2 px-3 bg-foreground/[0.06] border border-foreground/[0.08] rounded-xl text-foreground w-full outline-none focus:border-primary/50 placeholder:text-foreground/20" />
     </div>
   );
 };
