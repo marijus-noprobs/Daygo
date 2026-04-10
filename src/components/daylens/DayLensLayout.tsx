@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import ParticleRing from "./ParticleRing";
 import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users, MessageCircle, HelpCircle } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
