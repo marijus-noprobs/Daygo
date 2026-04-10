@@ -113,28 +113,23 @@ export const CheckInScreen = ({
       {/* SLEEP */}
       {section === "sleep" && (
         <div className="space-y-3 slide-in">
-          <div className="glass-card-apple rounded-[22px] p-[18px]">
+          <div className="card-dark rounded-[22px] p-[18px]">
             <div className="flex flex-col items-center mb-4">
               <svg width="88" height="88" viewBox="0 0 88 88" className="mb-1">
-                <defs><linearGradient id="sleepG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#c8e878" /><stop offset="100%" stopColor="#a0d040" /></linearGradient></defs>
-                <circle cx="44" cy="44" r="35" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="7" />
+                <defs><linearGradient id="sleepG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="hsl(var(--color-lime))" /><stop offset="100%" stopColor="hsl(var(--primary))" /></linearGradient></defs>
+                <circle cx="44" cy="44" r="35" fill="none" stroke="hsl(var(--border))" strokeWidth="7" />
                 <circle cx="44" cy="44" r="35" fill="none" stroke="url(#sleepG)" strokeWidth="7" strokeLinecap="round"
                   strokeDasharray={`${(wearable.sleep.score / 100) * 2 * Math.PI * 35} ${2 * Math.PI * 35}`}
                   transform="rotate(-90 44 44)" />
               </svg>
               <div className="font-display text-[26px] font-extrabold text-primary text-center">{wearable.sleep.score}</div>
-              <div className="text-[11px] text-white/[0.28] mt-0.5">Sleep Score</div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">Sleep Score</div>
             </div>
-            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Adjust Sleep Data</div>
+            <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Sleep Breakdown</div>
             <div className="space-y-0">
-              <SliderRow label="Total sleep" value={wearable.sleep.totalHours} min={4} max={12} step={0.5} unit="h"
-                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, totalHours: v } }))} />
-              <SliderRow label="Deep sleep" value={wearable.sleep.deepHours} min={0} max={4} step={0.25} unit="h"
-                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, deepHours: v } }))} />
-              <SliderRow label="REM sleep" value={wearable.sleep.remHours} min={0} max={4} step={0.25} unit="h"
-                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, remHours: v } }))} />
-              <SliderRow label="Score" value={wearable.sleep.score} min={0} max={100} step={1} unit=""
-                onChange={v => setWearable(w => ({ ...w, sleep: { ...w.sleep, score: v } }))} />
+              <ReadOnlyRow label="Total sleep" value={`${wearable.sleep.totalHours}h`} />
+              <ReadOnlyRow label="Deep sleep" value={`${wearable.sleep.deepHours}h`} />
+              <ReadOnlyRow label="REM sleep" value={`${wearable.sleep.remHours}h`} />
             </div>
           </div>
           <button onClick={() => setSection("activity")} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Next: Body Metrics →</button>
