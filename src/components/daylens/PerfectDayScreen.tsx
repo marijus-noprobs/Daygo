@@ -64,34 +64,34 @@ export const PerfectDayScreen = ({ entries, isPro, onShowPricing }: PerfectDaySc
         <GlassCard>
           <SectionHeader title="Activity Blueprint" subtitle="What your best days look like" />
           {topPositive && (
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-dl-emerald/[0.08] border border-dl-emerald/20 mb-3">
-              <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase ${topPositive.bgClass} ${topPositive.colorClass}`}>{topPositive.label.slice(0, 2)}</div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/[0.06] border border-primary/[0.12] mb-3">
+              <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase text-primary" style={{ background: 'rgba(200,232,120,0.08)' }}>{topPositive.label.slice(0, 2)}</div>
               <div className="flex-1">
-                <div className="text-sm font-medium text-dl-emerald">{topPositive.label} — Do more of this</div>
+                <div className="text-sm font-medium text-primary">{topPositive.label} — Do more of this</div>
                 <div className="text-xs text-muted-foreground">+{topPositive.diff.toFixed(2)} next-day score · avg {formatDuration(topPositive.avgDuration)}</div>
               </div>
-              <ArrowUp className="text-dl-emerald w-4 h-4" />
+              <ArrowUp className="text-primary w-4 h-4" />
             </div>
           )}
           {topNegative && (
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-dl-red/[0.08] border border-dl-red/20 mb-3">
-              <div className={`w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase ${topNegative.bgClass} ${topNegative.colorClass}`}>{topNegative.label.slice(0, 2)}</div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-destructive/[0.06] border border-destructive/[0.12] mb-3">
+              <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase text-destructive" style={{ background: 'rgba(224,80,80,0.08)' }}>{topNegative.label.slice(0, 2)}</div>
               <div className="flex-1">
-                <div className="text-sm font-medium text-dl-red">{topNegative.label} — Watch the timing</div>
+                <div className="text-sm font-medium text-destructive">{topNegative.label} — Watch the timing</div>
                 <div className="text-xs text-muted-foreground">{topNegative.diff.toFixed(2)} next-day score · esp. late at night</div>
               </div>
-              <ArrowDown className="text-dl-red w-4 h-4" />
+              <ArrowDown className="text-destructive w-4 h-4" />
             </div>
           )}
         </GlassCard>
       )}
 
       <GlassCard className="relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-dl-indigo/[0.08] blur-3xl rounded-full pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/[0.05] blur-3xl rounded-full pointer-events-none" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Sparkles className="text-dl-indigo w-4 h-4" />
+              <Sparkles className="text-primary w-4 h-4" />
               <h3 className="text-sm font-semibold">AI Perfect Day</h3>
             </div>
           </div>
