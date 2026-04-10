@@ -455,10 +455,10 @@ const HomeScreen = ({
       )}
 
       <motion.div
-        className="card-dark fade-up d3 cursor-pointer"
-        style={{ padding: '20px 22px' }}
-        whileTap={{ scale: 0.98 }}
-        whileHover={{ borderColor: 'rgba(255,255,255,0.12)' }}
+        className="card-dark fade-up d3 cursor-pointer transition-all duration-200 hover:shadow-[0_0_20px_rgba(200,232,120,0.06)] active:bg-white/[0.03]"
+        style={{ padding: '20px 22px', border: '1px solid rgba(255,255,255,0.06)' }}
+        whileTap={{ scale: 0.98, backgroundColor: 'rgba(255,255,255,0.03)' }}
+        whileHover={{ borderColor: 'rgba(255,255,255,0.14)', backgroundColor: 'rgba(255,255,255,0.02)' }}
         onClick={onViewInsights}
       >
         <div className="flex items-baseline gap-3 mb-1">
