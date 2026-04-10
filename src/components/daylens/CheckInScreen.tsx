@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { ScoreRing } from "./DayLensUI";
+import { Plus } from "lucide-react";
+import { ScoreRing, BottomSheet } from "./DayLensUI";
 import { MealLogSection } from "./MealLogSection";
+import { ActivityCard, ActivityTypePicker } from "./ActivityComponents";
 import type { WearableData, NutritionData, MoodData, Activity, DayEntry, UserProfile } from "@/lib/daylens-constants";
-import { scoreGradient } from "@/lib/daylens-utils";
+import { scoreGradient, newActivityBlank } from "@/lib/daylens-utils";
 
 interface CheckInScreenProps {
   submitted: boolean;
