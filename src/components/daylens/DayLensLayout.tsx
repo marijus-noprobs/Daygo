@@ -275,48 +275,6 @@ const HomeScreen = ({
   mood, setMood, todayActivities, setTodayActivities, note, setNote,
   onSubmit, yesterdayEntry, profile, isPro, onShowPricing, onGoToCheckin, streak, quickAddSection,
 }: any) => {
-  const latestEntry = recent[0];
-  const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
-  const sleepTotal = latestEntry?.wearable?.sleep?.totalHours || 7.5;
-  const avgMood = recent.length > 0 ? avg(recent.slice(0, 7).map((e: DayEntry) => e.mood.overallMood)) : 3.5;
-  const moodTrend = recent.length >= 7
-    ? avg(recent.slice(0, 3).map((e: DayEntry) => e.mood.overallMood)) - avg(recent.slice(3, 7).map((e: DayEntry) => e.mood.overallMood))
-    : 0;
-
-  const suggestions = useMemo(() => generateHealthSuggestions(entries, profile), [entries, profile]);
-  const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
-  const topPositive = activityCorrelations.filter((c: any) => c.diff > 0)[0];
-  const topNegative = activityCorrelations.filter((c: any) => c.diff < 0)[0];
-
-  // Dot matrix — last 3 months
-  const dotMatrix = useMemo(() => {
-    const months: { label: string; dots: boolean[] }[] = [];
-    const now = new Date();
-    for (let m = 2; m >= 0; m--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - m, 1);
-      const daysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-      const label = d.toLocaleString("default", { month: "short" });
-      const dots: boolean[] = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        dots.push(entries.some((e: DayEntry) => e.date === dateStr));
-      }
-      months.push({ label, dots });
-    }
-    return months;
-  }, [entries]);
-
-  if (!submitted && !hasToday) {
-    return (
-      <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
-        setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
-        nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
-        todayActivities={todayActivities} setTodayActivities={setTodayActivities}
-        note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} />
-    );
-  }
-
   const score = todayScore || (latestEntry ? computeDayScore(latestEntry) : 8.5);
   const sleepTotal = latestEntry?.wearable?.sleep?.totalHours || 7.5;
   const avgMood = recent.length > 0 ? avg(recent.slice(0, 7).map((e: DayEntry) => e.mood.overallMood)) : 3.5;
