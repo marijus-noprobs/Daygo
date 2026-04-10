@@ -13,7 +13,7 @@ interface GoalsScreenProps {
   onShowPricing: () => void;
 }
 
-const GOAL_COLORS = ["hsl(78,68%,62%)", "rgba(255,255,255,0.7)", "rgba(255,255,255,0.4)", "hsl(0,84%,60%)", "rgba(255,255,255,0.55)"];
+const GOAL_COLORS = ["hsl(25,95%,58%)", "rgba(255,255,255,0.7)", "rgba(255,255,255,0.4)", "hsl(0,84%,60%)", "rgba(255,255,255,0.55)"];
 
 export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onShowPricing }: GoalsScreenProps) => {
   const [showAddGoal, setShowAddGoal] = useState(false);
@@ -100,7 +100,7 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
           <div className="grid grid-cols-2 gap-3">
             {badges.map(b => (
               <GlassCard key={b.id} className={`text-center py-5 ${!b.earned ? "opacity-40" : ""}`}>
-                <div className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center text-[11px] font-bold uppercase" style={{ background: b.earned ? 'rgba(212,255,94,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${b.earned ? 'rgba(212,255,94,0.15)' : 'rgba(255,255,255,0.06)'}`, color: b.earned ? 'hsl(78,68%,62%)' : 'rgba(255,255,255,0.2)' }}>
+                <div className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center text-[11px] font-bold uppercase" style={{ background: b.earned ? 'rgba(255,127,50,0.1)' : 'rgba(255,255,255,0.04)', border: `1px solid ${b.earned ? 'rgba(255,127,50,0.15)' : 'rgba(255,255,255,0.06)'}`, color: b.earned ? 'hsl(25,95%,58%)' : 'rgba(255,255,255,0.2)' }}>
                   {b.earned ? b.title.slice(0, 2) : "—"}
                 </div>
                 <h4 className="text-[12px] font-semibold mb-0.5">{b.title}</h4>

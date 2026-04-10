@@ -65,7 +65,7 @@ export const PerfectDayScreen = ({ entries, isPro, onShowPricing }: PerfectDaySc
           <SectionHeader title="Activity Blueprint" subtitle="What your best days look like" />
           {topPositive && (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/[0.06] border border-primary/[0.12] mb-3">
-              <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase text-primary" style={{ background: 'rgba(200,232,120,0.08)' }}>{topPositive.label.slice(0, 2)}</div>
+              <div className="w-8 h-8 rounded-[10px] flex items-center justify-center text-[10px] font-bold uppercase text-primary" style={{ background: 'rgba(255,127,50,0.08)' }}>{topPositive.label.slice(0, 2)}</div>
               <div className="flex-1">
                 <div className="text-sm font-medium text-primary">{topPositive.label} — Do more of this</div>
                 <div className="text-xs text-muted-foreground">+{topPositive.diff.toFixed(2)} next-day score · avg {formatDuration(topPositive.avgDuration)}</div>

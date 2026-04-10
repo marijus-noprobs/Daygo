@@ -424,7 +424,7 @@ const HomeScreen = ({
         >
           {/* Gradient border + glow */}
           <div className="absolute inset-0 rounded-2xl" style={{
-            background: 'linear-gradient(135deg, hsl(78 68% 52%) 0%, hsl(78 68% 62%) 40%, hsl(78 50% 72%) 70%, hsl(78 68% 62%) 100%)',
+            background: 'linear-gradient(135deg, hsl(25 95% 48%) 0%, hsl(25 95% 58%) 40%, hsl(25 85% 68%) 70%, hsl(25 95% 58%) 100%)',
             opacity: 0.5,
           }} />
           {/* Inner background */}
