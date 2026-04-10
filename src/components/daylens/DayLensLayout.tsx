@@ -168,29 +168,36 @@ const DayLensApp = () => {
         </nav>
       </div>
 
-      {/* Quick Add Sheet */}
-      <BottomSheet open={showQuickAdd} onClose={() => setShowQuickAdd(false)} title="Log">
-        <div className="space-y-1 -mt-1">
-          {[
-            { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack" },
-            { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement" },
-            { icon: Users, label: "Social", desc: "Log social interaction" },
-          ].map(item => (
-            <button key={item.label} onClick={() => { setShowQuickAdd(false); setScreen("checkin"); }}
-              className="w-full flex items-center gap-4 px-2 py-4 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
-              style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-              <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
-                <item.icon className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
-              </div>
-              <div className="text-left">
-                <div className="text-[14px] font-bold text-foreground">{item.label}</div>
-                <div className="text-[11px] text-muted-foreground">{item.desc}</div>
-              </div>
-              <ChevronRight className="ml-auto w-4 h-4 text-muted-foreground" />
-            </button>
-          ))}
+      {/* Quick Add Modal */}
+      {showQuickAdd && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center fade-in" onClick={() => setShowQuickAdd(false)}
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
+          <div className="w-[85%] max-w-xs rounded-[22px] p-5 scale-in" onClick={e => e.stopPropagation()}
+            style={{ background: '#1c1c1d', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <h3 className="font-display text-base font-extrabold text-foreground mb-4">Log</h3>
+            <div className="space-y-1">
+              {[
+                { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack" },
+                { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement" },
+                { icon: Users, label: "Social", desc: "Log social interaction" },
+              ].map(item => (
+                <button key={item.label} onClick={() => { setShowQuickAdd(false); setScreen("checkin"); }}
+                  className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
+                  style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                    <item.icon className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[14px] font-bold text-foreground">{item.label}</div>
+                    <div className="text-[11px] text-muted-foreground">{item.desc}</div>
+                  </div>
+                  <ChevronRight className="ml-auto w-4 h-4 text-muted-foreground" />
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </BottomSheet>
+      )}
 
       {/* Pricing Sheet */}
       <BottomSheet open={showPricing} onClose={() => setShowPricing(false)} title="Unlock DayLens">
