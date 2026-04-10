@@ -252,11 +252,12 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center fade-in" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center fade-in" onClick={onClose}
+      style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
       <div
         className="w-full max-w-md flex flex-col scale-in"
         style={{
-          height: "85vh",
+          height: "70vh",
           background: "#111112",
           borderRadius: "26px 26px 0 0",
           border: "1px solid rgba(255,255,255,0.06)",
@@ -271,14 +272,9 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
 
         {/* Header */}
         <div className="flex-shrink-0 flex items-center justify-between px-5 py-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.06)" }}>
-              <Sparkles className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <div className="font-display text-[15px] font-extrabold text-foreground" style={{ letterSpacing: "-0.02em" }}>AI Coach</div>
-              <div className="text-[10px] text-muted-foreground">Personalized guidance</div>
-            </div>
+          <div>
+            <div className="font-display text-[15px] font-extrabold text-foreground" style={{ letterSpacing: "-0.02em" }}>AI Coach</div>
+            <div className="text-[10px] text-muted-foreground">Personalized guidance</div>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/[0.05] transition-colors">
             <X className="w-4 h-4 text-muted-foreground" />
@@ -337,7 +333,7 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
         </div>
 
         {/* Input */}
-        <div className="flex-shrink-0 px-4 pb-6 pt-2">
+        <div className="flex-shrink-0 px-4 pb-4 pt-2">
           <div className="flex items-center gap-2 rounded-2xl px-4 py-2.5" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)" }}>
             <input
               ref={inputRef}
