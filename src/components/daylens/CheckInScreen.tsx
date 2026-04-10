@@ -37,7 +37,7 @@ export const CheckInScreen = ({
   const [section, setSection] = useState("nutrition");
   const [showAddActivity, setShowAddActivity] = useState(false);
   const [showSentiment, setShowSentiment] = useState(false);
-  const sections = ["nutrition", "activities", "mood"];
+  const sections = ["nutrition", "activities"];
   const sectionIndex = sections.indexOf(section);
 
   if (submitted || hasToday) return (
@@ -133,19 +133,3 @@ export const CheckInScreen = ({
     </div>
   );
 };
-
-/* ─── Slider Row ──────────────── */
-const SliderRow = ({ label, value, min, max, step, unit, onChange, formatVal }: {
-  label: string; value: number; min: number; max: number; step: number; unit: string;
-  onChange: (v: number) => void; formatVal?: (v: number) => string;
-}) => (
-  <div className="flex items-center gap-2.5 py-2.5 border-b border-border last:border-0">
-    <span className="text-[11px] text-muted-foreground font-medium w-[86px] flex-shrink-0">{label}</span>
-    <input type="range" min={min} max={max} step={step} value={value}
-      onChange={e => onChange(parseFloat(e.target.value))}
-      className="flex-1" />
-    <span className="font-mono text-[11px] font-bold text-foreground w-[48px] text-right flex-shrink-0">
-      {formatVal ? formatVal(value) : `${value}${unit}`}
-    </span>
-  </div>
-);
