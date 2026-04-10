@@ -63,18 +63,8 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         dl: {
-          indigo: "hsl(var(--color-indigo))",
-          emerald: "hsl(var(--color-emerald))",
-          purple: "hsl(var(--color-purple))",
-          blue: "hsl(var(--color-blue))",
-          pink: "hsl(var(--color-pink))",
-          orange: "hsl(var(--color-orange))",
-          amber: "hsl(var(--color-amber))",
-          yellow: "hsl(var(--color-yellow))",
           red: "hsl(var(--color-red))",
-          cyan: "hsl(var(--color-cyan))",
           lime: "hsl(var(--color-lime))",
-          sky: "hsl(var(--color-sky))",
         },
         lime: {
           DEFAULT: "hsl(var(--lime))",
