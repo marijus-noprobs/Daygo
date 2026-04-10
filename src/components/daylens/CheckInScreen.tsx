@@ -252,17 +252,25 @@ export const CheckInScreen = ({
   );
 };
 
+/* ─── Read-Only Row ──────────────── */
+const ReadOnlyRow = ({ label, value }: { label: string; value: string }) => (
+  <div className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
+    <span className="text-[11px] text-muted-foreground font-medium">{label}</span>
+    <span className="font-mono text-[13px] font-bold text-foreground">{value}</span>
+  </div>
+);
+
 /* ─── Slider Row (HTML-matching style) ──────────────── */
 const SliderRow = ({ label, value, min, max, step, unit, onChange, formatVal }: {
   label: string; value: number; min: number; max: number; step: number; unit: string;
   onChange: (v: number) => void; formatVal?: (v: number) => string;
 }) => (
-  <div className="flex items-center gap-2.5 py-2.5 border-b border-white/[0.05] last:border-0">
-    <span className="text-[11px] text-white/[0.38] font-medium w-[86px] flex-shrink-0">{label}</span>
+  <div className="flex items-center gap-2.5 py-2.5 border-b border-border last:border-0">
+    <span className="text-[11px] text-muted-foreground font-medium w-[86px] flex-shrink-0">{label}</span>
     <input type="range" min={min} max={max} step={step} value={value}
       onChange={e => onChange(parseFloat(e.target.value))}
       className="flex-1" />
-    <span className="font-display text-[11px] font-extrabold text-foreground w-[48px] text-right flex-shrink-0">
+    <span className="font-mono text-[11px] font-bold text-foreground w-[48px] text-right flex-shrink-0">
       {formatVal ? formatVal(value) : `${value}${unit}`}
     </span>
   </div>
