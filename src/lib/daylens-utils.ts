@@ -41,9 +41,9 @@ export const isLateNight = (startTime: string) => {
 
 export const scoreGradient = (val: number, max = 5): [string, string] => {
   const n = val / max;
-  if (n >= 0.65) return ["#D4FF5E", "#C5F467"];  // lime
-  if (n >= 0.35) return ["#7B7BF7", "#6B6BE7"];  // blue
-  return ["#F06B9E", "#E05B8E"];                   // pink
+  if (n >= 0.65) return ["#c8e878", "#b8d868"];  // green/lime
+  if (n >= 0.35) return ["rgba(255,255,255,0.5)", "rgba(255,255,255,0.4)"];  // neutral white
+  return ["#e05050", "#d04040"];                   // red
 };
 
 export const scoreLabel = (v: number) => (["", "Poor", "Fair", "Good", "Great", "Peak"][Math.round(v)] || "");
@@ -176,7 +176,7 @@ export const computeActivityCorrelations = (entries: DayEntry[]): ActivityCorrel
   if (lateNightPairs.length >= 3 && normalPairs.length >= 3) {
     results.push({
       type: "late_night", label: "Late Night (past 10pm)", emoji: "",
-      colorClass: "text-dl-indigo", bgClass: "bg-dl-indigo/10", borderClass: "border-dl-indigo/20",
+      colorClass: "text-destructive", bgClass: "bg-destructive/10", borderClass: "border-destructive/20",
       diff: avg(lateNightPairs.map(p => computeDayScore(p.today))) - avg(normalPairs.map(p => computeDayScore(p.today))),
       avgWith: +avg(lateNightPairs.map(p => computeDayScore(p.today))).toFixed(2),
       avgWithout: +avg(normalPairs.map(p => computeDayScore(p.today))).toFixed(2),
