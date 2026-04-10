@@ -479,17 +479,11 @@ const HomeScreen = ({
       </div>
 
       {/* CTA */}
-      {!hasToday ? (
+      {!hasToday && (
         <button onClick={onGoToCheckin}
           className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up"
           style={{ letterSpacing: '-0.02em' }}>
           Start Today's Check-in
-        </button>
-      ) : (
-        <button onClick={onViewInsights}
-          className="w-full py-[14px] rounded-2xl font-display font-bold text-[14px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up"
-          style={{ letterSpacing: '-0.02em' }}>
-          View Insights
         </button>
       )}
     </div>

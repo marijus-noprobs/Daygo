@@ -56,7 +56,7 @@ export const CheckInScreen = ({
         <h2 className="font-display text-2xl font-extrabold tracking-tight">Log Complete</h2>
         <p className="text-muted-foreground text-[11px] mt-1">Your data has been saved.</p>
       </div>
-      <button onClick={onViewInsights} className="w-full bg-primary text-primary-foreground font-display font-extrabold py-4 rounded-[18px] active:scale-[0.98] transition-transform text-[15px]">View Insights →</button>
+      
     </div>
   );
 
