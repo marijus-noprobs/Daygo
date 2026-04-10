@@ -149,8 +149,8 @@ const DayLensApp = () => {
           </h1>
           <div className="flex items-center gap-[9px]">
             <MoodCalendar entries={entries} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
-            <button className="w-[38px] h-[38px] rounded-full flex items-center justify-center" style={{ background: '#1f1f21', color: 'rgba(255,255,255,0.36)' }} onClick={() => setShowQuickAdd(true)}>
-              <Plus className="w-[18px] h-[18px]" />
+            <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)}>
+              <Plus className="w-[28px] h-[28px] text-white" strokeWidth={3} />
             </button>
           </div>
         </div>
