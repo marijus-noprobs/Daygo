@@ -107,7 +107,7 @@ export interface Activity {
 
 export interface DayEntry {
   date: string;
-  wearable: WearableData;
+  wearable?: WearableData;
   nutrition: NutritionData;
   mood: MoodData;
   activities: Activity[];
