@@ -7,7 +7,11 @@ import { durationHours, formatDuration, isLateNight } from "@/lib/daylens-utils"
 export const ActivityCard = ({ activity, onUpdate, onRemove }: {
   activity: Activity; onUpdate: (a: Activity) => void; onRemove: () => void;
 }) => {
-  const at = ACTIVITY_TYPES.find(t => t.key === activity.type) || ACTIVITY_TYPES[0];
+  const typeKey = activity.type.includes(":") ? activity.type.split(":")[0] : activity.type;
+  const subKey = activity.type.includes(":") ? activity.type.split(":")[1] : null;
+  const at = ACTIVITY_TYPES.find(t => t.key === typeKey) || ACTIVITY_TYPES[0];
+  const subLabel = subKey && at.subcategories ? at.subcategories.find(s => s.key === subKey)?.label : null;
+  const displayLabel = subLabel ? subLabel : at.label;
   const dur = durationHours(activity.startTime, activity.endTime);
   const late = isLateNight(activity.startTime);
   return (
