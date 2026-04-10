@@ -519,14 +519,55 @@ const HomeScreen = ({
       {suggestions.length > 1 && (
         <div className="card-dark fade-up d5" style={{ padding: '16px 18px' }}>
           <div className="label-ref mb-2">Coaching Notes</div>
-          {suggestions.slice(1, 4).map((s, i, arr) => (
-            <div key={s.id} className="py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-              <div className="text-[13px] font-bold text-foreground">{s.title}</div>
-              <div className="text-[11px] text-foreground/70 mt-0.5 leading-relaxed">{s.description}</div>
-            </div>
-          ))}
+          {suggestions.slice(1, 4).map((s: any, i: number, arr: any[]) => {
+            const isExpanded = expandedInsight === s.id;
+            return (
+              <div key={s.id} className="py-3" style={{ borderBottom: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
+                <div className="text-[13px] font-bold text-foreground">{s.title}</div>
+                <div className="text-[11px] text-foreground/70 mt-0.5 leading-relaxed">{s.description}</div>
+                <div className="flex items-center gap-3 mt-2">
+                  <button
+                    onClick={() => setExpandedInsight(isExpanded ? null : s.id)}
+                    className="text-[10px] font-semibold text-foreground/40 hover:text-foreground/60 transition-colors flex items-center gap-1"
+                  >
+                    <HelpCircle className="w-3 h-3" />
+                    {isExpanded ? "Hide reasoning" : "View reasoning"}
+                  </button>
+                  <button
+                    onClick={() => { setCoachQuestion(`Explain in detail: ${s.title}. ${s.description}`); setShowCoach(true); }}
+                    className="text-[10px] font-semibold text-primary/70 hover:text-primary transition-colors flex items-center gap-1"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    Ask Coach
+                  </button>
+                </div>
+                {isExpanded && (
+                  <div className="mt-3 px-3 py-2.5 rounded-xl text-[11px] text-foreground/60 leading-relaxed fade-up"
+                    style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)' }}>
+                    <div className="text-[10px] text-primary/70 font-bold uppercase tracking-wider mb-1.5">Why this matters</div>
+                    <div>{s.description}</div>
+                    <div className="mt-2 text-[10px] text-muted-foreground">
+                      Category: {s.category} · Priority: {s.priority}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
+
+      {/* ── AI COACH SHEET ─────────────────────────────────── */}
+      <AICoachSheet
+        open={showCoach}
+        onClose={() => { setShowCoach(false); setCoachQuestion(null); }}
+        entries={entries}
+        recent={recent}
+        profile={profile}
+        score={score}
+        streak={streak}
+        preloadedQuestion={coachQuestion}
+      />
     </div>
   );
 };
