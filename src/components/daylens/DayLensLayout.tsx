@@ -73,10 +73,10 @@ const DayLensApp = () => {
   }, [entries]);
 
   const handleSubmit = () => {
-    if (!wearable) return;
-    setEntries(p => [...p.filter(e => e.date !== today), { date: today, wearable, nutrition, mood, activities: todayActivities, note }]);
+    const entry = { date: today, wearable: wearable || undefined, nutrition, mood, activities: todayActivities, note };
+    setEntries(p => [...p.filter(e => e.date !== today), entry]);
     setSubmitted(true);
-    save("dl_entries", [...entries.filter(e => e.date !== today), { date: today, wearable, nutrition, mood, activities: todayActivities, note }]);
+    save("dl_entries", [...entries.filter(e => e.date !== today), entry]);
   };
 
   const NAV = [
