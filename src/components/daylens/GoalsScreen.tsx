@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef } from "react";
 import { Plus, Target, Trophy, Check, X, ChevronRight } from "lucide-react";
 import { GlassCard, BottomSheet, SectionHeader } from "./DayLensUI";
+import ParticleRing from "./ParticleRing";
 import type { Goal, DayEntry } from "@/lib/daylens-constants";
 import { getMetricVal, calcStreak, computeBadges } from "@/lib/daylens-utils";
 
@@ -13,18 +14,14 @@ interface GoalsScreenProps {
   onShowPricing: () => void;
 }
 
-/* ── Ring arc (mini goal ring) ─────────────────────────── */
-const GoalRing = ({ pct, size = 64, thick = 5, color }: { pct: number; size?: number; thick?: number; color: string }) => {
-  const r = (size - thick * 2) / 2;
-  const circ = 2 * Math.PI * r;
+/* ── Goal Ring (particle-based) ─────────────────────────── */
+const GoalRing = ({ pct, size = 64, color }: { pct: number; size?: number; color: string }) => {
   const p = Math.max(0, Math.min(1, pct / 100));
+  // Convert CSS color to hex for ParticleRing
+  const hexColor = color.startsWith('#') ? color : '#ffffff';
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="transform -rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={thick} />
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={thick} strokeLinecap="round"
-          strokeDasharray={`${p * circ} ${circ}`} style={{ transition: "stroke-dasharray .6s ease" }} />
-      </svg>
+      <ParticleRing size={size} progress={p} color={hexColor} />
       <div className="absolute inset-0 flex items-center justify-center">
         <span className="font-mono text-[14px] font-bold text-foreground">{pct}%</span>
       </div>
