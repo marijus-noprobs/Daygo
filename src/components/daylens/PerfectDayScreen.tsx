@@ -38,12 +38,12 @@ export const PerfectDayScreen = ({ entries, isPro, onShowPricing }: PerfectDaySc
   const topNegative = activityCorrelations.filter(c => c.diff < 0)[0];
 
   const metrics = [
-    { label: "Sleep", val: avg(best.map(e => e.wearable.sleep.totalHours)).toFixed(1), unit: "hrs", colorClass: "text-dl-indigo", icon: Moon },
-    { label: "Deep Sleep", val: avg(best.map(e => e.wearable.sleep.deepHours)).toFixed(1), unit: "hrs", colorClass: "text-dl-purple", icon: Moon },
-    { label: "HRV", val: Math.round(avg(best.map(e => e.wearable.body.hrv))), unit: "ms", colorClass: "text-dl-blue", icon: Heart },
-    { label: "Steps", val: Math.round(avg(best.map(e => e.wearable.activity.steps))).toLocaleString(), unit: "", colorClass: "text-dl-orange", icon: Footprints },
-    { label: "Mood", val: avg(best.map(e => e.mood.overallMood)).toFixed(1), unit: "/5", colorClass: "text-dl-yellow", icon: Smile },
-    { label: "Water", val: avg(best.map(e => e.nutrition.waterLiters)).toFixed(1), unit: "L", colorClass: "text-dl-sky", icon: Droplets },
+    { label: "Sleep", val: avg(best.map(e => e.wearable.sleep.totalHours)).toFixed(1), unit: "hrs", colorClass: "text-primary", icon: Moon },
+    { label: "Deep Sleep", val: avg(best.map(e => e.wearable.sleep.deepHours)).toFixed(1), unit: "hrs", colorClass: "text-foreground/60", icon: Moon },
+    { label: "HRV", val: Math.round(avg(best.map(e => e.wearable.body.hrv))), unit: "ms", colorClass: "text-foreground/60", icon: Heart },
+    { label: "Steps", val: Math.round(avg(best.map(e => e.wearable.activity.steps))).toLocaleString(), unit: "", colorClass: "text-foreground/60", icon: Footprints },
+    { label: "Mood", val: avg(best.map(e => e.mood.overallMood)).toFixed(1), unit: "/5", colorClass: "text-primary", icon: Smile },
+    { label: "Water", val: avg(best.map(e => e.nutrition.waterLiters)).toFixed(1), unit: "L", colorClass: "text-foreground/60", icon: Droplets },
   ];
 
   return (
