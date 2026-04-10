@@ -115,7 +115,7 @@ export const CheckInScreen = ({
             }} />
           </BottomSheet>
 
-          <button onClick={() => setSection("mood")} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Next: Mood →</button>
+          <button onClick={() => setShowSentiment(true)} className="w-full py-[17px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">Next: Mood →</button>
         </div>
       )}
 
