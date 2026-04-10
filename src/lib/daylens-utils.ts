@@ -214,12 +214,7 @@ export const detectAnomalies = (entries: DayEntry[]): Anomaly[] => {
 };
 
 export const defaultNutrition = (): NutritionData => ({
-  meals: [
-    { name: "Breakfast", quality: 3, notes: "", items: [] },
-    { name: "Lunch", quality: 3, notes: "", items: [] },
-    { name: "Dinner", quality: 3, notes: "", items: [] },
-    { name: "Snacks", quality: 3, notes: "", items: [] },
-  ],
+  meals: [{ name: "Food", quality: 3, notes: "", items: [] }],
   waterLiters: 1.5, calories: 0, proteinG: 0, alcoholUnits: 0,
 });
 
