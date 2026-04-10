@@ -1,10 +1,8 @@
 import { useRef, useEffect, useMemo } from "react";
 import { format, subDays } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { type DayEntry } from "@/lib/daylens-constants";
 import { computeDayScore, scoreGradient } from "@/lib/daylens-utils";
-import { MoodCalendar } from "./MoodCalendar";
 
 interface WeeklyTimelineProps {
   entries: DayEntry[];
