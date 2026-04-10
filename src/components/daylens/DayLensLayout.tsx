@@ -340,16 +340,7 @@ const HomeScreen = ({
     return months;
   }, [entries]);
 
-  if (!submitted && !hasToday) {
-    return (
-      <CheckInScreen submitted={submitted} hasToday={hasToday} todayScore={todayScore} wearable={wearable}
-        setWearable={(fn: any) => setWearable((w: any) => w ? fn(w) : w)} setWearableRaw={setWearableRaw}
-        nutrition={nutrition} setNutrition={setNutrition} mood={mood} setMood={setMood}
-        todayActivities={todayActivities} setTodayActivities={setTodayActivities}
-        note={note} setNote={setNote} onSubmit={onSubmit} onViewInsights={onViewInsights}
-        yesterdayEntry={yesterdayEntry} profile={profile} initialSection={quickAddSection} />
-    );
-  }
+
 
   const scoreNorm = Math.min(score, 10) / 10;
   const ringR = 44;
@@ -431,14 +422,8 @@ const HomeScreen = ({
         <span className="text-[11px] font-bold text-foreground/60 tracking-wide">AI Coach</span>
       </button>
 
-      {/* ── PRIMARY CTA ────────────────────────────────────── */}
-      {!hasToday && (
-        <button onClick={onGoToCheckin}
-          className="w-full py-[17px] rounded-2xl font-display font-extrabold text-[15px] bg-primary text-primary-foreground hover:brightness-95 active:scale-[0.98] transition-all fade-up d2"
-          style={{ letterSpacing: '-0.02em' }}>
-          Log Today's Progress
-        </button>
-      )}
+
+
 
       {/* ── KEY WARNING ────────────────────────────────────── */}
       {suggestions.length > 0 && suggestions[0].priority === 'high' && (
