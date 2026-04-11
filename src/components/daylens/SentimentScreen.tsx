@@ -126,7 +126,7 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
   const step = STEPS[stepIndex];
   const value = values[stepIndex];
   const colors = getColors(value);
-  const label = getLabel(value, step);
+  const label = value <= 25 ? step.lowLabel.toUpperCase() : value <= 65 ? step.midLabel.toUpperCase() : step.highLabel.toUpperCase();
   const isLast = stepIndex === STEPS.length - 1;
 
   const updateValue = (v: number) => {
@@ -190,7 +190,7 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
 
         {/* Face */}
         <div className="flex-1 flex flex-col items-center justify-center -mt-8">
-          <SentimentFace value={value} fg={colors.fg} />
+          <SentimentFace value={value} dotColor={colors.dotColor} />
           <h2 className="text-5xl font-black tracking-tight mt-4 transition-colors duration-500" style={{ color: colors.fgLight }}>
             {label}
           </h2>
