@@ -15,58 +15,105 @@ const STEPS = [
 ] as const;
 
 const getColors = (value: number) => {
-  // Restricted palette: red → neutral grey → green
   if (value <= 35) {
-    // Red zone
+    // Bad — dark/black
     return {
-      bg: `hsl(0, ${55 + (35 - value)}%, ${28 + value * 0.2}%)`,
-      fg: "rgba(255,255,255,0.85)",
-      fgLight: "rgba(255,255,255,0.6)",
+      bg: `linear-gradient(135deg, hsl(0,0%,6%) 0%, hsl(0,0%,12%) 50%, hsl(240,4%,10%) 100%)`,
+      fg: "rgba(255,255,255,0.5)",
+      fgLight: "rgba(255,255,255,0.3)",
+      dotColor: "rgba(255,255,255,0.45)",
     };
   } else if (value <= 65) {
-    // Neutral grey zone
+    // Neutral — grey
     const t = (value - 35) / 30;
-    const l = 16 + t * 4;
     return {
-      bg: `hsl(0, 0%, ${l}%)`,
-      fg: "rgba(255,255,255,0.85)",
-      fgLight: "rgba(255,255,255,0.6)",
+      bg: `linear-gradient(135deg, hsl(0,0%,${12 + t * 4}%) 0%, hsl(0,0%,${16 + t * 3}%) 50%, hsl(220,3%,${14 + t * 4}%) 100%)`,
+      fg: "rgba(255,255,255,0.75)",
+      fgLight: "rgba(255,255,255,0.5)",
+      dotColor: "rgba(255,255,255,0.55)",
     };
   } else {
-    // Green zone
+    // Good — lime green
     const t = (value - 65) / 35;
     return {
-      bg: `hsl(78, ${40 + t * 28}%, ${22 + t * 8}%)`,
-      fg: "rgba(255,255,255,0.9)",
-      fgLight: "rgba(255,255,255,0.65)",
+      bg: `linear-gradient(135deg, hsl(84,${30 + t * 40}%,${10 + t * 8}%) 0%, hsl(78,${35 + t * 45}%,${14 + t * 10}%) 50%, hsl(90,${25 + t * 35}%,${8 + t * 6}%) 100%)`,
+      fg: `rgba(255,255,255,${0.8 + t * 0.15})`,
+      fgLight: `rgba(255,255,255,${0.55 + t * 0.15})`,
+      dotColor: `hsla(84,100%,${50 + t * 10}%,${0.6 + t * 0.35})`,
     };
   }
 };
 
-const getLabel = (value: number, step: typeof STEPS[number]) => {
-  if (value <= 25) return step.lowLabel.toUpperCase();
-  if (value <= 65) return step.midLabel.toUpperCase();
-  return step.highLabel.toUpperCase();
+// Dot-matrix face patterns on a 9x9 grid
+// 1 = filled dot, 0 = empty
+const FACE_PATTERNS = {
+  bad: [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,1,0,0,0,1,0,0],
+    [0,0,1,0,0,0,1,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,1,0,0,0,0,0,1,0],
+    [0,0,1,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,0,0],
+  ],
+  neutral: [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,1,0,0,0,1,0,0],
+    [0,0,1,0,0,0,1,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,1,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+  ],
+  good: [
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,1,0,0,0,1,0,0],
+    [0,0,1,0,0,0,1,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0],
+    [0,1,0,0,0,0,0,1,0],
+    [0,0,1,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,0,0],
+  ],
 };
 
-const SentimentFace = ({ value, fg }: { value: number; fg: string }) => {
-  const eyeRx = value <= 25 ? 28 : value <= 65 ? 35 : 30;
-  const eyeRy = value <= 25 ? 28 : value <= 65 ? 18 : 30;
-  const eyeY = value <= 25 ? 110 : value <= 65 ? 115 : 105;
-  const eyeSpacing = value <= 25 ? 45 : value <= 65 ? 42 : 48;
-  const mouthY = 170;
-  const mouthWidth = 30;
-  const mouthCurve = value <= 25 ? -15 : value <= 65 ? 0 : 12;
+const getFacePattern = (value: number) => {
+  if (value <= 25) return FACE_PATTERNS.bad;
+  if (value <= 65) return FACE_PATTERNS.neutral;
+  return FACE_PATTERNS.good;
+};
+
+const SentimentFace = ({ value, dotColor }: { value: number; dotColor: string }) => {
+  const pattern = getFacePattern(value);
+  const dotSize = 14;
+  const gap = 4;
+  const gridSize = 9;
+  const totalSize = gridSize * dotSize + (gridSize - 1) * gap;
 
   return (
-    <svg width="200" height="220" viewBox="0 0 260 220" className="transition-all duration-500">
-      <ellipse cx={130 - eyeSpacing} cy={eyeY} rx={eyeRx} ry={eyeRy} fill={fg} className="transition-all duration-500" />
-      <ellipse cx={130 + eyeSpacing} cy={eyeY} rx={eyeRx} ry={eyeRy} fill={fg} className="transition-all duration-500" />
-      <path
-        d={`M ${130 - mouthWidth} ${mouthY} Q 130 ${mouthY + mouthCurve * 2} ${130 + mouthWidth} ${mouthY}`}
-        fill="none" stroke={fg} strokeWidth="5" strokeLinecap="round" className="transition-all duration-500"
-      />
-    </svg>
+    <div className="transition-all duration-500" style={{ width: totalSize, height: totalSize }}>
+      <div className="grid transition-all duration-500" style={{
+        gridTemplateColumns: `repeat(${gridSize}, ${dotSize}px)`,
+        gap: `${gap}px`,
+      }}>
+        {pattern.flat().map((filled, i) => (
+          <div
+            key={i}
+            className="rounded-full transition-all duration-500"
+            style={{
+              width: dotSize,
+              height: dotSize,
+              backgroundColor: filled ? dotColor : `${dotColor}15`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 
