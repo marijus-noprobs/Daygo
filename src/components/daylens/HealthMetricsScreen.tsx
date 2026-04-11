@@ -32,7 +32,7 @@ const Sparkline = ({ data, color, height = 28, width = 80 }: { data: number[]; c
 };
 
 /* ── Sleep ring chart (particle-based) ────────────────────── */
-const SleepRing = ({ score, size = 90 }: { score: number; size?: number }) => {
+const SleepRing = ({ score, size = 110 }: { score: number; size?: number }) => {
   const pct = Math.max(0, Math.min(1, score / 100));
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
