@@ -115,7 +115,7 @@ const SentimentFace = ({ value, dotColor }: { value: number; dotColor: string })
             style={{
               width: dotSize,
               height: dotSize,
-              backgroundColor: filled ? dotColor : `${dotColor}10`,
+              backgroundColor: filled ? 'rgba(180,180,180,0.9)' : 'rgba(180,180,180,0.06)',
             }}
           />
         ))}
