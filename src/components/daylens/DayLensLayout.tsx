@@ -521,16 +521,16 @@ const HomeScreen = ({
         )}
 
         {/* Dot matrix */}
-        <div className="flex justify-between mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <div className="flex justify-between mt-5 pt-4 gap-4" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
           {dotMatrix.map(month => (
             <div key={month.label} className="flex-1">
               <div className="label-ref text-center mb-2" style={{ fontSize: 10 }}>{month.label}</div>
-              <div className="grid gap-[4px]" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
+              <div className="grid gap-[8px] justify-items-center" style={{ gridTemplateColumns: `repeat(7, 1fr)` }}>
                 {month.dots.map((filled, i) => (
                   <div key={i} className="rounded-full" style={{
                     background: filled ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.06)',
-                    width: 10,
-                    height: 10,
+                    width: 8,
+                    height: 8,
                   }} />
                 ))}
               </div>
