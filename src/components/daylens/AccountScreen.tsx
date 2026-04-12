@@ -33,7 +33,7 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
   return (
     <div className="space-y-4 pb-28 fade-up">
       {/* Profile Hero */}
-      <div className="card-dark rounded-[24px] p-5 fade-up d1">
+      <div className="card-dark-gradient rounded-[24px] p-5 fade-up d1">
         <div className="w-[52px] h-[52px] rounded-[18px] bg-primary/10 border border-primary/20 flex items-center justify-center mb-2.5">
           <span className="font-display text-lg font-extrabold text-primary">{initials}</span>
         </div>
