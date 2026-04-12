@@ -149,9 +149,10 @@ export const PastEntriesSheet = ({ open, onClose, entries }: PastEntriesSheetPro
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center fade-in" onClick={onClose}
-      style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
-      <div className="w-full max-w-md h-full max-h-[90vh] overflow-y-auto rounded-t-[28px] sm:rounded-[28px] mt-auto sm:my-auto p-5 pt-4 scale-in"
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center fade-in"
+      onClick={onClose}
+      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}>
+      <div className="w-[calc(100%-2rem)] max-w-md max-h-[80vh] overflow-y-auto rounded-[24px] p-5 pt-4 scale-in mx-auto"
         onClick={e => e.stopPropagation()}
         style={{ background: '#141415', border: '1px solid rgba(255,255,255,0.06)' }}>
 
