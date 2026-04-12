@@ -243,7 +243,7 @@ export const generateMockChallenges = (entries: DayEntry[]): Challenge[] => {
   const nextWeek = new Date(now); nextWeek.setDate(nextWeek.getDate() + 7);
 
   const recent = [...entries].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 7);
-  const userStrain = Math.round(recent.reduce((s, e) => s + (computeStrain(e)?.score || 5), 0) * 10) / 10;
+  const userLoad = Math.round(recent.reduce((s, e) => s + (computeLoad(e)?.score || 5), 0) * 10) / 10;
   const userSleep = Math.round(avg(recent.map(e => e.wearable?.sleep?.totalHours || 7)) * 10) / 10;
   const userSteps = Math.round(avg(recent.map(e => e.wearable?.activity?.steps || 5000)));
 
