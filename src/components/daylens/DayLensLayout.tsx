@@ -4,7 +4,7 @@ import ParticleRing from "./ParticleRing";
 import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, MessageCircle, HelpCircle, Shield, Flame, FileText, Trophy } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { AICoachSheet } from "./AICoachSheet";
-import { FoodModal, ActivityModal } from "./QuickAddModals";
+import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
 import { WeeklyTimeline } from "./WeeklyTimeline";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
@@ -39,7 +39,7 @@ const DayLensApp = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
-  const [quickAddModal, setQuickAddModal] = useState<"food" | "activity" | null>(null);
+  const [quickAddModal, setQuickAddModal] = useState<"food" | "activity" | "social" | null>(null);
   const [quickAddSection, setQuickAddSection] = useState<string>("nutrition");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
@@ -106,7 +106,7 @@ const DayLensApp = () => {
     }
   };
 
-  const openQuickAddModal = (modal: "food" | "activity") => {
+  const openQuickAddModal = (modal: "food" | "activity" | "social") => {
     prepareQuickAdd();
     setShowQuickAdd(false);
     setQuickAddModal(modal);
@@ -259,6 +259,7 @@ const DayLensApp = () => {
               {[
                 { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", modal: "food" as const },
                 { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", modal: "activity" as const },
+                { icon: MessageCircle, label: "Social", desc: "Log social interaction", modal: "social" as const },
               ].map(item => (
                 <button key={item.label} onClick={() => openQuickAddModal(item.modal)}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
@@ -285,8 +286,10 @@ const DayLensApp = () => {
       {quickAddModal === "activity" && (
         <ActivityModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
       )}
+      {quickAddModal === "social" && (
+        <SocialModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
+      )}
 
-      {/* Pricing Sheet */}
       <BottomSheet open={showPricing} onClose={() => setShowPricing(false)} title="Unlock DayLens">
         <p className="text-[11px] text-muted-foreground mb-5 -mt-1">Discover how your activities, sleep and habits connect.</p>
         <div className="space-y-3 mb-5">
