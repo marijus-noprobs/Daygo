@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X, ChevronLeft } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import type { MoodData } from "@/lib/daylens-constants";
-import moodGreatBg from "@/assets/mood-great-bg.png";
+
 
 interface SentimentScreenProps {
   onSubmit: (mood: MoodData, note: string) => void;
@@ -22,7 +22,7 @@ const getColors = (value: number) => {
   } else if (value <= 65) {
     return { bg: baseBg, bgImage: undefined, fg: "rgba(255,255,255,0.75)", fgLight: "rgba(255,255,255,0.5)", dotColor: "rgba(255,255,255,0.55)" };
   } else {
-    return { bg: undefined, bgImage: moodGreatBg, fg: "rgba(255,255,255,0.95)", fgLight: "rgba(255,255,255,0.7)", dotColor: "hsla(84,100%,55%,0.8)" };
+    return { bg: `linear-gradient(135deg, hsl(90,30%,18%) 0%, hsl(84,35%,22%) 50%, hsl(78,25%,16%) 100%)`, bgImage: undefined, fg: "rgba(255,255,255,0.95)", fgLight: "rgba(255,255,255,0.7)", dotColor: "hsla(84,100%,55%,0.8)" };
   }
 };
 
@@ -210,18 +210,16 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
               } as React.CSSProperties}
             />
           </div>
-          <div className="flex gap-2 mb-6">
+          <div className="flex justify-between mb-6 px-2">
             {step.options.map((opt, i) => {
               const isSelected = selectedIdx === i;
               return (
                 <button
                   key={opt}
                   onClick={() => updateValue(i)}
-                  className="flex-1 py-3 rounded-2xl text-[11px] font-bold transition-all active:scale-95"
+                  className="text-sm font-bold transition-all active:scale-95"
                   style={{
-                    background: isSelected ? colors.fg : `${colors.fg}12`,
-                    color: isSelected ? (value > 50 ? '#111' : '#000') : `${colors.fg}80`,
-                    border: isSelected ? 'none' : `1px solid ${colors.fg}20`,
+                    color: isSelected ? colors.fg : `${colors.fg}40`,
                   }}
                 >
                   {opt}
