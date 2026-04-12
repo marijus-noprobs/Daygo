@@ -11,7 +11,6 @@ interface SentimentScreenProps {
 const STEPS = [
   { key: "overallMood", question: "How's your overall mood?", options: ["Bad", "Okay", "Great"] },
   { key: "anxiety", question: "How's your anxiety level?", options: ["High", "Moderate", "Calm"] },
-  { key: "focus", question: "How's your focus & clarity?", options: ["Foggy", "Okay", "Sharp"] },
   { key: "energy", question: "How's your mental energy?", options: ["Drained", "Okay", "Energized"] },
 ] as const;
 
@@ -127,7 +126,7 @@ const SentimentFace = ({ value, dotColor }: { value: number; dotColor: string })
 
 export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => {
   const [stepIndex, setStepIndex] = useState(0);
-  const [values, setValues] = useState([1, 1, 1, 1]); // 0-2 index into options
+  const [values, setValues] = useState([1, 1, 1]); // 0-2 index into options
   const [noteText, setNoteText] = useState("");
   const [showNote, setShowNote] = useState(false);
 
@@ -150,8 +149,8 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
       onSubmit({
         overallMood: toMood(values[0]),
         anxiety: 5 - values[1] * 2, // invert
-        focus: toMood(values[2]),
-        energy: toMood(values[3]),
+        focus: 3, // default middle value
+        energy: toMood(values[2]),
         stressEvents: "",
         gratitude: "",
       }, noteText);
