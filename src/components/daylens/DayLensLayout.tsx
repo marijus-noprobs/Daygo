@@ -30,7 +30,6 @@ const DayLensApp = () => {
   const [plan, setPlan] = useState<string>(() => load("dl_plan", "free"));
   const [screen, setScreen] = useState("checkin");
   const [wearable, setWearable] = useState<WearableData | null>(null);
-  const [wearable, setWearable] = useState<WearableData | null>(null);
   const [nutrition, setNutrition] = useState<NutritionData>(defaultNutrition());
   const [mood, setMood] = useState<MoodData>(defaultMood());
   const [todayActivities, setTodayActivities] = useState<Activity[]>([]);
