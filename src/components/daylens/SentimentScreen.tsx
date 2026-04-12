@@ -149,8 +149,8 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
       onSubmit({
         overallMood: toMood(values[0]),
         anxiety: 5 - values[1] * 2, // invert
-        focus: toMood(values[2]),
-        energy: toMood(values[3]),
+        focus: 3, // default middle value
+        energy: toMood(values[2]),
         stressEvents: "",
         gratitude: "",
       }, noteText);
