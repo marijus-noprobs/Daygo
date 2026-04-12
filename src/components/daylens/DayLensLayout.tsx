@@ -1,10 +1,10 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import ParticleRing from "./ParticleRing";
-import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users, MessageCircle, HelpCircle, Shield, Flame, FileText, Trophy } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, MessageCircle, HelpCircle, Shield, Flame, FileText, Trophy } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { AICoachSheet } from "./AICoachSheet";
-import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
+import { FoodModal, ActivityModal } from "./QuickAddModals";
 import { WeeklyTimeline } from "./WeeklyTimeline";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
@@ -17,7 +17,7 @@ import { RecoveryScreen } from "./RecoveryScreen";
 import { StrainScreen } from "./StrainScreen";
 import { SleepCoachScreen } from "./SleepCoachScreen";
 import { ReportsScreen } from "./ReportsScreen";
-import { ChallengesScreen } from "./ChallengesScreen";
+
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions, scoreLabel, computeActivityCorrelations, avg, formatDuration, generateDailyPlan, getReadinessLevel, getStreakMessage } from "@/lib/daylens-utils";
 import { ACTIVITY_LEVEL_LABELS } from "@/lib/daylens-constants";
@@ -37,7 +37,7 @@ const DayLensApp = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
-  const [quickAddModal, setQuickAddModal] = useState<"food" | "activity" | "social" | null>(null);
+  const [quickAddModal, setQuickAddModal] = useState<"food" | "activity" | null>(null);
   const [quickAddSection, setQuickAddSection] = useState<string>("nutrition");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
@@ -104,7 +104,7 @@ const DayLensApp = () => {
     }
   };
 
-  const openQuickAddModal = (modal: "food" | "activity" | "social") => {
+  const openQuickAddModal = (modal: "food" | "activity") => {
     prepareQuickAdd();
     setShowQuickAdd(false);
     setQuickAddModal(modal);
@@ -187,7 +187,7 @@ const DayLensApp = () => {
           <div className="space-y-6">
             <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />
             <ReportsScreen entries={entries} />
-            <ChallengesScreen entries={entries} />
+            
           </div>
         )}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
@@ -226,7 +226,6 @@ const DayLensApp = () => {
               {[
                 { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", modal: "food" as const },
                 { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", modal: "activity" as const },
-                { icon: Users, label: "Social", desc: "Log social interaction", modal: "social" as const },
               ].map(item => (
                 <button key={item.label} onClick={() => openQuickAddModal(item.modal)}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
@@ -252,9 +251,6 @@ const DayLensApp = () => {
       )}
       {quickAddModal === "activity" && (
         <ActivityModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
-      )}
-      {quickAddModal === "social" && (
-        <SocialModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
       )}
 
       {/* Pricing Sheet */}
