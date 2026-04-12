@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Target, Check, X, ChevronRight } from "lucide-react";
+import { Target, Check, X, ChevronRight, Trash2, Pause, Play, Pencil } from "lucide-react";
 import { GlassCard, BottomSheet } from "./DayLensUI";
 import ParticleRing from "./ParticleRing";
 import type { Goal, DayEntry } from "@/lib/daylens-constants";
@@ -53,6 +53,8 @@ const GOAL_TEMPLATES = [
 
 export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onShowPricing }: GoalsScreenProps) => {
   const [showAddGoal, setShowAddGoal] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [expandedGoalId, setExpandedGoalId] = useState<number | null>(null);
   const [newGoal, setNewGoal] = useState<{ metric: string; label: string; target: number; unit: string; op: "gte" | "lte" }>({ metric: "sleep_hrs", label: "", target: 7.5, unit: "hrs", op: "gte" });
 
   // AI narrative
@@ -88,6 +90,28 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
     setGoals(gs => [...gs, { ...t, id: Date.now(), active: true }]);
   };
 
+  const toggleGoalActive = (id: number) => {
+    setGoals(gs => gs.map(g => g.id === id ? { ...g, active: !g.active } : g));
+  };
+
+  const deleteGoal = (id: number) => {
+    setGoals(gs => gs.filter(g => g.id !== id));
+    setExpandedGoalId(null);
+  };
+
+  const startEditGoal = (goal: Goal) => {
+    setEditingGoal({ ...goal });
+  };
+
+  const saveEditGoal = () => {
+    if (!editingGoal) return;
+    setGoals(gs => gs.map(g => g.id === editingGoal.id ? editingGoal : g));
+    setEditingGoal(null);
+  };
+
+  const activeGoals = goals.filter(g => g.active);
+  const pausedGoals = goals.filter(g => !g.active);
+
   return (
     <div className="space-y-4 pb-28 fade-up">
       {/* AI Narrative */}
@@ -103,34 +127,101 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
         </button>
       </div>
 
-      {goals.filter(g => g.active).map((g, gi) => {
+      {/* Active Goals */}
+      {activeGoals.map((g, gi) => {
         const { pct, hits } = goalProgress(g);
         const streak = calcStreak(entries, g.metric, g.target, g.op);
         const color = RING_COLORS[gi % RING_COLORS.length];
+        const isExpanded = expandedGoalId === g.id;
         return (
-          <div key={g.id} className={`card-dark rounded-[20px] p-5 fade-up d${gi + 1}`}>
-            <div className="flex items-center gap-4">
-              <GoalRing pct={pct} color={color} />
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-bold text-foreground">{g.label}</div>
-                <div className="font-mono text-[28px] font-bold text-foreground leading-none mt-1" style={{ letterSpacing: '-0.04em' }}>
-                  {streak.current}<span className="text-[11px] text-muted-foreground font-normal ml-1">day streak</span>
-                </div>
-                <div className="text-[9px] text-muted-foreground mt-1">
-                  {g.op === "gte" ? "≥" : "≤"} {g.target} {g.unit} · Best: {streak.best} days
+          <div key={g.id} className={`card-dark rounded-[20px] fade-up d${gi + 1}`}>
+            <button
+              className="w-full p-5 text-left"
+              onClick={() => setExpandedGoalId(isExpanded ? null : g.id)}
+            >
+              <div className="flex items-center gap-4">
+                <GoalRing pct={pct} color={color} />
+                <div className="flex-1 min-w-0">
+                  <div className="text-[13px] font-bold text-foreground">{g.label}</div>
+                  <div className="font-mono text-[28px] font-bold text-foreground leading-none mt-1" style={{ letterSpacing: '-0.04em' }}>
+                    {streak.current}<span className="text-[11px] text-muted-foreground font-normal ml-1">day streak</span>
+                  </div>
+                  <div className="text-[9px] text-muted-foreground mt-1">
+                    {g.op === "gte" ? "≥" : "≤"} {g.target} {g.unit} · Best: {streak.best} days
+                  </div>
                 </div>
               </div>
-            </div>
-            <DotRow hits={hits} />
+              <DotRow hits={hits} />
+            </button>
+
+            {/* Expanded actions */}
+            {isExpanded && (
+              <div className="px-5 pb-4 pt-1 flex gap-2 fade-up" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); startEditGoal(g); }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95"
+                  style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.7)' }}
+                >
+                  <Pencil size={12} /> Edit
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleGoalActive(g.id); }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95"
+                  style={{ background: 'rgba(255,200,50,0.06)', color: 'rgba(255,200,50,0.8)' }}
+                >
+                  <Pause size={12} /> Pause
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); deleteGoal(g.id); }}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[11px] font-bold transition-all active:scale-95"
+                  style={{ background: 'rgba(224,80,80,0.06)', color: 'rgba(224,80,80,0.8)' }}
+                >
+                  <Trash2 size={12} /> Delete
+                </button>
+              </div>
+            )}
           </div>
         );
       })}
 
-      {goals.filter(g => g.active).length === 0 && (
+      {activeGoals.length === 0 && (
         <GlassCard className="text-center py-10">
           <Target className="text-muted-foreground mx-auto mb-3 w-10 h-10" />
           <p className="text-muted-foreground text-[11px]">No active goals.</p>
         </GlassCard>
+      )}
+
+      {/* Paused Goals */}
+      {pausedGoals.length > 0 && (
+        <>
+          <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold mt-6 px-1">Paused</div>
+          {pausedGoals.map((g) => (
+            <div key={g.id} className="card-dark rounded-[20px] p-4 flex items-center justify-between" style={{ opacity: 0.5 }}>
+              <div>
+                <div className="text-[13px] font-bold text-foreground">{g.label}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">
+                  {g.op === "gte" ? "≥" : "≤"} {g.target} {g.unit}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => toggleGoalActive(g.id)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
+                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                >
+                  <Play size={14} className="text-primary" />
+                </button>
+                <button
+                  onClick={() => deleteGoal(g.id)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
+                  style={{ background: 'rgba(224,80,80,0.06)' }}
+                >
+                  <Trash2 size={14} style={{ color: 'rgba(224,80,80,0.7)' }} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </>
       )}
 
       {!isPremium && (
@@ -142,6 +233,41 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
           <ChevronRight size={18} className="text-muted-foreground" />
         </div>
       )}
+
+      {/* Edit Goal Sheet */}
+      <BottomSheet open={!!editingGoal} onClose={() => setEditingGoal(null)} title="Edit Goal">
+        {editingGoal && (
+          <div className="space-y-4 mb-5">
+            <div>
+              <label className="text-[10px] text-muted-foreground mb-2 block uppercase tracking-wider font-semibold">Label</label>
+              <input type="text" value={editingGoal.label} onChange={e => setEditingGoal({ ...editingGoal, label: e.target.value })}
+                className="bg-white/[0.05] border border-white/[0.08] rounded-xl text-foreground w-full p-3 text-[13px] outline-none focus:border-primary/[0.3] placeholder:text-white/[0.15]" />
+            </div>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <label className="text-[10px] text-muted-foreground mb-2 block uppercase tracking-wider font-semibold">Target</label>
+                <input type="number" value={editingGoal.target} onChange={e => setEditingGoal({ ...editingGoal, target: parseFloat(e.target.value) || 0 })}
+                  className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-[13px] text-foreground outline-none focus:border-primary/[0.3]" />
+              </div>
+              <div>
+                <label className="text-[10px] text-muted-foreground mb-2 block uppercase tracking-wider font-semibold">Direction</label>
+                <div className="flex gap-2">
+                  {([["gte", "≥"], ["lte", "≤"]] as const).map(([op, l]) => (
+                    <button key={op} onClick={() => setEditingGoal({ ...editingGoal, op })}
+                      className={`px-4 py-3 rounded-xl text-[13px] font-semibold transition-colors ${editingGoal.op === op ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "bg-white/[0.05] text-muted-foreground border border-white/[0.07]"}`}>
+                      {l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button onClick={saveEditGoal}
+              className="w-full bg-primary text-primary-foreground font-display font-extrabold py-4 rounded-[18px] active:scale-[0.98] transition-transform text-[15px]">
+              Save Changes
+            </button>
+          </div>
+        )}
+      </BottomSheet>
 
       {/* Add Goal Sheet */}
       <BottomSheet open={showAddGoal} onClose={() => setShowAddGoal(false)} title="New Goal">
