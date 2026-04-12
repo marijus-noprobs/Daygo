@@ -1,9 +1,9 @@
-import { useState, useMemo, useRef } from "react";
-import { Plus, Target, Trophy, Check, X, ChevronRight } from "lucide-react";
-import { GlassCard, BottomSheet, SectionHeader } from "./DayLensUI";
+import { useState, useMemo } from "react";
+import { Target, Check, X, ChevronRight } from "lucide-react";
+import { GlassCard, BottomSheet } from "./DayLensUI";
 import ParticleRing from "./ParticleRing";
 import type { Goal, DayEntry } from "@/lib/daylens-constants";
-import { getMetricVal, calcStreak, computeBadges } from "@/lib/daylens-utils";
+import { getMetricVal, calcStreak } from "@/lib/daylens-utils";
 
 interface GoalsScreenProps {
   goals: Goal[];
@@ -17,7 +17,6 @@ interface GoalsScreenProps {
 /* ── Goal Ring (particle-based) ─────────────────────────── */
 const GoalRing = ({ pct, size = 64, color }: { pct: number; size?: number; color: string }) => {
   const p = Math.max(0, Math.min(1, pct / 100));
-  // Convert CSS color to hex for ParticleRing
   const hexColor = color.startsWith('#') ? color : '#ffffff';
   return (
     <div className="relative flex-shrink-0" style={{ width: size, height: size }}>
@@ -43,13 +42,6 @@ const DotRow = ({ hits }: { hits: boolean[] }) => (
   </div>
 );
 
-/* ── Badge icons map ───────────────────────────────────── */
-const BADGE_ICONS: Record<string, string> = {
-  first_log: "🎯", week_streak: "🔥", month_streak: "💎",
-  sleep_7: "🌙", steps_7: "👟", mood_5: "😊",
-  perfect_5: "⭐", workout_10: "💪", hydrated_7: "💧", perfect_10: "👑",
-};
-
 /* ── Goal templates ────────────────────────────────────── */
 const GOAL_TEMPLATES = [
   { metric: "sleep_hrs", label: "7.5h Sleep", target: 7.5, unit: "hrs", op: "gte" as const },
@@ -61,13 +53,7 @@ const GOAL_TEMPLATES = [
 
 export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onShowPricing }: GoalsScreenProps) => {
   const [showAddGoal, setShowAddGoal] = useState(false);
-  const [tab, setTab] = useState<"goals" | "badges">("goals");
   const [newGoal, setNewGoal] = useState<{ metric: string; label: string; target: number; unit: string; op: "gte" | "lte" }>({ metric: "sleep_hrs", label: "", target: 7.5, unit: "hrs", op: "gte" });
-  const badgeScrollRef = useRef<HTMLDivElement>(null);
-
-  const badges = useMemo(() => computeBadges(entries), [entries]);
-  const earnedBadges = badges.filter(b => b.earned);
-  const lockedBadges = badges.filter(b => !b.earned);
 
   // AI narrative
   const aiNarrative = useMemo(() => {
@@ -98,7 +84,6 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
   const RING_COLORS = ["hsl(var(--primary))", "rgba(255,255,255,0.6)", "rgba(255,255,255,0.35)"];
 
   const addFromTemplate = (t: typeof GOAL_TEMPLATES[0]) => {
-    // Don't add if already exists
     if (goals.some(g => g.metric === t.metric && g.target === t.target && g.active)) return;
     setGoals(gs => [...gs, { ...t, id: Date.now(), active: true }]);
   };
@@ -118,99 +103,44 @@ export const GoalsScreen = ({ goals, setGoals, entries, recent, isPremium, onSho
         </button>
       </div>
 
-      {/* Tab switcher */}
-      <div className="flex p-1 card-dark !rounded-xl overflow-hidden">
-        {(["goals", "badges"] as const).map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            className={`flex-1 py-2 text-[11px] font-bold rounded-lg capitalize transition-all flex items-center justify-center gap-1.5 ${tab === t ? "bg-primary/[0.12] text-primary border border-primary/[0.2]" : "text-muted-foreground"}`}>
-            {t === "goals" ? <Target size={13} /> : <Trophy size={13} />}
-            {t === "badges" ? `Badges (${earnedBadges.length}/${badges.length})` : "Goals"}
-          </button>
-        ))}
-      </div>
-
-      {tab === "goals" && (
-        <>
-          {goals.filter(g => g.active).map((g, gi) => {
-            const { pct, hits } = goalProgress(g);
-            const streak = calcStreak(entries, g.metric, g.target, g.op);
-            const color = RING_COLORS[gi % RING_COLORS.length];
-            return (
-              <div key={g.id} className={`card-dark rounded-[20px] p-5 fade-up d${gi + 1}`}>
-                <div className="flex items-center gap-4">
-                  <GoalRing pct={pct} color={color} />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-bold text-foreground">{g.label}</div>
-                    <div className="font-mono text-[28px] font-bold text-foreground leading-none mt-1" style={{ letterSpacing: '-0.04em' }}>
-                      {streak.current}<span className="text-[11px] text-muted-foreground font-normal ml-1">day streak</span>
-                    </div>
-                    <div className="text-[9px] text-muted-foreground mt-1">
-                      {g.op === "gte" ? "≥" : "≤"} {g.target} {g.unit} · Best: {streak.best} days
-                    </div>
-                  </div>
+      {goals.filter(g => g.active).map((g, gi) => {
+        const { pct, hits } = goalProgress(g);
+        const streak = calcStreak(entries, g.metric, g.target, g.op);
+        const color = RING_COLORS[gi % RING_COLORS.length];
+        return (
+          <div key={g.id} className={`card-dark rounded-[20px] p-5 fade-up d${gi + 1}`}>
+            <div className="flex items-center gap-4">
+              <GoalRing pct={pct} color={color} />
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-bold text-foreground">{g.label}</div>
+                <div className="font-mono text-[28px] font-bold text-foreground leading-none mt-1" style={{ letterSpacing: '-0.04em' }}>
+                  {streak.current}<span className="text-[11px] text-muted-foreground font-normal ml-1">day streak</span>
                 </div>
-                <DotRow hits={hits} />
+                <div className="text-[9px] text-muted-foreground mt-1">
+                  {g.op === "gte" ? "≥" : "≤"} {g.target} {g.unit} · Best: {streak.best} days
+                </div>
               </div>
-            );
-          })}
-
-          {goals.filter(g => g.active).length === 0 && (
-            <GlassCard className="text-center py-10">
-              <Target className="text-muted-foreground mx-auto mb-3 w-10 h-10" />
-              <p className="text-muted-foreground text-[11px]">No active goals.</p>
-            </GlassCard>
-          )}
-
-          {!isPremium && (
-            <div className="card-dark rounded-[22px] p-4 flex items-center justify-between cursor-pointer" onClick={onShowPricing}>
-              <div>
-                <div className="font-display text-[13px] font-bold text-primary">Unlock Pro</div>
-                <div className="text-[11px] text-muted-foreground mt-0.5">AI insights, advanced trends & more</div>
-              </div>
-              <ChevronRight size={18} className="text-muted-foreground" />
             </div>
-          )}
-        </>
+            <DotRow hits={hits} />
+          </div>
+        );
+      })}
+
+      {goals.filter(g => g.active).length === 0 && (
+        <GlassCard className="text-center py-10">
+          <Target className="text-muted-foreground mx-auto mb-3 w-10 h-10" />
+          <p className="text-muted-foreground text-[11px]">No active goals.</p>
+        </GlassCard>
       )}
 
-      {tab === "badges" && (
-        <>
-          {/* Recently Earned - horizontal carousel */}
-          {earnedBadges.length > 0 && (
-            <div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold px-1 mb-3">Recently Earned</div>
-              <div ref={badgeScrollRef} className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1" style={{ scrollSnapType: 'x mandatory' }}>
-                {earnedBadges.map(b => (
-                  <div key={b.id} className="card-dark rounded-[18px] p-4 text-center flex-shrink-0" style={{ width: 140, scrollSnapAlign: 'start' }}>
-                    <div className="text-[28px] mb-2">{BADGE_ICONS[b.id] || "🏆"}</div>
-                    <h4 className="text-[12px] font-bold text-foreground mb-0.5">{b.title}</h4>
-                    <p className="text-[9px] text-muted-foreground leading-snug">{b.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Locked Achievements */}
-          {lockedBadges.length > 0 && (
-            <div>
-              <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold px-1 mb-3">Locked</div>
-              <div className="space-y-2">
-                {lockedBadges.map(b => (
-                  <div key={b.id} className="card-dark rounded-[16px] p-3.5 flex items-center gap-3 opacity-50">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-[18px]" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                      🔒
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-[12px] font-semibold text-foreground">{b.title}</h4>
-                      <p className="text-[10px] text-muted-foreground">{b.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+      {!isPremium && (
+        <div className="card-dark rounded-[22px] p-4 flex items-center justify-between cursor-pointer" onClick={onShowPricing}>
+          <div>
+            <div className="font-display text-[13px] font-bold text-primary">Unlock Pro</div>
+            <div className="text-[11px] text-muted-foreground mt-0.5">AI insights, advanced trends & more</div>
+          </div>
+          <ChevronRight size={18} className="text-muted-foreground" />
+        </div>
       )}
 
       {/* Add Goal Sheet */}
