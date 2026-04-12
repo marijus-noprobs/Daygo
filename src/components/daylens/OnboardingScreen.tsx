@@ -139,7 +139,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
       <div className="flex justify-center gap-1.5 pt-14 pb-4 z-10">
         {STEPS.filter(s => s !== "paywall").map((_, i) => (
           <div key={i} className={`h-1 rounded-full transition-all duration-300 ${
-            i === stepIdx ? "w-8 bg-muted-foreground" : i < stepIdx ? "w-3 bg-muted-foreground/40" : "w-3 bg-muted/40"
+            i === stepIdx ? "w-8 bg-foreground" : i < stepIdx ? "w-3 bg-foreground/30" : "w-3 bg-muted/40"
           }`} />
         ))}
       </div>
@@ -232,8 +232,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, sex: s.value }))}
                       className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
                         profile.sex === s.value
-                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
-                          : "bg-muted/20 text-muted-foreground border-2 border-transparent"
+                          ? "bg-foreground/[0.08] text-foreground border-2 border-foreground/25"
+                          : "bg-foreground/[0.04] text-muted-foreground border-2 border-foreground/[0.06]"
                       }`}
                     >
                       <span className="text-2xl block mb-1">{s.emoji}</span>
@@ -264,8 +264,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setUnits(u.value)}
                       className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
                         units === u.value
-                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
-                          : "bg-muted/20 text-muted-foreground border-2 border-transparent"
+                          ? "bg-foreground/[0.08] text-foreground border-2 border-foreground/25"
+                          : "bg-foreground/[0.04] text-muted-foreground border-2 border-foreground/[0.06]"
                       }`}
                     >
                       {u.label}
@@ -363,13 +363,13 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, goal: key as UserProfile["goal"] }))}
                       className={`w-full py-4 rounded-2xl text-[15px] font-bold transition-all flex items-center justify-between px-6 ${
                         profile.goal === key
-                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
-                          : "bg-muted/20 text-muted-foreground border-2 border-transparent"
+                          ? "bg-foreground/[0.08] text-foreground border-2 border-foreground/25"
+                          : "bg-foreground/[0.04] text-muted-foreground border-2 border-foreground/[0.06]"
                       }`}
                     >
                       {label}
                       {profile.goal === key && (
-                        <div className="w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                         <div className="w-5 h-5 rounded-full bg-foreground flex items-center justify-center">
                           <Check size={12} className="text-background" />
                         </div>
                       )}
@@ -396,12 +396,12 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, diet: d.value }))}
                       className={`relative rounded-2xl p-4 text-left transition-all ${
                         profile.diet === d.value
-                          ? "bg-muted border-2 border-muted-foreground/25"
-                          : "bg-muted/10 border-2 border-transparent hover:border-muted/20"
+                          ? "bg-foreground/[0.08] border-2 border-foreground/25"
+                          : "bg-foreground/[0.04] border-2 border-foreground/[0.06] hover:border-foreground/10"
                       }`}
                     >
                       {profile.diet === d.value && (
-                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-foreground flex items-center justify-center">
                           <Check size={12} className="text-background" />
                         </div>
                       )}
@@ -463,15 +463,15 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.04 }}
                       onClick={() => setProfile(p => ({ ...p, wearableType: w.value }))}
-                      className={`w-full py-3.5 rounded-2xl text-[13px] font-semibold transition-all flex items-center justify-between px-5 ${
-                        profile.wearableType === w.value
-                          ? "bg-muted text-foreground border-2 border-muted-foreground/25"
-                          : "bg-muted/10 text-muted-foreground/60 border-2 border-transparent hover:border-muted/20"
-                      }`}
+                       className={`w-full py-3.5 rounded-2xl text-[13px] font-semibold transition-all flex items-center justify-between px-5 ${
+                         profile.wearableType === w.value
+                           ? "bg-foreground/[0.08] text-foreground border-2 border-foreground/25"
+                           : "bg-foreground/[0.04] text-muted-foreground/60 border-2 border-foreground/[0.06] hover:border-foreground/10"
+                       }`}
                     >
                       {w.label}
                       {profile.wearableType === w.value && (
-                        <div className="w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                         <div className="w-5 h-5 rounded-full bg-foreground flex items-center justify-center">
                           <Check size={12} className="text-background" />
                         </div>
                       )}
@@ -504,7 +504,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   transition={{ delay: 0.4 }} className="flex flex-col gap-3 w-full max-w-xs">
                   <button
                     onClick={requestNotifications}
-                    className="w-full h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 bg-muted text-foreground hover:opacity-90 active:scale-[0.98] transition-all"
+                    className="w-full h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 bg-foreground text-background hover:opacity-90 active:scale-[0.98] transition-all"
                   >
                     <Bell size={16} /> Enable Notifications
                   </button>
@@ -534,8 +534,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
             disabled={!canContinue}
             className={`flex-1 h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 transition-all ${
               canContinue
-                ? "bg-muted text-foreground hover:opacity-90 active:scale-[0.98]"
-                : "bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
+                ? "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
+                : "bg-foreground/10 text-muted-foreground/40 cursor-not-allowed"
             }`}
           >
             {step === "welcome" ? "Get Started" : "Continue"}
