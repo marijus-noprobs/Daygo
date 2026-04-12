@@ -159,7 +159,7 @@ const DayLensApp = () => {
           <h1 className="font-display text-[30px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>
             {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Insights" : screen === "goals" ? "Goals" : "Profile"}
           </h1>
-          <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)}>
+          <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)} data-quick-add-trigger>
             <Plus className="w-[28px] h-[28px] text-white" strokeWidth={3} />
           </button>
         </div>
