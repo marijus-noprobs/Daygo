@@ -119,8 +119,8 @@ export const BottomSheet = ({ open, onClose, children, title }: {
   open: boolean; onClose: () => void; children: ReactNode; title?: string;
 }) => {
   if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-5 fade-in" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }} onClick={onClose}>
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-5 fade-in" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }} onClick={onClose}>
       <div className="w-full max-w-md bg-card rounded-[22px] shadow-2xl scale-in border border-border" onClick={e => e.stopPropagation()}>
         {title && (
           <div className="flex items-center justify-between px-6 pt-5 pb-3">
@@ -132,6 +132,7 @@ export const BottomSheet = ({ open, onClose, children, title }: {
         )}
         <div className="px-6 pb-6 overflow-y-auto" style={{ maxHeight: "70vh" }}>{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
