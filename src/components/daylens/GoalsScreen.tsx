@@ -1,9 +1,9 @@
-import { useState, useMemo, useRef } from "react";
-import { Plus, Target, Trophy, Check, X, ChevronRight } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Plus, Target, Check, X, ChevronRight } from "lucide-react";
 import { GlassCard, BottomSheet, SectionHeader } from "./DayLensUI";
 import ParticleRing from "./ParticleRing";
 import type { Goal, DayEntry } from "@/lib/daylens-constants";
-import { getMetricVal, calcStreak, computeBadges } from "@/lib/daylens-utils";
+import { getMetricVal, calcStreak } from "@/lib/daylens-utils";
 
 interface GoalsScreenProps {
   goals: Goal[];
