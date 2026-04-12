@@ -149,7 +149,7 @@ export const PastEntriesSheet = ({ open, onClose, entries }: PastEntriesSheetPro
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center fade-in" onClick={onClose}
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center fade-in" onClick={onClose}
       style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
       <div className="w-full max-w-md h-full max-h-[90vh] overflow-y-auto rounded-t-[28px] sm:rounded-[28px] mt-auto sm:my-auto p-5 pt-4 scale-in"
         onClick={e => e.stopPropagation()}
