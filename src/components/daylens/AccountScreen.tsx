@@ -198,7 +198,7 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
               <button onClick={() => setEditing(null)}><X className="w-4 h-4 text-muted-foreground" /></button>
             </div>
             <div className="space-y-2">
-              {Object.entries(GOAL_LABELS).map(([key, label]) => (
+              {(Object.entries(GOAL_LABELS) as [("lose" | "maintain" | "gain"), string][]).map(([key, label]) => (
                 <button
                   key={key}
                   onClick={() => saveGoal(key)}
