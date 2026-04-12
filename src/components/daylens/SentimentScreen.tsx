@@ -22,7 +22,7 @@ const getColors = (value: number) => {
   } else if (value <= 65) {
     return { bg: baseBg, bgImage: undefined, fg: "rgba(255,255,255,0.75)", fgLight: "rgba(255,255,255,0.5)", dotColor: "rgba(255,255,255,0.55)" };
   } else {
-    return { bg: undefined, bgImage: moodGreatBg, fg: "rgba(255,255,255,0.95)", fgLight: "rgba(255,255,255,0.7)", dotColor: "hsla(84,100%,55%,0.8)" };
+    return { bg: `linear-gradient(135deg, hsl(90,30%,18%) 0%, hsl(84,35%,22%) 50%, hsl(78,25%,16%) 100%)`, bgImage: undefined, fg: "rgba(255,255,255,0.95)", fgLight: "rgba(255,255,255,0.7)", dotColor: "hsla(84,100%,55%,0.8)" };
   }
 };
 
