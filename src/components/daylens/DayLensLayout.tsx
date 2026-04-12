@@ -480,7 +480,7 @@ const HomeScreen = ({
           className="w-full"
         >
           {/* Main input area */}
-          <div className="rounded-[16px] flex items-center gap-3 px-4 py-2.5" style={{ background: '#1a1a1b', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="rounded-[16px] flex items-center gap-3 px-4 py-2.5 coach-glow-border" style={{ background: '#1a1a1b' }}>
             <input
               name="coachInput"
               type="text"
