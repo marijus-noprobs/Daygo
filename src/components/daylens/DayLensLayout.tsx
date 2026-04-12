@@ -37,7 +37,7 @@ const DayLensApp = () => {
   const [submitted, setSubmitted] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
-  const [quickAddModal, setQuickAddModal] = useState<"food" | "activity" | "social" | null>(null);
+  const [quickAddModal, setQuickAddModal] = useState<"food" | "activity" | null>(null);
   const [quickAddSection, setQuickAddSection] = useState<string>("nutrition");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showSentiment, setShowSentiment] = useState<boolean>(() => {
@@ -104,7 +104,7 @@ const DayLensApp = () => {
     }
   };
 
-  const openQuickAddModal = (modal: "food" | "activity" | "social") => {
+  const openQuickAddModal = (modal: "food" | "activity") => {
     prepareQuickAdd();
     setShowQuickAdd(false);
     setQuickAddModal(modal);
@@ -187,7 +187,7 @@ const DayLensApp = () => {
           <div className="space-y-6">
             <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />
             <ReportsScreen entries={entries} />
-            <ChallengesScreen entries={entries} />
+            
           </div>
         )}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
@@ -226,7 +226,6 @@ const DayLensApp = () => {
               {[
                 { icon: UtensilsCrossed, label: "Food", desc: "Log a meal or snack", modal: "food" as const },
                 { icon: Dumbbell, label: "Activity", desc: "Log exercise or movement", modal: "activity" as const },
-                { icon: Users, label: "Social", desc: "Log social interaction", modal: "social" as const },
               ].map(item => (
                 <button key={item.label} onClick={() => openQuickAddModal(item.modal)}
                   className="w-full flex items-center gap-3.5 px-2 py-3.5 rounded-2xl hover:bg-white/[0.03] active:scale-[0.98] transition-all"
@@ -252,10 +251,7 @@ const DayLensApp = () => {
       )}
       {quickAddModal === "activity" && (
         <ActivityModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
-      )}
-      {quickAddModal === "social" && (
-        <SocialModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
-      )}
+      )
 
       {/* Pricing Sheet */}
       <BottomSheet open={showPricing} onClose={() => setShowPricing(false)} title="Unlock DayLens">
