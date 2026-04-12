@@ -487,8 +487,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
               <div className="flex-1 flex flex-col items-center justify-center px-8">
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1, duration: 0.5 }}
-                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center mb-6 shadow-lg shadow-primary/30">
-                  <Bell className="text-primary-foreground" size={36} />
+                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-muted to-muted-foreground flex items-center justify-center mb-6">
+                  <Bell className="text-background" size={36} />
                 </motion.div>
                 <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -504,7 +504,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   transition={{ delay: 0.4 }} className="flex flex-col gap-3 w-full max-w-xs">
                   <button
                     onClick={requestNotifications}
-                    className="w-full h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all"
+                    className="w-full h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 bg-muted text-foreground hover:opacity-90 active:scale-[0.98] transition-all"
                   >
                     <Bell size={16} /> Enable Notifications
                   </button>
@@ -534,7 +534,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
             disabled={!canContinue}
             className={`flex-1 h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 transition-all ${
               canContinue
-                ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
+                ? "bg-muted text-foreground hover:opacity-90 active:scale-[0.98]"
                 : "bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
             }`}
           >
