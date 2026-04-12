@@ -55,7 +55,7 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
     setEditing(null);
   };
 
-  const saveGoal = (goal: string) => {
+  const saveGoal = (goal: "lose" | "maintain" | "gain") => {
     setProfile({ ...profile, goal });
     setEditing(null);
   };
