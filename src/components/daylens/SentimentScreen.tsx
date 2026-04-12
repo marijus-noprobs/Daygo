@@ -17,27 +17,27 @@ const STEPS = [
 
 const getColors = (value: number) => {
   if (value <= 35) {
-    // Bad — dark/black
     return {
       bg: `linear-gradient(135deg, hsl(0,0%,6%) 0%, hsl(0,0%,12%) 50%, hsl(240,4%,10%) 100%)`,
+      bgImage: undefined,
       fg: "rgba(255,255,255,0.5)",
       fgLight: "rgba(255,255,255,0.3)",
       dotColor: "rgba(255,255,255,0.45)",
     };
   } else if (value <= 65) {
-    // Neutral — grey
     const t = (value - 35) / 30;
     return {
       bg: `linear-gradient(135deg, hsl(0,0%,${12 + t * 4}%) 0%, hsl(0,0%,${16 + t * 3}%) 50%, hsl(220,3%,${14 + t * 4}%) 100%)`,
+      bgImage: undefined,
       fg: "rgba(255,255,255,0.75)",
       fgLight: "rgba(255,255,255,0.5)",
       dotColor: "rgba(255,255,255,0.55)",
     };
   } else {
-    // Good — lime green
     const t = (value - 65) / 35;
     return {
-      bg: `linear-gradient(135deg, hsl(84,${30 + t * 40}%,${10 + t * 8}%) 0%, hsl(78,${35 + t * 45}%,${14 + t * 10}%) 50%, hsl(90,${25 + t * 35}%,${8 + t * 6}%) 100%)`,
+      bg: undefined,
+      bgImage: moodGreatBg,
       fg: `rgba(255,255,255,${0.8 + t * 0.15})`,
       fgLight: `rgba(255,255,255,${0.55 + t * 0.15})`,
       dotColor: `hsla(84,100%,${50 + t * 10}%,${0.6 + t * 0.35})`,
