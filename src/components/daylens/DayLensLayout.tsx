@@ -251,7 +251,7 @@ const DayLensApp = () => {
       )}
       {quickAddModal === "activity" && (
         <ActivityModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
-      )
+      )}
 
       {/* Pricing Sheet */}
       <BottomSheet open={showPricing} onClose={() => setShowPricing(false)} title="Unlock DayLens">
