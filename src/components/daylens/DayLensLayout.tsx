@@ -130,6 +130,8 @@ const DayLensApp = () => {
     save("dl_profile", p);
     setOnboarded(true);
     save("dl_onboarded", true);
+    // Always show sentiment after onboarding, even if previously completed today
+    setShowSentiment(true);
   };
 
   if (!onboarded) {
