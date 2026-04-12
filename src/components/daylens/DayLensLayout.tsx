@@ -159,7 +159,7 @@ const DayLensApp = () => {
           <h1 className="font-display text-[30px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>
             {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Insights" : screen === "goals" ? "Goals" : "Profile"}
           </h1>
-          <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)} data-quick-add-trigger>
+          <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)}>
             <Plus className="w-[28px] h-[28px] text-white" strokeWidth={3} />
           </button>
         </div>
@@ -423,37 +423,8 @@ const HomeScreen = ({
     activity: "→", sleep: "→", social: "→", recovery: "→", nutrition: "→",
   };
 
-  const hasLoggedToday = hasToday || todayActivities.length > 0 || nutrition.calories > 0;
-
   return (
     <div className="space-y-5 fade-up">
-
-      {/* ── EMPTY STATE CTA ─────────────────────────────────── */}
-      {!hasLoggedToday && (
-        <button
-          onClick={() => {
-            // Trigger the quick add modal from the parent
-            const plusBtn = document.querySelector('[data-quick-add-trigger]') as HTMLButtonElement;
-            plusBtn?.click();
-          }}
-          className="w-full card-dark-gradient fade-up d1 text-left active:scale-[0.98] transition-transform"
-          style={{ padding: '24px 22px' }}
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <Plus className="w-5 h-5 text-primary" strokeWidth={2.5} />
-            </div>
-            <div className="flex-1">
-              <div className="font-display text-[15px] font-extrabold text-foreground">Log your day</div>
-              <div className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                Tap here or the <span className="text-foreground font-bold">+</span> button above to record meals, activities & mood.
-              </div>
-            </div>
-            <ChevronRight size={16} className="text-muted-foreground/30 flex-shrink-0" />
-          </div>
-        </button>
-      )}
 
       {/* ── HERO: Today's Optimal Day ───────────────────────── */}
       <div className="card-dark-gradient fade-up d1" style={{ padding: '28px 22px 24px' }}>
