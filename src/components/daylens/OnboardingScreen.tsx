@@ -13,8 +13,8 @@ const STEPS = ["welcome", "name", "birthday", "sex", "units", "height", "weight"
 type Step = typeof STEPS[number];
 
 const FEATURES = [
-  { icon: Activity, title: "Daily Check-in", desc: "Log sleep, nutrition, mood & activities in seconds", color: "text-primary" },
-  { icon: TrendingUp, title: "Smart Insights", desc: "See how your habits affect tomorrow's performance", color: "text-primary" },
+  { icon: Activity, title: "Daily Check-in", desc: "Log sleep, nutrition, mood & activities in seconds", color: "text-muted-foreground" },
+  { icon: TrendingUp, title: "Smart Insights", desc: "See how your habits affect tomorrow's performance", color: "text-muted-foreground" },
   { icon: Target, title: "Goal Tracking", desc: "Set targets and track streaks across all metrics", color: "text-foreground" },
   { icon: Sparkles, title: "Perfect Day Blueprint", desc: "AI analyzes your best days to find your formula", color: "text-foreground" },
 ];
@@ -139,7 +139,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
       <div className="flex justify-center gap-1.5 pt-14 pb-4 z-10">
         {STEPS.filter(s => s !== "paywall").map((_, i) => (
           <div key={i} className={`h-1 rounded-full transition-all duration-300 ${
-            i === stepIdx ? "w-8 bg-primary" : i < stepIdx ? "w-3 bg-primary/40" : "w-3 bg-muted/40"
+            i === stepIdx ? "w-8 bg-muted-foreground" : i < stepIdx ? "w-3 bg-muted-foreground/40" : "w-3 bg-muted/40"
           }`} />
         ))}
       </div>
@@ -161,12 +161,12 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
               <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10 px-6">
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.15, duration: 0.5 }}
-                  className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center mb-8 shadow-lg shadow-primary/30">
-                  <Sparkles className="text-primary-foreground" size={40} />
+                  className="w-24 h-24 rounded-3xl bg-gradient-to-br from-muted to-muted-foreground flex items-center justify-center mb-8">
+                  <Sparkles className="text-background" size={40} />
                 </motion.div>
                 <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }} className="font-display text-4xl font-extrabold tracking-tight mb-3">
-                  daygo<span className="text-primary">.ai</span>
+                  daygo<span className="text-muted-foreground">.ai</span>
                 </motion.h1>
                 <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.45 }} className="text-muted-foreground text-base max-w-[260px] leading-relaxed">
@@ -190,7 +190,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   onChange={e => setName(e.target.value)}
                   placeholder="Your name"
                   autoFocus
-                  className="w-full text-center text-3xl font-extrabold font-display bg-transparent border-b-2 border-muted/30 focus:border-primary/50 pb-3 text-foreground placeholder:text-muted-foreground/30 focus:outline-none transition-colors"
+                  className="w-full text-center text-3xl font-extrabold font-display bg-transparent border-b-2 border-muted/30 focus:border-muted-foreground/50 pb-3 text-foreground placeholder:text-muted-foreground/30 focus:outline-none transition-colors"
                 />
               </div>
             )}
@@ -232,7 +232,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, sex: s.value }))}
                       className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
                         profile.sex === s.value
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
                           : "bg-muted/20 text-muted-foreground border-2 border-transparent"
                       }`}
                     >
