@@ -1,7 +1,8 @@
-import { ChevronRight } from "lucide-react";
+import { useRef, useState } from "react";
+import { ChevronRight, Camera } from "lucide-react";
 import type { DayEntry, UserProfile } from "@/lib/daylens-constants";
 import { ACTIVITY_LEVEL_LABELS, GOAL_LABELS } from "@/lib/daylens-constants";
-import { calcCalorieRecommendation, computeDayScore, avg } from "@/lib/daylens-utils";
+import { calcCalorieRecommendation, computeDayScore, avg, save, load } from "@/lib/daylens-utils";
 
 interface AccountScreenProps {
   entries: DayEntry[];
@@ -14,6 +15,8 @@ interface AccountScreenProps {
 
 export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, setProfile }: AccountScreenProps) => {
   const avgScore = entries.length ? avg(entries.slice(0, 14).map(computeDayScore)).toFixed(1) : "—";
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [avatar, setAvatar] = useState<string | null>(() => load("dl_avatar", null));
 
   const streak = (() => {
     const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
@@ -30,13 +33,44 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
 
   const initials = "JC";
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      setAvatar(result);
+      save("dl_avatar", result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="space-y-4 pb-28 fade-up">
       {/* Profile Hero */}
       <div className="card-dark-gradient rounded-[24px] p-5 fade-up d1">
-        <div className="w-[52px] h-[52px] rounded-[18px] bg-primary/10 border border-primary/20 flex items-center justify-center mb-2.5">
-          <span className="font-display text-lg font-extrabold text-primary">{initials}</span>
-        </div>
+        <button
+          onClick={() => fileRef.current?.click()}
+          className="relative w-[60px] h-[60px] rounded-[20px] overflow-hidden mb-2.5 group"
+        >
+          {avatar ? (
+            <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <span className="font-display text-lg font-extrabold text-primary">{initials}</span>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
+            <Camera className="w-4 h-4 text-white" strokeWidth={2} />
+          </div>
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handlePhotoUpload}
+        />
         <div className="font-display text-[22px] font-extrabold text-foreground tracking-tight">Jacob Clarke</div>
         <div className="text-[12px] text-muted-foreground mt-0.5">{plan === "free" ? "Free Plan · Upgrade for AI Insights" : `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`}</div>
         <div className="flex mt-4 pt-3.5 border-t border-border">
