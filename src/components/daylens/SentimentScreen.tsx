@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, ChevronLeft } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import type { MoodData } from "@/lib/daylens-constants";
+import moodGreatBg from "@/assets/mood-great-bg.png";
 
 interface SentimentScreenProps {
   onSubmit: (mood: MoodData, note: string) => void;
