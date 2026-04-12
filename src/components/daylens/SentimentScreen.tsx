@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X, ChevronLeft } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import type { MoodData } from "@/lib/daylens-constants";
-import moodGreatBg from "@/assets/mood-great-bg.png";
+
 
 interface SentimentScreenProps {
   onSubmit: (mood: MoodData, note: string) => void;
@@ -210,18 +210,16 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
               } as React.CSSProperties}
             />
           </div>
-          <div className="flex gap-2 mb-6">
+          <div className="flex justify-between mb-6 px-2">
             {step.options.map((opt, i) => {
               const isSelected = selectedIdx === i;
               return (
                 <button
                   key={opt}
                   onClick={() => updateValue(i)}
-                  className="flex-1 py-3 rounded-2xl text-[11px] font-bold transition-all active:scale-95"
+                  className="text-sm font-bold transition-all active:scale-95"
                   style={{
-                    background: isSelected ? colors.fg : `${colors.fg}12`,
-                    color: isSelected ? (value > 50 ? '#111' : '#000') : `${colors.fg}80`,
-                    border: isSelected ? 'none' : `1px solid ${colors.fg}20`,
+                    color: isSelected ? colors.fg : `${colors.fg}40`,
                   }}
                 >
                   {opt}
