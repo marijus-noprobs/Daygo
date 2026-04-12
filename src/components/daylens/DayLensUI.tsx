@@ -113,17 +113,23 @@ export const StatTile = ({ label, value, unit, colorClass, icon: Icon }: {
   </div>
 );
 
-// ─── Bottom Sheet ─────────────────────────────────────────────────────────────
+// ─── Bottom Sheet (centered modal with blur) ─────────────────────────────────
 export const BottomSheet = ({ open, onClose, children, title }: {
   open: boolean; onClose: () => void; children: ReactNode; title?: string;
 }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 fade-in" onClick={onClose}>
-      <div className="w-full max-w-md bg-card rounded-t-[26px] shadow-2xl scale-in border border-border border-b-0" onClick={e => e.stopPropagation()}>
-        <div className="w-10 h-1 bg-muted rounded-full mx-auto mt-4 mb-5" />
-        {title && <div className="px-6 pb-3"><h3 className="font-display text-lg font-extrabold text-foreground">{title}</h3></div>}
-        <div className="px-6 pb-10 overflow-y-auto" style={{ maxHeight: "82vh" }}>{children}</div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-5 fade-in" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }} onClick={onClose}>
+      <div className="w-full max-w-md bg-card rounded-[22px] shadow-2xl scale-in border border-border" onClick={e => e.stopPropagation()}>
+        {title && (
+          <div className="flex items-center justify-between px-6 pt-5 pb-3">
+            <h3 className="font-display text-lg font-extrabold text-foreground">{title}</h3>
+            <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <X size={16} />
+            </button>
+          </div>
+        )}
+        <div className="px-6 pb-6 overflow-y-auto" style={{ maxHeight: "70vh" }}>{children}</div>
       </div>
     </div>
   );
