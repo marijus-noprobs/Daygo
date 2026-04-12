@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ChevronLeft, Sparkles, TrendingUp, Target, Activity, Watch, SkipForward, Check } from "lucide-react";
 import { type UserProfile, GOAL_LABELS, DIET_OPTIONS, WEARABLE_OPTIONS } from "@/lib/daylens-constants";
+import { MultiWheelPicker, ScrollWheelPicker } from "./ScrollWheelPicker";
 
 interface OnboardingProps {
   onComplete: (profile: UserProfile) => void;
 }
 
-const STEPS = ["welcome", "profile", "diet", "features", "wearable"] as const;
+const STEPS = ["welcome", "name", "birthday", "sex", "height", "weight", "goal", "diet", "features", "wearable"] as const;
 type Step = typeof STEPS[number];
 
 const FEATURES = [
@@ -17,13 +18,32 @@ const FEATURES = [
   { icon: Sparkles, title: "Perfect Day Blueprint", desc: "AI analyzes your best days to find your formula", color: "text-foreground" },
 ];
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
+const YEARS = Array.from({ length: 80 }, (_, i) => 2010 - i); // 2010 down to 1931
+const HEIGHTS = Array.from({ length: 121 }, (_, i) => i + 120); // 120-240 cm
+const WEIGHTS = Array.from({ length: 181 }, (_, i) => i + 30); // 30-210 kg
+
 const SEX_OPTIONS: { value: "male" | "female"; label: string; emoji: string }[] = [
   { value: "male", label: "Male", emoji: "♂" },
   { value: "female", label: "Female", emoji: "♀" },
 ];
 
+function calcAgeFromBirthday(birthday: string): number {
+  const birth = new Date(birthday);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
+}
+
 export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
   const [stepIdx, setStepIdx] = useState(0);
+  const [name, setName] = useState("");
+  const [birthDay, setBirthDay] = useState(18);
+  const [birthMonth, setBirthMonth] = useState(1); // 0-indexed
+  const [birthYear, setBirthYear] = useState(1995);
   const [profile, setProfile] = useState<UserProfile>({
     heightCm: 175, weightKg: 75, age: 25, sex: "male",
     activityLevel: "moderate", goal: "maintain", diet: "standard",
@@ -32,16 +52,24 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
   const step = STEPS[stepIdx];
   const isLast = stepIdx === STEPS.length - 1;
 
+  const heightIndex = useMemo(() => HEIGHTS.indexOf(profile.heightCm), [profile.heightCm]);
+  const weightIndex = useMemo(() => WEIGHTS.indexOf(profile.weightKg), [profile.weightKg]);
+  const dayIndex = DAYS.indexOf(birthDay);
+  const yearIndex = YEARS.indexOf(birthYear);
+
+  const finalize = () => {
+    const birthday = `${birthYear}-${String(birthMonth + 1).padStart(2, "0")}-${String(birthDay).padStart(2, "0")}`;
+    const age = calcAgeFromBirthday(birthday);
+    onComplete({ ...profile, name: name.trim() || undefined, birthday, age });
+  };
+
   const next = () => {
-    if (isLast) {
-      onComplete(profile);
-    } else {
-      setStepIdx(i => i + 1);
-    }
+    if (isLast) finalize();
+    else setStepIdx(i => i + 1);
   };
 
   const prev = () => setStepIdx(i => Math.max(0, i - 1));
-  const skip = () => onComplete(profile);
+  const skip = () => finalize();
 
   const slideVariants = {
     enter: { opacity: 0, x: 60 },
@@ -49,30 +77,45 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
     exit: { opacity: 0, x: -60 },
   };
 
+  const canContinue = step === "name" ? name.trim().length > 0 : true;
+
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-background flex flex-col overflow-hidden">
-      <div className="fixed top-20 -left-20 w-80 h-80 bg-white/[0.06] blur-[120px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-32 -right-20 w-72 h-72 bg-white/[0.06] blur-[100px] rounded-full pointer-events-none" />
+      {/* Ambient glow */}
+      <div className="fixed top-20 -left-20 w-80 h-80 bg-white/[0.03] blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-32 -right-20 w-72 h-72 bg-white/[0.03] blur-[100px] rounded-full pointer-events-none" />
 
+      {/* Skip button */}
       {step !== "welcome" && (
-        <button onClick={skip} className="absolute top-12 right-6 z-50 text-[11px] text-white/[0.3] hover:text-white/[0.5] transition-colors flex items-center gap-1">
+        <button onClick={skip} className="absolute top-12 right-6 z-50 text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors flex items-center gap-1">
           Skip <SkipForward size={12} />
         </button>
       )}
 
-      <div className="flex justify-center gap-2 pt-14 pb-4 z-10">
+      {/* Progress dots */}
+      <div className="flex justify-center gap-1.5 pt-14 pb-4 z-10">
         {STEPS.map((_, i) => (
-          <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i === stepIdx ? "w-8 bg-primary" : i < stepIdx ? "w-4 bg-primary/40" : "w-4 bg-white/[0.1]"}`} />
+          <div key={i} className={`h-1 rounded-full transition-all duration-300 ${
+            i === stepIdx ? "w-8 bg-primary" : i < stepIdx ? "w-3 bg-primary/40" : "w-3 bg-muted/40"
+          }`} />
         ))}
       </div>
 
-      <div className="flex-1 flex flex-col px-6 relative">
+      {/* Content */}
+      <div className="flex-1 flex flex-col relative">
         <AnimatePresence mode="wait">
-          <motion.div key={step} variants={slideVariants} initial="enter" animate="center" exit="exit"
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }} className="flex-1 flex flex-col">
-
+          <motion.div
+            key={step}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="flex-1 flex flex-col"
+          >
+            {/* ─── WELCOME ─── */}
             {step === "welcome" && (
-              <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10">
+              <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10 px-6">
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.15, duration: 0.5 }}
                   className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center mb-8 shadow-lg shadow-primary/30">
@@ -83,84 +126,184 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   daygo<span className="text-primary">.ai</span>
                 </motion.h1>
                 <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.45 }} className="text-white/[0.38] text-base max-w-[260px] leading-relaxed">
+                  transition={{ delay: 0.45 }} className="text-muted-foreground text-base max-w-[260px] leading-relaxed">
                   Understand your days. Optimize your life.
                 </motion.p>
               </div>
             )}
 
-            {step === "profile" && (
-              <div className="flex-1 flex flex-col pt-4">
-                <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">About you</h2>
-                <p className="text-[11px] text-white/[0.38] mb-6">We'll use this to personalize your calorie targets and insights.</p>
+            {/* ─── NAME ─── */}
+            {step === "name" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-8">
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-8 text-center">
+                  What's your first name?
+                </motion.h2>
+                <motion.input
+                  initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.15 }}
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Your name"
+                  autoFocus
+                  className="w-full text-center text-3xl font-extrabold font-display bg-transparent border-b-2 border-muted/30 focus:border-primary/50 pb-3 text-foreground placeholder:text-muted-foreground/30 focus:outline-none transition-colors"
+                />
+              </div>
+            )}
 
-                <div className="space-y-5 flex-1 overflow-y-auto pb-4">
-                  <div>
-                    <label className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-wider mb-2 block">Sex</label>
-                    <div className="flex gap-2">
-                      {SEX_OPTIONS.map(s => (
-                        <button key={s.value} onClick={() => setProfile(p => ({ ...p, sex: s.value }))}
-                          className={`flex-1 py-3 rounded-[18px] text-[13px] font-semibold transition-all ${
-                            profile.sex === s.value
-                              ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
-                              : "bg-white/[0.05] text-white/[0.3] border border-white/[0.07]"
-                          }`}>
-                          {s.emoji} {s.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+            {/* ─── BIRTHDAY ─── */}
+            {step === "birthday" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-6">
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-8 text-center">
+                  When's your birthday?
+                </motion.h2>
+                <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}>
+                  <MultiWheelPicker
+                    columns={[
+                      {
+                        items: DAYS,
+                        selectedIndex: dayIndex >= 0 ? dayIndex : 17,
+                        onChange: (i) => setBirthDay(DAYS[i]),
+                        width: "w-20",
+                      },
+                      {
+                        items: MONTHS,
+                        selectedIndex: birthMonth,
+                        onChange: (i) => setBirthMonth(i),
+                        width: "w-20",
+                      },
+                      {
+                        items: YEARS,
+                        selectedIndex: yearIndex >= 0 ? yearIndex : 15,
+                        onChange: (i) => setBirthYear(YEARS[i]),
+                        width: "w-24",
+                      },
+                    ]}
+                  />
+                </motion.div>
+              </div>
+            )}
 
-                  <div className="grid grid-cols-3 gap-3">
-                    {([
-                      { label: "Age", key: "age" as const, unit: "yrs", min: 13, max: 100 },
-                      { label: "Height", key: "heightCm" as const, unit: "cm", min: 100, max: 250 },
-                      { label: "Weight", key: "weightKg" as const, unit: "kg", min: 30, max: 250 },
-                    ] as const).map(f => (
-                      <div key={f.key}>
-                        <label className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-wider mb-2 block">{f.label}</label>
-                        <div className="glass rounded-[14px] px-3 py-3 flex items-baseline gap-1">
-                          <input type="number" value={profile[f.key]} min={f.min} max={f.max}
-                            onChange={e => setProfile(p => ({ ...p, [f.key]: parseFloat(e.target.value) || 0 }))}
-                            className="bg-transparent font-display text-lg font-extrabold text-foreground focus:outline-none w-full" />
-                          <span className="text-[10px] text-white/[0.28]">{f.unit}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-wider mb-2 block">Goal</label>
-                    <div className="flex gap-2">
-                      {Object.entries(GOAL_LABELS).map(([key, label]) => (
-                        <button key={key} onClick={() => setProfile(p => ({ ...p, goal: key as UserProfile["goal"] }))}
-                          className={`flex-1 py-3 rounded-[18px] text-[13px] font-semibold transition-all ${
-                            profile.goal === key
-                              ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
-                              : "bg-white/[0.05] text-white/[0.3] border border-white/[0.07]"
-                          }`}>
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-wider mb-2 block">Activity Level</label>
-                    <div className="glass rounded-[14px] px-4 py-3 flex items-center justify-between">
-                      <span className="text-[11px] text-white/[0.38]">Auto-detected from your wearable</span>
-                      <span className="text-[10px] px-2 py-1 rounded-lg bg-primary/[0.1] text-primary font-bold">Smart</span>
-                    </div>
-                  </div>
+            {/* ─── SEX ─── */}
+            {step === "sex" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-8">
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-8 text-center">
+                  What's your sex?
+                </motion.h2>
+                <div className="flex gap-3 w-full max-w-xs">
+                  {SEX_OPTIONS.map(s => (
+                    <motion.button
+                      key={s.value}
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: s.value === "male" ? 0.1 : 0.15 }}
+                      onClick={() => setProfile(p => ({ ...p, sex: s.value }))}
+                      className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
+                        profile.sex === s.value
+                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          : "bg-muted/20 text-muted-foreground border-2 border-transparent"
+                      }`}
+                    >
+                      <span className="text-2xl block mb-1">{s.emoji}</span>
+                      {s.label}
+                    </motion.button>
+                  ))}
                 </div>
               </div>
             )}
 
-            {step === "diet" && (
-              <div className="flex-1 flex flex-col pt-4">
-                <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">Your diet</h2>
-                <p className="text-[11px] text-white/[0.38] mb-6">We'll tailor your macro recommendations based on your dietary preference.</p>
+            {/* ─── HEIGHT ─── */}
+            {step === "height" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-6">
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-2 text-center">
+                  How tall are you?
+                </motion.h2>
+                <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.05 }} className="text-muted-foreground/50 text-xs mb-6">
+                  in centimeters
+                </motion.p>
+                <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}>
+                  <ScrollWheelPicker
+                    items={HEIGHTS}
+                    selectedIndex={heightIndex >= 0 ? heightIndex : 55}
+                    onChange={(i) => setProfile(p => ({ ...p, heightCm: HEIGHTS[i] }))}
+                    className="w-28"
+                  />
+                </motion.div>
+                <span className="text-muted-foreground/40 text-sm mt-3 font-medium">cm</span>
+              </div>
+            )}
 
+            {/* ─── WEIGHT ─── */}
+            {step === "weight" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-6">
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-2 text-center">
+                  What's your weight?
+                </motion.h2>
+                <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.05 }} className="text-muted-foreground/50 text-xs mb-6">
+                  in kilograms
+                </motion.p>
+                <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.1 }}>
+                  <ScrollWheelPicker
+                    items={WEIGHTS}
+                    selectedIndex={weightIndex >= 0 ? weightIndex : 45}
+                    onChange={(i) => setProfile(p => ({ ...p, weightKg: WEIGHTS[i] }))}
+                    className="w-28"
+                  />
+                </motion.div>
+                <span className="text-muted-foreground/40 text-sm mt-3 font-medium">kg</span>
+              </div>
+            )}
+
+            {/* ─── GOAL ─── */}
+            {step === "goal" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-8">
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-8 text-center">
+                  What's your goal?
+                </motion.h2>
+                <div className="w-full max-w-xs space-y-3">
+                  {Object.entries(GOAL_LABELS).map(([key, label], i) => (
+                    <motion.button
+                      key={key}
+                      initial={{ y: 12, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.08 + i * 0.06 }}
+                      onClick={() => setProfile(p => ({ ...p, goal: key as UserProfile["goal"] }))}
+                      className={`w-full py-4 rounded-2xl text-[15px] font-bold transition-all flex items-center justify-between px-6 ${
+                        profile.goal === key
+                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          : "bg-muted/20 text-muted-foreground border-2 border-transparent"
+                      }`}
+                    >
+                      {label}
+                      {profile.goal === key && (
+                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                          <Check size={12} className="text-primary-foreground" />
+                        </div>
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── DIET ─── */}
+            {step === "diet" && (
+              <div className="flex-1 flex flex-col pt-4 px-6">
+                <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1 text-center">Your diet</h2>
+                <p className="text-[11px] text-muted-foreground/50 mb-6 text-center">
+                  We'll tailor your macro recommendations.
+                </p>
                 <div className="grid grid-cols-2 gap-2.5 flex-1 overflow-y-auto pb-4">
                   {DIET_OPTIONS.map((d, i) => (
                     <motion.button
@@ -169,10 +312,10 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.04 }}
                       onClick={() => setProfile(p => ({ ...p, diet: d.value }))}
-                      className={`relative rounded-[18px] p-4 text-left transition-all ${
+                      className={`relative rounded-2xl p-4 text-left transition-all ${
                         profile.diet === d.value
-                          ? "bg-primary/[0.12] border border-primary/[0.25]"
-                          : "bg-white/[0.04] border border-white/[0.07] hover:border-white/[0.12]"
+                          ? "bg-primary/[0.12] border-2 border-primary/25"
+                          : "bg-muted/10 border-2 border-transparent hover:border-muted/20"
                       }`}
                     >
                       {profile.diet === d.value && (
@@ -181,31 +324,36 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                         </div>
                       )}
                       <span className="text-xl mb-2 block">{d.emoji}</span>
-                      <span className={`text-[13px] font-semibold block mb-0.5 ${profile.diet === d.value ? "text-primary" : "text-foreground/80"}`}>
+                      <span className={`text-[13px] font-semibold block mb-0.5 ${
+                        profile.diet === d.value ? "text-primary" : "text-foreground/80"
+                      }`}>
                         {d.label}
                       </span>
-                      <span className="text-[10px] text-white/[0.35] leading-relaxed">{d.desc}</span>
+                      <span className="text-[10px] text-muted-foreground/50 leading-relaxed">{d.desc}</span>
                     </motion.button>
                   ))}
                 </div>
               </div>
             )}
 
+            {/* ─── FEATURES ─── */}
             {step === "features" && (
-              <div className="flex-1 flex flex-col pt-4">
-                <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">What you'll get</h2>
-                <p className="text-[11px] text-white/[0.38] mb-6">Powerful tools to understand & improve your daily life.</p>
+              <div className="flex-1 flex flex-col pt-4 px-6">
+                <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1 text-center">What you'll get</h2>
+                <p className="text-[11px] text-muted-foreground/50 mb-6 text-center">
+                  Powerful tools to understand & improve your daily life.
+                </p>
                 <div className="space-y-3 flex-1">
                   {FEATURES.map((f, i) => (
                     <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + i * 0.1 }}
-                      className="glass rounded-[18px] p-4 flex items-start gap-4">
-                      <div className={`w-10 h-10 rounded-xl bg-white/[0.05] flex items-center justify-center shrink-0 ${f.color}`}>
+                      className="glass rounded-2xl p-4 flex items-start gap-4">
+                      <div className={`w-10 h-10 rounded-xl bg-muted/20 flex items-center justify-center shrink-0 ${f.color}`}>
                         <f.icon size={20} />
                       </div>
                       <div>
                         <h3 className="text-[12px] font-semibold text-foreground mb-0.5">{f.title}</h3>
-                        <p className="text-[10px] text-white/[0.38] leading-relaxed">{f.desc}</p>
+                        <p className="text-[10px] text-muted-foreground/50 leading-relaxed">{f.desc}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -213,8 +361,9 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
               </div>
             )}
 
+            {/* ─── WEARABLE ─── */}
             {step === "wearable" && (
-              <div className="flex-1 flex flex-col pt-4">
+              <div className="flex-1 flex flex-col pt-4 px-6">
                 <div className="flex flex-col items-center text-center mb-6">
                   <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.1 }}
@@ -222,7 +371,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                     <Watch size={36} className="text-foreground" />
                   </motion.div>
                   <h2 className="font-display text-2xl font-extrabold tracking-tight mb-2">Your wearable</h2>
-                  <p className="text-[11px] text-white/[0.38] max-w-[280px] leading-relaxed">
+                  <p className="text-[11px] text-muted-foreground/50 max-w-[280px] leading-relaxed">
                     Select your device for automatic sleep, activity & health data sync.
                   </p>
                 </div>
@@ -234,10 +383,10 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.04 }}
                       onClick={() => setProfile(p => ({ ...p, wearableType: w.value }))}
-                      className={`w-full py-3.5 rounded-[18px] text-[13px] font-semibold transition-all flex items-center justify-between px-5 ${
+                      className={`w-full py-3.5 rounded-2xl text-[13px] font-semibold transition-all flex items-center justify-between px-5 ${
                         profile.wearableType === w.value
-                          ? "bg-primary/[0.12] text-primary border border-primary/[0.25]"
-                          : "bg-white/[0.05] text-white/[0.55] border border-white/[0.07] hover:border-white/[0.12]"
+                          ? "bg-primary/[0.12] text-primary border-2 border-primary/25"
+                          : "bg-muted/10 text-muted-foreground/60 border-2 border-transparent hover:border-muted/20"
                       }`}
                     >
                       {w.label}
@@ -249,21 +398,29 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                     </motion.button>
                   ))}
                 </div>
-                <p className="text-[10px] text-white/[0.28] text-center mt-2">You can also enter data manually.</p>
+                <p className="text-[10px] text-muted-foreground/40 text-center mt-2">You can also enter data manually.</p>
               </div>
             )}
           </motion.div>
         </AnimatePresence>
       </div>
 
+      {/* Navigation */}
       <div className="px-6 pb-10 pt-4 flex items-center gap-3 z-10">
         {stepIdx > 0 && (
-          <button onClick={prev} className="w-12 h-12 rounded-[18px] bg-white/[0.05] flex items-center justify-center text-white/[0.45] hover:text-white/[0.7] transition-colors border border-white/[0.07]">
+          <button onClick={prev} className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors border border-border">
             <ChevronLeft size={20} />
           </button>
         )}
-        <button onClick={next}
-          className="flex-1 h-12 rounded-[18px] bg-primary text-primary-foreground font-display font-extrabold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all">
+        <button
+          onClick={next}
+          disabled={!canContinue}
+          className={`flex-1 h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 transition-all ${
+            canContinue
+              ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
+              : "bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
+          }`}
+        >
           {step === "welcome" ? "Get Started" : isLast ? "Let's Go" : "Continue"}
           <ChevronRight size={16} />
         </button>
