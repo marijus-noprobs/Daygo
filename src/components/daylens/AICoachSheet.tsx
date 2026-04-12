@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { X, Send, Sparkles, ChevronDown } from "lucide-react";
+import { X, Send } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { type DayEntry, type UserProfile } from "@/lib/daylens-constants";
 import { avg, computeDayScore, getReadinessLevel, generateDailyPlan, generateHealthSuggestions } from "@/lib/daylens-utils";
+import { streamChat, type ChatMessage } from "@/lib/ai-chat";
 
 interface Message {
   id: string;
@@ -11,86 +13,77 @@ interface Message {
   timestamp: Date;
 }
 
-const COACH_RESPONSES: Record<string, (ctx: CoachContext) => string> = {
-  "plan": (ctx) => {
+// Build system prompt with user context for the AI backend
+function buildSystemPrompt(ctx: CoachContext): string {
+  const latest = ctx.latestEntry;
+  const sleepHrs = latest?.wearable?.sleep?.totalHours || 0;
+  const sleepScore = latest?.wearable?.sleep?.score || 0;
+  const hrv = latest?.wearable?.body?.hrv || 0;
+  const bodyBattery = latest?.wearable?.body?.bodyBattery || 0;
+  const stress = latest?.wearable?.body?.stressLevel || 0;
+  const steps = latest?.wearable?.activity?.steps || 0;
+  const mood = latest?.mood?.overallMood || 0;
+  const energy = latest?.mood?.energy || 0;
+  const anxiety = latest?.mood?.anxiety || 0;
+
+  return `You are DayLens AI Coach — a concise, empathetic wellness coach inside a health tracking app.
+
+USER PROFILE:
+- Name: ${(ctx.profile as any).name || "User"}
+- Height: ${ctx.profile.heightCm || "unknown"} cm
+- Weight: ${ctx.profile.weightKg || "unknown"} kg
+- Goal: ${ctx.profile.goal || "general wellness"}
+
+TODAY'S DATA:
+- Wellness Score: ${ctx.score.toFixed(1)}/10
+- Readiness: ${ctx.readiness.label} (${ctx.readiness.level})
+- Sleep: ${sleepHrs.toFixed(1)} hrs (score: ${sleepScore}/100)
+- HRV: ${hrv} ms | Body Battery: ${bodyBattery}% | Stress: ${stress}%
+- Steps: ${steps.toLocaleString()}
+- Mood: ${mood}/5 | Energy: ${energy}/5 | Anxiety: ${anxiety}/5
+- Check-in Streak: ${ctx.streak} days
+
+GUIDELINES:
+- Keep responses concise but warm (2-4 short paragraphs max)
+- Use markdown formatting (bold for key metrics, bullet points for recommendations)
+- Reference the user's actual data when giving advice
+- If readiness is "recovering", prioritize rest recommendations
+- If readiness is "peak", encourage pushing limits
+- Be actionable — give specific, numbered recommendations when appropriate`;
+}
+
+// Fallback local responses when API is unavailable
+function getLocalResponse(input: string, ctx: CoachContext): string {
+  const lower = input.toLowerCase();
+  if (lower.includes("plan") || lower.includes("today") || lower.includes("recommend")) {
     const recs = ctx.dailyPlan;
-    let msg = `Based on your wellness score of **${ctx.score.toFixed(1)}/10** and ${ctx.readiness.label.toLowerCase()} readiness, here's your personalized plan:\n\n`;
-    recs.forEach((r, i) => {
-      msg += `**${i + 1}. ${r.label}** — ${r.action}\n_${r.reason}_\n\n`;
-    });
-    if (ctx.readiness.level === "recovering") {
-      msg += "💡 Since you're in recovery mode, prioritize rest over intensity today. Your body will thank you tomorrow.";
-    } else if (ctx.readiness.level === "peak") {
-      msg += "🔥 You're at peak readiness — this is a great day to push your limits and tackle challenging goals.";
-    }
+    let msg = `Based on your wellness score of **${ctx.score.toFixed(1)}/10** and ${ctx.readiness.label.toLowerCase()} readiness, here's your plan:\n\n`;
+    recs.forEach((r, i) => { msg += `**${i + 1}. ${r.label}** — ${r.action}\n\n`; });
     return msg;
-  },
-  "sleep": (ctx) => {
-    const sleepHrs = ctx.latestEntry?.wearable?.sleep?.totalHours || 0;
-    const sleepScore = ctx.latestEntry?.wearable?.sleep?.score || 0;
-    const avgSleep = avg(ctx.recent.map(e => e.wearable?.sleep?.totalHours || 7));
-    let msg = `**Sleep Analysis:**\n\nLast night: **${sleepHrs.toFixed(1)} hours** (score: ${sleepScore}/100)\n7-day average: **${avgSleep.toFixed(1)} hours**\n\n`;
-    if (sleepHrs < 7) {
-      msg += "Your sleep was below the recommended 7-9 hours. This can impact your HRV, mood, and recovery capacity.\n\n**Recommendation:** Try going to bed 30 minutes earlier tonight. Avoid screens 1 hour before bed and keep your room cool (65-68°F).";
-    } else if (sleepHrs >= 7.5) {
-      msg += "Great sleep duration! You're giving your body adequate recovery time.\n\n**To optimize further:** Track your deep sleep percentage — aim for 15-20% of total sleep time for optimal physical recovery.";
-    } else {
-      msg += "Decent sleep, but there's room to improve.\n\n**Tip:** Consistency matters more than duration. Try to maintain the same bedtime ±30 minutes every day, even on weekends.";
-    }
-    return msg;
-  },
-  "activity": (ctx) => {
-    const steps = ctx.latestEntry?.wearable?.activity?.steps || 0;
-    const avgSteps = avg(ctx.recent.map(e => e.wearable?.activity?.steps || 5000));
-    const workouts = ctx.recent.filter(e => e.wearable?.activity?.workouts?.length > 0).length;
-    let msg = `**Activity Analysis:**\n\nToday's steps: **${steps.toLocaleString()}**\n7-day avg: **${Math.round(avgSteps).toLocaleString()} steps**\nWorkout days this week: **${workouts}/7**\n\n`;
-    if (ctx.readiness.level === "recovering") {
-      msg += "Given your current recovery state, I recommend **active recovery** today — light walking, stretching, or yoga. Intense exercise while recovering can delay your body's repair process.";
-    } else if (avgSteps > 10000) {
-      msg += "Your activity level is excellent! You're consistently active.\n\n**Next level tip:** Consider adding variety — if you mostly walk, try a strength session. If you lift weights, add a mobility day.";
-    } else {
-      msg += `**Recommendation:** Try to hit ${Math.max(8000, Math.round(avgSteps * 1.1)).toLocaleString()} steps today. Small increases (10% per week) build sustainable habits without burnout.`;
-    }
-    return msg;
-  },
-  "mood": (ctx) => {
+  }
+  if (lower.includes("sleep")) {
+    const hrs = ctx.latestEntry?.wearable?.sleep?.totalHours || 0;
+    return `**Sleep Analysis:**\n\nLast night: **${hrs.toFixed(1)} hours**\n\n${hrs < 7 ? "Your sleep was below the recommended 7-9 hours. Try going to bed 30 minutes earlier tonight." : "Good sleep duration! Keep it up."}`;
+  }
+  if (lower.includes("mood") || lower.includes("feeling")) {
     const mood = ctx.latestEntry?.mood?.overallMood || 3;
-    const avgMood = avg(ctx.recent.map(e => e.mood?.overallMood || 3));
-    const energy = ctx.latestEntry?.mood?.energy || 3;
-    const anxiety = ctx.latestEntry?.mood?.anxiety || 2;
-    let msg = `**Mood & Mental State:**\n\nCurrent mood: **${mood}/5**\n7-day avg: **${avgMood.toFixed(1)}/5**\nEnergy: **${energy}/5** | Anxiety: **${anxiety}/5**\n\n`;
-    if (mood <= 2) {
-      msg += "I notice your mood is low today. This is normal and temporary.\n\n**Evidence-based actions:**\n- 20-minute walk outdoors (proven to boost mood)\n- Connect with someone you trust\n- 5-minute gratitude journaling\n\nYour data shows mood tends to improve after exercise days — consider a light workout.";
-    } else if (anxiety >= 4) {
-      msg += "Your anxiety levels are elevated. Let's address this.\n\n**Immediate relief:** Try box breathing — inhale 4s, hold 4s, exhale 4s, hold 4s. Repeat 4 cycles.\n\n**Longer-term:** Your data suggests lower anxiety on days with exercise and social interaction.";
-    } else {
-      msg += "Your mental state looks stable. Keep maintaining your routines — consistency in sleep and exercise are the strongest predictors of sustained mood quality.";
-    }
-    return msg;
-  },
-  "recovery": (ctx) => {
-    const hrv = ctx.latestEntry?.wearable?.body?.hrv || 50;
-    const bodyBattery = ctx.latestEntry?.wearable?.body?.bodyBattery || 50;
-    const stress = ctx.latestEntry?.wearable?.body?.stressLevel || 30;
-    let msg = `**Recovery Status:**\n\nHRV: **${hrv} ms**\nBody Battery: **${bodyBattery}%**\nStress Level: **${stress}%**\n\n`;
-    if (hrv < 40 || bodyBattery < 30) {
-      msg += "⚠️ Your recovery metrics indicate significant strain.\n\n**Priority actions:**\n1. Skip intense exercise today\n2. Hydrate aggressively (3L+ water)\n3. Aim for 8+ hours sleep tonight\n4. Try a 10-minute meditation\n\nYour body needs restoration before your next push day.";
-    } else if (bodyBattery > 70 && hrv > 55) {
-      msg += "✅ Your recovery is strong! Your body is well-rested and ready for performance.\n\nThis is an ideal day for a challenging workout or important tasks requiring focus and endurance.";
-    } else {
-      msg += "Your recovery is moderate. You can train today but listen to your body — moderate intensity is recommended.\n\n**Tip:** Monitor how you feel 2 hours post-workout. If fatigue persists, scale back tomorrow.";
-    }
-    return msg;
-  },
-  "default": (ctx) => {
-    const suggestions = ctx.suggestions;
-    if (suggestions.length > 0) {
-      const top = suggestions[0];
-      return `Great question! Looking at your data, the most important thing right now is: **${top.title}**\n\n${top.description}\n\nWould you like me to dive deeper into any specific area? I can analyze your **sleep**, **activity**, **mood**, or **recovery** in detail.`;
-    }
-    return `Your overall wellness score is **${ctx.score.toFixed(1)}/10** with ${ctx.readiness.label.toLowerCase()} readiness.\n\nI can help you understand:\n- Your **daily plan** and recommendations\n- **Sleep** quality and optimization\n- **Activity** levels and trends\n- **Mood** patterns and mental wellness\n- **Recovery** status and body readiness\n\nWhat would you like to explore?`;
-  },
-};
+    return `**Mood:** ${mood}/5\n\n${mood <= 2 ? "Your mood is low today. A 20-minute walk outdoors can help boost it." : "Your mental state looks stable. Keep up your routines!"}`;
+  }
+  return `Your wellness score is **${ctx.score.toFixed(1)}/10** (${ctx.readiness.label}). I can help with your **daily plan**, **sleep**, **activity**, **mood**, or **recovery**. What would you like to explore?`;
+}
+
+function generateOpeningMessage(ctx: CoachContext): string {
+  const sleepHrs = ctx.latestEntry?.wearable?.sleep?.totalHours || 7;
+  const hrv = ctx.latestEntry?.wearable?.body?.hrv || 50;
+
+  if (ctx.readiness.level === "recovering") {
+    return `Based on your recovery score (${ctx.score.toFixed(1)}/10) and low HRV (${hrv}ms), today is better suited for lighter activity. Your sleep was ${sleepHrs.toFixed(1)} hours — would you like a detailed recovery plan?`;
+  }
+  if (ctx.readiness.level === "peak") {
+    return `You're at **peak readiness** today — score ${ctx.score.toFixed(1)}/10 with strong HRV (${hrv}ms) and ${sleepHrs.toFixed(1)} hrs sleep. This is a great day to push your limits. Want me to suggest an optimized plan?`;
+  }
+  return `Good to see you! Your wellness score is **${ctx.score.toFixed(1)}/10** (${ctx.readiness.label}). Sleep was ${sleepHrs.toFixed(1)} hrs with HRV at ${hrv}ms. Would you like a breakdown of today's recommendations?`;
+}
 
 interface CoachContext {
   score: number;
@@ -101,51 +94,6 @@ interface CoachContext {
   latestEntry: DayEntry | null;
   streak: number;
   profile: UserProfile;
-}
-
-function getCoachResponse(input: string, ctx: CoachContext): string {
-  const lower = input.toLowerCase();
-  if (lower.includes("plan") || lower.includes("today") || lower.includes("recommend")) return COACH_RESPONSES.plan(ctx);
-  if (lower.includes("sleep") || lower.includes("bed") || lower.includes("rest")) return COACH_RESPONSES.sleep(ctx);
-  if (lower.includes("activity") || lower.includes("exercise") || lower.includes("step") || lower.includes("workout")) return COACH_RESPONSES.activity(ctx);
-  if (lower.includes("mood") || lower.includes("mental") || lower.includes("anxi") || lower.includes("stress") || lower.includes("feeling")) return COACH_RESPONSES.mood(ctx);
-  if (lower.includes("recover") || lower.includes("hrv") || lower.includes("battery") || lower.includes("readiness")) return COACH_RESPONSES.recovery(ctx);
-  return COACH_RESPONSES.default(ctx);
-}
-
-function generateOpeningMessage(ctx: CoachContext): string {
-  const { score, readiness } = ctx;
-  const sleepHrs = ctx.latestEntry?.wearable?.sleep?.totalHours || 7;
-  const hrv = ctx.latestEntry?.wearable?.body?.hrv || 50;
-
-  if (readiness.level === "recovering") {
-    return `Based on your recovery score (${score.toFixed(1)}/10) and low HRV (${hrv}ms), today is better suited for lighter activity. Your sleep was ${sleepHrs.toFixed(1)} hours — would you like a detailed recovery plan?`;
-  }
-  if (readiness.level === "peak") {
-    return `You're at **peak readiness** today — score ${score.toFixed(1)}/10 with strong HRV (${hrv}ms) and ${sleepHrs.toFixed(1)} hrs sleep. This is a great day to push your limits. Want me to suggest an optimized plan?`;
-  }
-  return `Good to see you! Your wellness score is **${score.toFixed(1)}/10** (${readiness.label}). Sleep was ${sleepHrs.toFixed(1)} hrs with HRV at ${hrv}ms. Would you like a breakdown of today's recommendations?`;
-}
-
-// Simple markdown-ish renderer
-function renderContent(text: string) {
-  const lines = text.split("\n");
-  return lines.map((line, i) => {
-    // Bold
-    let processed = line.replace(/\*\*(.+?)\*\*/g, '<strong class="text-foreground font-bold">$1</strong>');
-    // Italic
-    processed = processed.replace(/_(.+?)_/g, '<em class="text-foreground/50 italic">$1</em>');
-
-    if (line.startsWith("- ") || line.startsWith("• ")) {
-      return <div key={i} className="flex gap-2 ml-1 mt-0.5"><span className="text-primary mt-0.5">•</span><span className="flex-1" dangerouslySetInnerHTML={{ __html: processed.slice(2) }} /></div>;
-    }
-    if (/^\d+\./.test(line)) {
-      const num = line.match(/^(\d+)\./)?.[1];
-      return <div key={i} className="flex gap-2 ml-1 mt-0.5"><span className="text-primary font-bold">{num}.</span><span className="flex-1" dangerouslySetInnerHTML={{ __html: processed.replace(/^\d+\.\s*/, '') }} /></div>;
-    }
-    if (line.trim() === "") return <div key={i} className="h-2" />;
-    return <div key={i} className="mt-0.5" dangerouslySetInnerHTML={{ __html: processed }} />;
-  });
 }
 
 const QUICK_PROMPTS = [
@@ -172,6 +120,7 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const ctx = useMemo<CoachContext>(() => ({
     score,
@@ -184,7 +133,19 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
     profile,
   }), [entries, recent, profile, score, streak]);
 
-  // Reset and generate opening message when sheet opens
+  const systemPrompt = useMemo(() => buildSystemPrompt(ctx), [ctx]);
+
+  // Convert messages to chat format for API
+  const toChatMessages = useCallback((msgs: Message[]): ChatMessage[] => {
+    return [
+      { role: "system", content: systemPrompt },
+      ...msgs.map(m => ({
+        role: (m.role === "coach" ? "assistant" : "user") as "assistant" | "user",
+        content: m.content,
+      })),
+    ];
+  }, [systemPrompt]);
+
   useEffect(() => {
     if (open) {
       const opening: Message = {
@@ -196,29 +157,11 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
       setMessages([opening]);
       setInput("");
 
-      // If preloaded question, auto-send it
       if (preloadedQuestion) {
-        setTimeout(() => {
-          const userMsg: Message = {
-            id: `user-${Date.now()}`,
-            role: "user",
-            content: preloadedQuestion,
-            timestamp: new Date(),
-          };
-          setMessages(prev => [...prev, userMsg]);
-          setIsTyping(true);
-          setTimeout(() => {
-            const response = getCoachResponse(preloadedQuestion, ctx);
-            setMessages(prev => [...prev, {
-              id: `coach-${Date.now()}`,
-              role: "coach",
-              content: response,
-              timestamp: new Date(),
-            }]);
-            setIsTyping(false);
-          }, 800);
-        }, 600);
+        setTimeout(() => sendMessage(preloadedQuestion, [opening]), 600);
       }
+    } else {
+      abortRef.current?.abort();
     }
   }, [open]);
 
@@ -226,7 +169,7 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const sendMessage = (text: string) => {
+  const sendMessage = useCallback((text: string, existingMessages?: Message[]) => {
     if (!text.trim()) return;
     const userMsg: Message = {
       id: `user-${Date.now()}`,
@@ -234,21 +177,51 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
       content: text.trim(),
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, userMsg]);
+
+    const currentMessages = existingMessages || messages;
+    const updatedMessages = [...currentMessages, userMsg];
+    setMessages(updatedMessages);
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      const response = getCoachResponse(text, ctx);
-      setMessages(prev => [...prev, {
-        id: `coach-${Date.now()}`,
-        role: "coach",
-        content: response,
-        timestamp: new Date(),
-      }]);
-      setIsTyping(false);
-    }, 600 + Math.random() * 800);
-  };
+    // Abort any ongoing stream
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    const coachMsgId = `coach-${Date.now()}`;
+    let accumulated = "";
+
+    // Try streaming API first
+    streamChat({
+      messages: toChatMessages(updatedMessages),
+      signal: controller.signal,
+      onDelta: (chunk) => {
+        accumulated += chunk;
+        const content = accumulated;
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last?.id === coachMsgId) {
+            return prev.map(m => m.id === coachMsgId ? { ...m, content } : m);
+          }
+          return [...prev, { id: coachMsgId, role: "coach", content, timestamp: new Date() }];
+        });
+      },
+      onDone: () => setIsTyping(false),
+      onError: () => {
+        // Fallback to local responses
+        const fallback = getLocalResponse(text, ctx);
+        setMessages(prev => {
+          const hasCoach = prev.some(m => m.id === coachMsgId);
+          if (hasCoach) {
+            return prev.map(m => m.id === coachMsgId ? { ...m, content: fallback } : m);
+          }
+          return [...prev, { id: coachMsgId, role: "coach", content: fallback, timestamp: new Date() }];
+        });
+        setIsTyping(false);
+      },
+    });
+  }, [messages, ctx, toChatMessages]);
 
   if (!open) return null;
 
@@ -287,12 +260,16 @@ export const AICoachSheet = ({ open, onClose, entries, recent, profile, score, s
                   : { background: "rgba(255,255,255,0.04)" }
                 }
               >
-                {msg.role === "coach" ? renderContent(msg.content) : msg.content}
+                {msg.role === "coach" ? (
+                  <div className="prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1 [&_li]:my-0.5 [&_strong]:text-foreground [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-xs">
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                ) : msg.content}
               </div>
             </div>
           ))}
 
-          {isTyping && (
+          {isTyping && messages[messages.length - 1]?.role !== "coach" && (
             <div className="flex justify-start">
               <div className="rounded-[18px] px-4 py-3" style={{ background: "rgba(255,255,255,0.04)" }}>
                 <div className="flex gap-1.5">
