@@ -520,12 +520,15 @@ const HomeScreen = ({
         </div>
       )}
 
-      <div className="card-dark fade-up d3" style={{ padding: '20px 22px' }}>
-        <div className="flex items-baseline gap-3 mb-1">
-          <span className="font-mono text-[42px] font-bold text-foreground leading-none" style={{ letterSpacing: '-0.04em' }}>
-            {streak}
-          </span>
-          <span className="font-display text-[14px] font-bold text-foreground/60">day streak</span>
+      <button onClick={() => setShowHistory(true)} className="card-dark fade-up d3 w-full text-left cursor-pointer active:scale-[0.98] transition-transform" style={{ padding: '20px 22px' }}>
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-baseline gap-3">
+            <span className="font-mono text-[42px] font-bold text-foreground leading-none" style={{ letterSpacing: '-0.04em' }}>
+              {streak}
+            </span>
+            <span className="font-display text-[14px] font-bold text-foreground/60">day streak</span>
+          </div>
+          <ChevronRight size={18} className="text-muted-foreground/40" />
         </div>
         {streakMsg && (
           <div className="text-[11px] text-muted-foreground mt-1">{streakMsg}</div>
@@ -548,7 +551,9 @@ const HomeScreen = ({
             </div>
           ))}
         </div>
-      </div>
+      </button>
+
+      <PastEntriesSheet open={showHistory} onClose={() => setShowHistory(false)} entries={entries} />
 
       {/* ── SUPPORTING METRICS ─────────────────────────────── */}
       <div className="grid grid-cols-3 gap-[10px] fade-up d4">
