@@ -13,8 +13,8 @@ const STEPS = ["welcome", "name", "birthday", "sex", "units", "height", "weight"
 type Step = typeof STEPS[number];
 
 const FEATURES = [
-  { icon: Activity, title: "Daily Check-in", desc: "Log sleep, nutrition, mood & activities in seconds", color: "text-primary" },
-  { icon: TrendingUp, title: "Smart Insights", desc: "See how your habits affect tomorrow's performance", color: "text-primary" },
+  { icon: Activity, title: "Daily Check-in", desc: "Log sleep, nutrition, mood & activities in seconds", color: "text-muted-foreground" },
+  { icon: TrendingUp, title: "Smart Insights", desc: "See how your habits affect tomorrow's performance", color: "text-muted-foreground" },
   { icon: Target, title: "Goal Tracking", desc: "Set targets and track streaks across all metrics", color: "text-foreground" },
   { icon: Sparkles, title: "Perfect Day Blueprint", desc: "AI analyzes your best days to find your formula", color: "text-foreground" },
 ];
@@ -139,7 +139,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
       <div className="flex justify-center gap-1.5 pt-14 pb-4 z-10">
         {STEPS.filter(s => s !== "paywall").map((_, i) => (
           <div key={i} className={`h-1 rounded-full transition-all duration-300 ${
-            i === stepIdx ? "w-8 bg-primary" : i < stepIdx ? "w-3 bg-primary/40" : "w-3 bg-muted/40"
+            i === stepIdx ? "w-8 bg-muted-foreground" : i < stepIdx ? "w-3 bg-muted-foreground/40" : "w-3 bg-muted/40"
           }`} />
         ))}
       </div>
@@ -161,12 +161,12 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
               <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10 px-6">
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.15, duration: 0.5 }}
-                  className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center mb-8 shadow-lg shadow-primary/30">
-                  <Sparkles className="text-primary-foreground" size={40} />
+                  className="w-24 h-24 rounded-3xl bg-gradient-to-br from-muted to-muted-foreground flex items-center justify-center mb-8">
+                  <Sparkles className="text-background" size={40} />
                 </motion.div>
                 <motion.h1 initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }} className="font-display text-4xl font-extrabold tracking-tight mb-3">
-                  daygo<span className="text-primary">.ai</span>
+                  daygo<span className="text-muted-foreground">.ai</span>
                 </motion.h1>
                 <motion.p initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.45 }} className="text-muted-foreground text-base max-w-[260px] leading-relaxed">
@@ -190,7 +190,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   onChange={e => setName(e.target.value)}
                   placeholder="Your name"
                   autoFocus
-                  className="w-full text-center text-3xl font-extrabold font-display bg-transparent border-b-2 border-muted/30 focus:border-primary/50 pb-3 text-foreground placeholder:text-muted-foreground/30 focus:outline-none transition-colors"
+                  className="w-full text-center text-3xl font-extrabold font-display bg-transparent border-b-2 border-muted/30 focus:border-muted-foreground/50 pb-3 text-foreground placeholder:text-muted-foreground/30 focus:outline-none transition-colors"
                 />
               </div>
             )}
@@ -232,7 +232,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, sex: s.value }))}
                       className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
                         profile.sex === s.value
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
                           : "bg-muted/20 text-muted-foreground border-2 border-transparent"
                       }`}
                     >
@@ -264,7 +264,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setUnits(u.value)}
                       className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
                         units === u.value
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
                           : "bg-muted/20 text-muted-foreground border-2 border-transparent"
                       }`}
                     >
@@ -363,14 +363,14 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, goal: key as UserProfile["goal"] }))}
                       className={`w-full py-4 rounded-2xl text-[15px] font-bold transition-all flex items-center justify-between px-6 ${
                         profile.goal === key
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
                           : "bg-muted/20 text-muted-foreground border-2 border-transparent"
                       }`}
                     >
                       {label}
                       {profile.goal === key && (
-                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                          <Check size={12} className="text-primary-foreground" />
+                        <div className="w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                          <Check size={12} className="text-background" />
                         </div>
                       )}
                     </motion.button>
@@ -396,18 +396,18 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, diet: d.value }))}
                       className={`relative rounded-2xl p-4 text-left transition-all ${
                         profile.diet === d.value
-                          ? "bg-primary/[0.12] border-2 border-primary/25"
+                          ? "bg-muted border-2 border-muted-foreground/25"
                           : "bg-muted/10 border-2 border-transparent hover:border-muted/20"
                       }`}
                     >
                       {profile.diet === d.value && (
-                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                          <Check size={12} className="text-primary-foreground" />
+                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                          <Check size={12} className="text-background" />
                         </div>
                       )}
                       <span className="text-xl mb-2 block">{d.emoji}</span>
                       <span className={`text-[13px] font-semibold block mb-0.5 ${
-                        profile.diet === d.value ? "text-primary" : "text-foreground/80"
+                        profile.diet === d.value ? "text-foreground" : "text-foreground/80"
                       }`}>{d.label}</span>
                       <span className="text-[10px] text-muted-foreground/50 leading-relaxed">{d.desc}</span>
                     </motion.button>
@@ -447,8 +447,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                 <div className="flex flex-col items-center text-center mb-6">
                   <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/30">
-                    <Watch size={36} className="text-foreground" />
+                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-muted to-muted-foreground flex items-center justify-center mb-5">
+                    <Watch size={36} className="text-background" />
                   </motion.div>
                   <h2 className="font-display text-2xl font-extrabold tracking-tight mb-2">Your wearable</h2>
                   <p className="text-[11px] text-muted-foreground/50 max-w-[280px] leading-relaxed">
@@ -465,14 +465,14 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, wearableType: w.value }))}
                       className={`w-full py-3.5 rounded-2xl text-[13px] font-semibold transition-all flex items-center justify-between px-5 ${
                         profile.wearableType === w.value
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/25"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/25"
                           : "bg-muted/10 text-muted-foreground/60 border-2 border-transparent hover:border-muted/20"
                       }`}
                     >
                       {w.label}
                       {profile.wearableType === w.value && (
-                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                          <Check size={12} className="text-primary-foreground" />
+                        <div className="w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                          <Check size={12} className="text-background" />
                         </div>
                       )}
                     </motion.button>
@@ -487,8 +487,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
               <div className="flex-1 flex flex-col items-center justify-center px-8">
                 <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.1, duration: 0.5 }}
-                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center mb-6 shadow-lg shadow-primary/30">
-                  <Bell className="text-primary-foreground" size={36} />
+                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-muted to-muted-foreground flex items-center justify-center mb-6">
+                  <Bell className="text-background" size={36} />
                 </motion.div>
                 <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
@@ -504,7 +504,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   transition={{ delay: 0.4 }} className="flex flex-col gap-3 w-full max-w-xs">
                   <button
                     onClick={requestNotifications}
-                    className="w-full h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all"
+                    className="w-full h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 bg-muted text-foreground hover:opacity-90 active:scale-[0.98] transition-all"
                   >
                     <Bell size={16} /> Enable Notifications
                   </button>
@@ -534,7 +534,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
             disabled={!canContinue}
             className={`flex-1 h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 transition-all ${
               canContinue
-                ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
+                ? "bg-muted text-foreground hover:opacity-90 active:scale-[0.98]"
                 : "bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
             }`}
           >
