@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Sparkles, TrendingUp, Target, Activity, Watch, SkipForward } from "lucide-react";
-import { type UserProfile, ACTIVITY_LEVEL_LABELS, GOAL_LABELS } from "@/lib/daylens-constants";
+import { ChevronRight, ChevronLeft, Sparkles, TrendingUp, Target, Activity, Watch, SkipForward, Check } from "lucide-react";
+import { type UserProfile, GOAL_LABELS, DIET_OPTIONS, WEARABLE_OPTIONS } from "@/lib/daylens-constants";
 
 interface OnboardingProps {
   onComplete: (profile: UserProfile) => void;
 }
 
-const STEPS = ["welcome", "profile", "features", "wearable"] as const;
+const STEPS = ["welcome", "profile", "diet", "features", "wearable"] as const;
 type Step = typeof STEPS[number];
 
 const FEATURES = [
@@ -26,7 +26,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
   const [stepIdx, setStepIdx] = useState(0);
   const [profile, setProfile] = useState<UserProfile>({
     heightCm: 175, weightKg: 75, age: 25, sex: "male",
-    activityLevel: "moderate", goal: "maintain",
+    activityLevel: "moderate", goal: "maintain", diet: "standard",
   });
 
   const step = STEPS[stepIdx];
@@ -130,14 +130,6 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-wider mb-2 block">Activity Level</label>
-                    <div className="glass rounded-[14px] px-4 py-3 flex items-center justify-between">
-                      <span className="text-[11px] text-white/[0.38]">Auto-detected from your wearable</span>
-                      <span className="text-[10px] px-2 py-1 rounded-lg bg-primary/[0.1] text-primary font-bold">Smart</span>
-                    </div>
-                  </div>
-
-                  <div>
                     <label className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-wider mb-2 block">Goal</label>
                     <div className="flex gap-2">
                       {Object.entries(GOAL_LABELS).map(([key, label]) => (
@@ -152,6 +144,49 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       ))}
                     </div>
                   </div>
+
+                  <div>
+                    <label className="text-[10px] font-semibold text-white/[0.28] uppercase tracking-wider mb-2 block">Activity Level</label>
+                    <div className="glass rounded-[14px] px-4 py-3 flex items-center justify-between">
+                      <span className="text-[11px] text-white/[0.38]">Auto-detected from your wearable</span>
+                      <span className="text-[10px] px-2 py-1 rounded-lg bg-primary/[0.1] text-primary font-bold">Smart</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === "diet" && (
+              <div className="flex-1 flex flex-col pt-4">
+                <h2 className="font-display text-2xl font-extrabold tracking-tight mb-1">Your diet</h2>
+                <p className="text-[11px] text-white/[0.38] mb-6">We'll tailor your macro recommendations based on your dietary preference.</p>
+
+                <div className="grid grid-cols-2 gap-2.5 flex-1 overflow-y-auto pb-4">
+                  {DIET_OPTIONS.map((d, i) => (
+                    <motion.button
+                      key={d.value}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      onClick={() => setProfile(p => ({ ...p, diet: d.value }))}
+                      className={`relative rounded-[18px] p-4 text-left transition-all ${
+                        profile.diet === d.value
+                          ? "bg-primary/[0.12] border border-primary/[0.25]"
+                          : "bg-white/[0.04] border border-white/[0.07] hover:border-white/[0.12]"
+                      }`}
+                    >
+                      {profile.diet === d.value && (
+                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                          <Check size={12} className="text-primary-foreground" />
+                        </div>
+                      )}
+                      <span className="text-xl mb-2 block">{d.emoji}</span>
+                      <span className={`text-[13px] font-semibold block mb-0.5 ${profile.diet === d.value ? "text-primary" : "text-foreground/80"}`}>
+                        {d.label}
+                      </span>
+                      <span className="text-[10px] text-white/[0.35] leading-relaxed">{d.desc}</span>
+                    </motion.button>
+                  ))}
                 </div>
               </div>
             )}
@@ -179,24 +214,42 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
             )}
 
             {step === "wearable" && (
-              <div className="flex-1 flex flex-col items-center justify-center text-center -mt-10">
-                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary flex items-center justify-center mb-6 shadow-lg shadow-primary/30">
-                  <Watch size={36} className="text-foreground" />
-                </motion.div>
-                <h2 className="font-display text-2xl font-extrabold tracking-tight mb-2">Connect a wearable</h2>
-                <p className="text-[11px] text-white/[0.38] max-w-[280px] leading-relaxed mb-8">
-                  Sync your Apple Watch, Garmin, or Fitbit for automatic sleep & activity data.
-                </p>
-                <div className="space-y-3 w-full max-w-[280px]">
-                  {["Apple Health", "Garmin Connect", "Fitbit"].map(name => (
-                    <button key={name} className="w-full py-3.5 rounded-[18px] bg-white/[0.05] text-[13px] font-semibold text-white/[0.55] border border-white/[0.07] hover:border-white/[0.12] transition-all">
-                      {name}
-                    </button>
+              <div className="flex-1 flex flex-col pt-4">
+                <div className="flex flex-col items-center text-center mb-6">
+                  <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/30">
+                    <Watch size={36} className="text-foreground" />
+                  </motion.div>
+                  <h2 className="font-display text-2xl font-extrabold tracking-tight mb-2">Your wearable</h2>
+                  <p className="text-[11px] text-white/[0.38] max-w-[280px] leading-relaxed">
+                    Select your device for automatic sleep, activity & health data sync.
+                  </p>
+                </div>
+                <div className="space-y-2.5 flex-1 overflow-y-auto pb-4">
+                  {WEARABLE_OPTIONS.map((w, i) => (
+                    <motion.button
+                      key={w.value}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      onClick={() => setProfile(p => ({ ...p, wearableType: w.value }))}
+                      className={`w-full py-3.5 rounded-[18px] text-[13px] font-semibold transition-all flex items-center justify-between px-5 ${
+                        profile.wearableType === w.value
+                          ? "bg-primary/[0.12] text-primary border border-primary/[0.25]"
+                          : "bg-white/[0.05] text-white/[0.55] border border-white/[0.07] hover:border-white/[0.12]"
+                      }`}
+                    >
+                      {w.label}
+                      {profile.wearableType === w.value && (
+                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                          <Check size={12} className="text-primary-foreground" />
+                        </div>
+                      )}
+                    </motion.button>
                   ))}
                 </div>
-                <p className="text-[10px] text-white/[0.28] mt-6">You can also enter data manually.</p>
+                <p className="text-[10px] text-white/[0.28] text-center mt-2">You can also enter data manually.</p>
               </div>
             )}
           </motion.div>
