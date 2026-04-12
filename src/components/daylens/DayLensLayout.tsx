@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import ParticleRing from "./ParticleRing";
-import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users, MessageCircle, HelpCircle } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users, MessageCircle, HelpCircle, Shield, Flame, FileText, Trophy } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { AICoachSheet } from "./AICoachSheet";
 import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
@@ -13,6 +13,11 @@ import { AccountScreen } from "./AccountScreen";
 import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
 import { HealthMetricsScreen } from "./HealthMetricsScreen";
+import { RecoveryScreen } from "./RecoveryScreen";
+import { StrainScreen } from "./StrainScreen";
+import { SleepCoachScreen } from "./SleepCoachScreen";
+import { ReportsScreen } from "./ReportsScreen";
+import { ChallengesScreen } from "./ChallengesScreen";
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions, scoreLabel, computeActivityCorrelations, avg, formatDuration, generateDailyPlan, getReadinessLevel, getStreakMessage } from "@/lib/daylens-utils";
 import { ACTIVITY_LEVEL_LABELS } from "@/lib/daylens-constants";
@@ -24,6 +29,8 @@ const DayLensApp = () => {
   const [profile, setProfile] = useState<UserProfile>(() => load("dl_profile", DEFAULT_PROFILE));
   const [plan, setPlan] = useState<string>(() => load("dl_plan", "free"));
   const [screen, setScreen] = useState("checkin");
+  const [healthTab, setHealthTab] = useState<"overview" | "recovery" | "strain" | "sleep">("overview");
+  const [insightTab, setInsightTab] = useState<"trends" | "reports" | "challenges">("trends");
   const [wearable, setWearable] = useState<WearableData | null>(null);
   const [nutrition, setNutrition] = useState<NutritionData>(defaultNutrition());
   const [mood, setMood] = useState<MoodData>(defaultMood());
@@ -147,7 +154,7 @@ const DayLensApp = () => {
       <div className="px-4 pt-14 pb-2">
         <div className="flex justify-between items-center">
           <h1 className="font-display text-[30px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>
-            {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Insights" : screen === "goals" ? "Goals" : "Profile"}
+            {screen === "checkin" ? "Dashboard" : screen === "health" ? (healthTab === "overview" ? "Health" : healthTab === "recovery" ? "Recovery" : healthTab === "strain" ? "Strain" : "Sleep Coach") : screen === "insights" ? (insightTab === "trends" ? "Insights" : insightTab === "reports" ? "Reports" : "Challenges") : screen === "goals" ? "Goals" : "Profile"}
           </h1>
           <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)}>
             <Plus className="w-[28px] h-[28px] text-white" strokeWidth={3} />
@@ -170,8 +177,56 @@ const DayLensApp = () => {
             quickAddSection={quickAddSection}
           />
         )}
-        {screen === "health" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
-        {screen === "insights" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
+        {screen === "health" && (
+          <div className="space-y-4">
+            {/* Health sub-tabs */}
+            <div className="flex p-1 card-dark !rounded-[18px] overflow-x-auto">
+              {([
+                { key: "overview", label: "Overview" },
+                { key: "recovery", label: "Recovery" },
+                { key: "strain", label: "Strain" },
+                { key: "sleep", label: "Sleep Coach" },
+              ] as const).map(t => (
+                <button key={t.key} onClick={() => setHealthTab(t.key)}
+                  className={`flex-1 py-[7px] text-[10px] font-bold rounded-[13px] capitalize whitespace-nowrap transition-all px-1 uppercase tracking-[0.04em] ${
+                    healthTab === t.key
+                      ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
+                      : "text-muted-foreground"
+                  }`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {healthTab === "overview" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
+            {healthTab === "recovery" && <RecoveryScreen entries={entries} recent={recent} />}
+            {healthTab === "strain" && <StrainScreen entries={entries} recent={recent} />}
+            {healthTab === "sleep" && <SleepCoachScreen entries={entries} />}
+          </div>
+        )}
+        {screen === "insights" && (
+          <div className="space-y-4">
+            {/* Insights sub-tabs */}
+            <div className="flex p-1 card-dark !rounded-[18px] overflow-x-auto">
+              {([
+                { key: "trends", label: "Trends" },
+                { key: "reports", label: "Reports" },
+                { key: "challenges", label: "Challenges" },
+              ] as const).map(t => (
+                <button key={t.key} onClick={() => setInsightTab(t.key)}
+                  className={`flex-1 py-[7px] text-[10px] font-bold rounded-[13px] capitalize whitespace-nowrap transition-all px-1 uppercase tracking-[0.04em] ${
+                    insightTab === t.key
+                      ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
+                      : "text-muted-foreground"
+                  }`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {insightTab === "trends" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
+            {insightTab === "reports" && <ReportsScreen entries={entries} />}
+            {insightTab === "challenges" && <ChallengesScreen entries={entries} />}
+          </div>
+        )}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
         {screen === "account" && (
           <AccountScreen entries={entries} plan={plan} onShowPricing={() => setShowPricing(true)}
