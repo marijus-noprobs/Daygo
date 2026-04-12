@@ -79,11 +79,11 @@
 
   /* Mesh gradient for all primary-colored elements */
   .bg-primary {
-    background: linear-gradient(135deg, #80ff00 0%, #4a9e00 40%, #2d6b00 70%, #1a1a1b 100%) !important;
+    background: linear-gradient(140deg, #2a2030 0%, #3d6b1a 35%, #4a8c10 55%, #5da000 75%, #6ab800 100%) !important;
   }
   .hover\:bg-primary\/90:hover,
   .hover\:bg-primary:hover {
-    background: linear-gradient(135deg, #8aff1a 0%, #55b000 40%, #357a00 70%, #222223 100%) !important;
+    background: linear-gradient(140deg, #332838 0%, #478220 35%, #55a015 55%, #68b400 75%, #78cc00 100%) !important;
   }
 }
 
