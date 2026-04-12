@@ -4,7 +4,7 @@ import ParticleRing from "./ParticleRing";
 import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, MessageCircle, HelpCircle, Shield, Flame, FileText, Trophy } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { AICoachSheet } from "./AICoachSheet";
-import { FoodModal, ActivityModal } from "./QuickAddModals";
+import { FoodModal, ActivityModal, SocialModal } from "./QuickAddModals";
 import { WeeklyTimeline } from "./WeeklyTimeline";
 import { CheckInScreen } from "./CheckInScreen";
 import { InsightScreen } from "./InsightScreen";
