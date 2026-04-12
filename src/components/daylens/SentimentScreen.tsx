@@ -169,8 +169,13 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
       <div
-        className="relative w-full max-w-md h-full max-h-[900px] flex flex-col transition-colors duration-500 rounded-none sm:rounded-[40px] overflow-hidden"
-        style={{ background: colors.bg }}
+        className="relative w-full max-w-md h-full max-h-[900px] flex flex-col transition-all duration-500 rounded-none sm:rounded-[40px] overflow-hidden"
+        style={{
+          background: colors.bg || undefined,
+          backgroundImage: colors.bgImage ? `url(${colors.bgImage})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
       >
         {/* Top bar */}
         <div className="flex justify-between items-center px-6 pt-12 pb-2">
