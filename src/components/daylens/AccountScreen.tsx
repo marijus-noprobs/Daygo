@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ChevronRight, Camera } from "lucide-react";
+import { ChevronRight, Camera, X } from "lucide-react";
 import type { DayEntry, UserProfile } from "@/lib/daylens-constants";
 import { ACTIVITY_LEVEL_LABELS, GOAL_LABELS } from "@/lib/daylens-constants";
 import { calcCalorieRecommendation, computeDayScore, avg, save, load } from "@/lib/daylens-utils";
@@ -17,6 +17,8 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
   const avgScore = entries.length ? avg(entries.slice(0, 14).map(computeDayScore)).toFixed(1) : "—";
   const fileRef = useRef<HTMLInputElement>(null);
   const [avatar, setAvatar] = useState<string | null>(() => load("dl_avatar", null));
+  const [editing, setEditing] = useState<"weight" | "goal" | null>(null);
+  const [tempWeight, setTempWeight] = useState(String(profile.weightKg));
 
   const streak = (() => {
     const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
@@ -43,6 +45,19 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
       save("dl_avatar", result);
     };
     reader.readAsDataURL(file);
+  };
+
+  const saveWeight = () => {
+    const val = parseFloat(tempWeight);
+    if (!isNaN(val) && val > 0) {
+      setProfile({ ...profile, weightKg: val });
+    }
+    setEditing(null);
+  };
+
+  const saveGoal = (goal: string) => {
+    setProfile({ ...profile, goal });
+    setEditing(null);
   };
 
   return (
@@ -91,20 +106,42 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
 
       {/* Settings List */}
       <div className="card-dark rounded-[20px] overflow-hidden fade-up d2">
-        {[
-          { label: "Height", value: `${profile.heightCm} cm` },
-          { label: "Weight", value: `${profile.weightKg} kg` },
-          { label: "Goal", value: GOAL_LABELS[profile.goal] || profile.goal },
-          { label: "Activity Level", value: ACTIVITY_LEVEL_LABELS[profile.activityLevel]?.split(" (")[0] || profile.activityLevel },
-        ].map((row, i, arr) => (
-          <div key={row.label} className={`flex items-center justify-between px-[18px] py-[15px] cursor-pointer hover:bg-card/80 transition-colors ${i < arr.length - 1 ? "border-b border-border" : ""}`}>
-            <span className="text-[13px] text-foreground/60 font-medium">{row.label}</span>
-            <div className="flex items-center gap-1">
-              <span className="text-[13px] text-muted-foreground">{row.value}</span>
-              <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
-            </div>
+        {/* Height — read-only, set during onboarding */}
+        <div className="flex items-center justify-between px-[18px] py-[15px] border-b border-border">
+          <span className="text-[13px] text-foreground/60 font-medium">Height</span>
+          <span className="text-[13px] text-muted-foreground">{profile.heightCm} cm</span>
+        </div>
+
+        {/* Weight — editable */}
+        <div
+          className="flex items-center justify-between px-[18px] py-[15px] cursor-pointer hover:bg-card/80 transition-colors border-b border-border"
+          onClick={() => { setTempWeight(String(profile.weightKg)); setEditing("weight"); }}
+        >
+          <span className="text-[13px] text-foreground/60 font-medium">Weight</span>
+          <div className="flex items-center gap-1">
+            <span className="text-[13px] text-muted-foreground">{profile.weightKg} kg</span>
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
-        ))}
+        </div>
+
+        {/* Goal — editable */}
+        <div
+          className="flex items-center justify-between px-[18px] py-[15px] cursor-pointer hover:bg-card/80 transition-colors border-b border-border"
+          onClick={() => setEditing("goal")}
+        >
+          <span className="text-[13px] text-foreground/60 font-medium">Goal</span>
+          <div className="flex items-center gap-1">
+            <span className="text-[13px] text-muted-foreground">{GOAL_LABELS[profile.goal] || profile.goal}</span>
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+          </div>
+        </div>
+
+        {/* Activity Level — auto-detected, read-only */}
+        <div className="flex items-center justify-between px-[18px] py-[15px]">
+          <span className="text-[13px] text-foreground/60 font-medium">Activity Level</span>
+          <span className="text-[13px] text-muted-foreground">{ACTIVITY_LEVEL_LABELS[profile.activityLevel]?.split(" (")[0] || profile.activityLevel}</span>
+        </div>
+
         <div className="flex items-center justify-between px-[18px] py-[15px] cursor-pointer hover:bg-card/80 transition-colors border-t border-border" onClick={onReset}>
           <span className="text-[13px] text-destructive font-medium">Sign Out</span>
           <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
@@ -119,6 +156,63 @@ export const AccountScreen = ({ entries, plan, onShowPricing, onReset, profile, 
             <div className="text-[11px] mt-0.5 text-muted-foreground">AI insights, advanced trends & more</div>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </div>
+      )}
+
+      {/* Weight Editor Modal */}
+      {editing === "weight" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center fade-in" onClick={() => setEditing(null)}
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(16px)' }}>
+          <div className="w-[85%] max-w-xs rounded-[22px] p-5 scale-in" onClick={e => e.stopPropagation()}
+            style={{ background: '#1c1c1d', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-base font-extrabold text-foreground">Update Weight</h3>
+              <button onClick={() => setEditing(null)}><X className="w-4 h-4 text-muted-foreground" /></button>
+            </div>
+            <div className="flex items-center gap-2 mb-4">
+              <input
+                type="number"
+                value={tempWeight}
+                onChange={e => setTempWeight(e.target.value)}
+                className="flex-1 bg-card rounded-xl px-4 py-3 text-foreground text-[16px] font-mono font-bold outline-none border border-border focus:border-primary/30"
+                autoFocus
+              />
+              <span className="text-muted-foreground text-[13px] font-medium">kg</span>
+            </div>
+            <button onClick={saveWeight}
+              className="w-full py-3 bg-primary text-primary-foreground rounded-xl text-[13px] font-bold hover:opacity-90 transition-opacity">
+              Save
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Goal Editor Modal */}
+      {editing === "goal" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center fade-in" onClick={() => setEditing(null)}
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(16px)' }}>
+          <div className="w-[85%] max-w-xs rounded-[22px] p-5 scale-in" onClick={e => e.stopPropagation()}
+            style={{ background: '#1c1c1d', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-base font-extrabold text-foreground">Set Goal</h3>
+              <button onClick={() => setEditing(null)}><X className="w-4 h-4 text-muted-foreground" /></button>
+            </div>
+            <div className="space-y-2">
+              {Object.entries(GOAL_LABELS).map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => saveGoal(key)}
+                  className={`w-full py-3.5 px-4 rounded-xl text-[13px] font-bold text-left transition-all ${
+                    profile.goal === key
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card text-foreground/70 hover:bg-card/80 border border-border"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
