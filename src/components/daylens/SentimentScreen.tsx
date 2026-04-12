@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, ChevronLeft } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import type { MoodData } from "@/lib/daylens-constants";
 
 interface SentimentScreenProps {
@@ -76,8 +77,8 @@ const FACE_PATTERNS = {
   ],
   happy: [
     [0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,1,0,0,0,0,1,0,0,0],
-    [0,1,0,1,0,0,1,0,1,0,0],
+    [0,0,1,0,0,0,0,0,1,0,0],
+    [0,1,0,1,0,0,0,1,0,1,0],
     [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0],
@@ -85,7 +86,7 @@ const FACE_PATTERNS = {
     [0,1,1,1,1,1,1,1,1,1,0],
     [0,0,1,1,1,1,1,1,1,0,0],
     [0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,0,1,0,0,0,0,0],
+    [0,0,0,0,1,1,1,0,0,0,0],
   ],
 };
 
@@ -206,8 +207,23 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
           </h2>
         </div>
 
-        {/* Discrete mood options */}
+        {/* Slider + Discrete mood options */}
         <div className="px-6 pb-4">
+          <div className="mb-4 px-1">
+            <Slider
+              value={[selectedIdx]}
+              onValueChange={([v]) => updateValue(v)}
+              min={0}
+              max={4}
+              step={1}
+              className="w-full [&_[role=slider]]:h-6 [&_[role=slider]]:w-6 [&_[role=slider]]:border-0"
+              style={{
+                '--slider-track': `${colors.fg}20`,
+                '--slider-range': colors.fg,
+                '--slider-thumb': colors.fg,
+              } as React.CSSProperties}
+            />
+          </div>
           <div className="flex gap-2 mb-6">
             {step.options.map((opt, i) => {
               const isSelected = selectedIdx === i;
