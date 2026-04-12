@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import ParticleRing from "./ParticleRing";
-import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, Users, MessageCircle, HelpCircle, Shield, Flame, FileText, Trophy } from "lucide-react";
+import { Home, TrendingUp, ClipboardList, Heart, User, Zap, Plus, ChevronRight, Sparkles, Sun, Moon, ArrowUp, ArrowDown, UtensilsCrossed, Dumbbell, MessageCircle, HelpCircle, Shield, Flame, FileText, Trophy } from "lucide-react";
 import { BottomSheet } from "./DayLensUI";
 import { AICoachSheet } from "./AICoachSheet";
 import { FoodModal, ActivityModal } from "./QuickAddModals";
