@@ -393,3 +393,11 @@
 .d3 { animation-delay: .14s; }
 .d4 { animation-delay: .19s; }
 .d5 { animation-delay: .24s; }
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
