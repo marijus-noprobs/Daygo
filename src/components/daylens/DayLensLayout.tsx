@@ -17,6 +17,7 @@ import { RecoveryScreen } from "./RecoveryScreen";
 import { LoadScreen } from "./LoadScreen";
 import { SleepCoachScreen } from "./SleepCoachScreen";
 import { ReportsScreen } from "./ReportsScreen";
+import { PastEntriesSheet } from "./PastEntriesSheet";
 
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions, scoreLabel, computeActivityCorrelations, avg, formatDuration, generateDailyPlan, getReadinessLevel, getStreakMessage } from "@/lib/daylens-utils";
