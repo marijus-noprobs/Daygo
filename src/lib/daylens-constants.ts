@@ -131,6 +131,8 @@ export interface DayEntry {
 
 export type DietType = "standard" | "keto" | "paleo" | "vegan" | "vegetarian" | "mediterranean" | "carnivore" | "intermittent_fasting";
 
+export type UnitSystem = "metric" | "imperial";
+
 export interface UserProfile {
   name?: string;
   birthday?: string; // ISO date string e.g. "1995-02-18"
@@ -142,6 +144,7 @@ export interface UserProfile {
   goal: "lose" | "maintain" | "gain";
   diet: DietType;
   wearableType?: string;
+  units?: UnitSystem;
 }
 
 export const DEFAULT_PROFILE: UserProfile = {

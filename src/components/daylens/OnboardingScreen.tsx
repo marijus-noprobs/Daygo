@@ -1,14 +1,15 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, ChevronLeft, Sparkles, TrendingUp, Target, Activity, Watch, SkipForward, Check } from "lucide-react";
-import { type UserProfile, GOAL_LABELS, DIET_OPTIONS, WEARABLE_OPTIONS } from "@/lib/daylens-constants";
+import { ChevronRight, ChevronLeft, Sparkles, TrendingUp, Target, Activity, Watch, Check, Bell } from "lucide-react";
+import { type UserProfile, type UnitSystem, GOAL_LABELS, DIET_OPTIONS, WEARABLE_OPTIONS } from "@/lib/daylens-constants";
 import { MultiWheelPicker, ScrollWheelPicker } from "./ScrollWheelPicker";
+import { PaywallScreen } from "./PaywallScreen";
 
 interface OnboardingProps {
   onComplete: (profile: UserProfile) => void;
 }
 
-const STEPS = ["welcome", "name", "birthday", "sex", "height", "weight", "goal", "diet", "features", "wearable"] as const;
+const STEPS = ["welcome", "name", "birthday", "sex", "units", "height", "weight", "goal", "diet", "features", "wearable", "notifications", "paywall"] as const;
 type Step = typeof STEPS[number];
 
 const FEATURES = [
@@ -20,9 +21,29 @@ const FEATURES = [
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
-const YEARS = Array.from({ length: 80 }, (_, i) => 2010 - i); // 2010 down to 1931
-const HEIGHTS = Array.from({ length: 121 }, (_, i) => i + 120); // 120-240 cm
-const WEIGHTS = Array.from({ length: 181 }, (_, i) => i + 30); // 30-210 kg
+const YEARS = Array.from({ length: 80 }, (_, i) => 2010 - i);
+
+// Metric
+const HEIGHTS_CM = Array.from({ length: 121 }, (_, i) => i + 120); // 120-240 cm
+const WEIGHTS_KG = Array.from({ length: 181 }, (_, i) => i + 30); // 30-210 kg
+
+// Imperial: feet display values
+const FEET_OPTIONS: string[] = [];
+for (let ft = 3; ft <= 7; ft++) {
+  for (let inch = 0; inch < 12; inch++) {
+    FEET_OPTIONS.push(`${ft}'${inch}"`);
+  }
+}
+const FEET_CM: number[] = [];
+for (let ft = 3; ft <= 7; ft++) {
+  for (let inch = 0; inch < 12; inch++) {
+    FEET_CM.push(Math.round((ft * 12 + inch) * 2.54));
+  }
+}
+// Imperial: lbs 66-462
+const WEIGHTS_LBS = Array.from({ length: 397 }, (_, i) => i + 66);
+const LBS_TO_KG = (lbs: number) => Math.round(lbs * 0.453592);
+const KG_TO_LBS = (kg: number) => Math.round(kg / 0.453592);
 
 const SEX_OPTIONS: { value: "male" | "female"; label: string; emoji: string }[] = [
   { value: "male", label: "Male", emoji: "♂" },
@@ -42,25 +63,39 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
   const [stepIdx, setStepIdx] = useState(0);
   const [name, setName] = useState("");
   const [birthDay, setBirthDay] = useState(18);
-  const [birthMonth, setBirthMonth] = useState(1); // 0-indexed
+  const [birthMonth, setBirthMonth] = useState(1);
   const [birthYear, setBirthYear] = useState(1995);
+  const [units, setUnits] = useState<UnitSystem>("metric");
   const [profile, setProfile] = useState<UserProfile>({
     heightCm: 175, weightKg: 75, age: 25, sex: "male",
     activityLevel: "moderate", goal: "maintain", diet: "standard",
   });
 
   const step = STEPS[stepIdx];
-  const isLast = stepIdx === STEPS.length - 1;
+  const isLast = step === "paywall";
+  const isPaywall = step === "paywall";
 
-  const heightIndex = useMemo(() => HEIGHTS.indexOf(profile.heightCm), [profile.heightCm]);
-  const weightIndex = useMemo(() => WEIGHTS.indexOf(profile.weightKg), [profile.weightKg]);
+  // Height/weight indices for pickers
+  const heightIndexMetric = useMemo(() => HEIGHTS_CM.indexOf(profile.heightCm), [profile.heightCm]);
+  const weightIndexMetric = useMemo(() => WEIGHTS_KG.indexOf(profile.weightKg), [profile.weightKg]);
+
+  const heightIndexImperial = useMemo(() => {
+    const closest = FEET_CM.reduce((best, cm, i) => Math.abs(cm - profile.heightCm) < Math.abs(FEET_CM[best] - profile.heightCm) ? i : best, 0);
+    return closest;
+  }, [profile.heightCm]);
+
+  const weightIndexImperial = useMemo(() => {
+    const lbs = KG_TO_LBS(profile.weightKg);
+    return Math.max(0, Math.min(WEIGHTS_LBS.length - 1, lbs - 66));
+  }, [profile.weightKg]);
+
   const dayIndex = DAYS.indexOf(birthDay);
   const yearIndex = YEARS.indexOf(birthYear);
 
-  const finalize = () => {
+  const finalize = (plan?: string) => {
     const birthday = `${birthYear}-${String(birthMonth + 1).padStart(2, "0")}-${String(birthDay).padStart(2, "0")}`;
     const age = calcAgeFromBirthday(birthday);
-    onComplete({ ...profile, name: name.trim() || undefined, birthday, age });
+    onComplete({ ...profile, name: name.trim() || undefined, birthday, age, units });
   };
 
   const next = () => {
@@ -69,7 +104,17 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
   };
 
   const prev = () => setStepIdx(i => Math.max(0, i - 1));
-  const skip = () => finalize();
+
+  const handlePaywallSubscribe = (plan: string) => {
+    finalize(plan);
+  };
+
+  const requestNotifications = () => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+    next();
+  };
 
   const slideVariants = {
     enter: { opacity: 0, x: 60 },
@@ -79,22 +124,20 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
 
   const canContinue = step === "name" ? name.trim().length > 0 : true;
 
+  // Paywall is rendered as a full-screen replacement
+  if (isPaywall) {
+    return <PaywallScreen onSubscribe={handlePaywallSubscribe} />;
+  }
+
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-background flex flex-col overflow-hidden">
       {/* Ambient glow */}
       <div className="fixed top-20 -left-20 w-80 h-80 bg-white/[0.03] blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-32 -right-20 w-72 h-72 bg-white/[0.03] blur-[100px] rounded-full pointer-events-none" />
 
-      {/* Skip button */}
-      {step !== "welcome" && (
-        <button onClick={skip} className="absolute top-12 right-6 z-50 text-[11px] text-muted-foreground/50 hover:text-muted-foreground transition-colors flex items-center gap-1">
-          Skip <SkipForward size={12} />
-        </button>
-      )}
-
       {/* Progress dots */}
       <div className="flex justify-center gap-1.5 pt-14 pb-4 z-10">
-        {STEPS.map((_, i) => (
+        {STEPS.filter(s => s !== "paywall").map((_, i) => (
           <div key={i} className={`h-1 rounded-full transition-all duration-300 ${
             i === stepIdx ? "w-8 bg-primary" : i < stepIdx ? "w-3 bg-primary/40" : "w-3 bg-muted/40"
           }`} />
@@ -163,24 +206,9 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   transition={{ delay: 0.1 }}>
                   <MultiWheelPicker
                     columns={[
-                      {
-                        items: DAYS,
-                        selectedIndex: dayIndex >= 0 ? dayIndex : 17,
-                        onChange: (i) => setBirthDay(DAYS[i]),
-                        width: "w-20",
-                      },
-                      {
-                        items: MONTHS,
-                        selectedIndex: birthMonth,
-                        onChange: (i) => setBirthMonth(i),
-                        width: "w-20",
-                      },
-                      {
-                        items: YEARS,
-                        selectedIndex: yearIndex >= 0 ? yearIndex : 15,
-                        onChange: (i) => setBirthYear(YEARS[i]),
-                        width: "w-24",
-                      },
+                      { items: DAYS, selectedIndex: dayIndex >= 0 ? dayIndex : 17, onChange: (i) => setBirthDay(DAYS[i]), width: "w-20" },
+                      { items: MONTHS, selectedIndex: birthMonth, onChange: (i) => setBirthMonth(i), width: "w-20" },
+                      { items: YEARS, selectedIndex: yearIndex >= 0 ? yearIndex : 15, onChange: (i) => setBirthYear(YEARS[i]), width: "w-24" },
                     ]}
                   />
                 </motion.div>
@@ -216,6 +244,38 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
               </div>
             )}
 
+            {/* ─── UNITS ─── */}
+            {step === "units" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-8">
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-8 text-center">
+                  Preferred units?
+                </motion.h2>
+                <div className="flex gap-3 w-full max-w-xs">
+                  {([
+                    { value: "metric" as UnitSystem, label: "Metric", sub: "kg · cm" },
+                    { value: "imperial" as UnitSystem, label: "Imperial", sub: "lbs · ft" },
+                  ]).map((u, i) => (
+                    <motion.button
+                      key={u.value}
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 + i * 0.05 }}
+                      onClick={() => setUnits(u.value)}
+                      className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
+                        units === u.value
+                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          : "bg-muted/20 text-muted-foreground border-2 border-transparent"
+                      }`}
+                    >
+                      {u.label}
+                      <span className="text-[11px] block mt-1 opacity-50">{u.sub}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* ─── HEIGHT ─── */}
             {step === "height" && (
               <div className="flex-1 flex flex-col items-center justify-center px-6">
@@ -225,18 +285,29 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                 </motion.h2>
                 <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.05 }} className="text-muted-foreground/50 text-xs mb-6">
-                  in centimeters
+                  {units === "metric" ? "in centimeters" : "in feet & inches"}
                 </motion.p>
                 <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}>
-                  <ScrollWheelPicker
-                    items={HEIGHTS}
-                    selectedIndex={heightIndex >= 0 ? heightIndex : 55}
-                    onChange={(i) => setProfile(p => ({ ...p, heightCm: HEIGHTS[i] }))}
-                    className="w-28"
-                  />
+                  {units === "metric" ? (
+                    <ScrollWheelPicker
+                      items={HEIGHTS_CM}
+                      selectedIndex={heightIndexMetric >= 0 ? heightIndexMetric : 55}
+                      onChange={(i) => setProfile(p => ({ ...p, heightCm: HEIGHTS_CM[i] }))}
+                      className="w-28"
+                    />
+                  ) : (
+                    <ScrollWheelPicker
+                      items={FEET_OPTIONS}
+                      selectedIndex={heightIndexImperial}
+                      onChange={(i) => setProfile(p => ({ ...p, heightCm: FEET_CM[i] }))}
+                      className="w-28"
+                    />
+                  )}
                 </motion.div>
-                <span className="text-muted-foreground/40 text-sm mt-3 font-medium">cm</span>
+                <span className="text-muted-foreground/40 text-sm mt-3 font-medium">
+                  {units === "metric" ? "cm" : "ft/in"}
+                </span>
               </div>
             )}
 
@@ -249,18 +320,29 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                 </motion.h2>
                 <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.05 }} className="text-muted-foreground/50 text-xs mb-6">
-                  in kilograms
+                  {units === "metric" ? "in kilograms" : "in pounds"}
                 </motion.p>
                 <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 }}>
-                  <ScrollWheelPicker
-                    items={WEIGHTS}
-                    selectedIndex={weightIndex >= 0 ? weightIndex : 45}
-                    onChange={(i) => setProfile(p => ({ ...p, weightKg: WEIGHTS[i] }))}
-                    className="w-28"
-                  />
+                  {units === "metric" ? (
+                    <ScrollWheelPicker
+                      items={WEIGHTS_KG}
+                      selectedIndex={weightIndexMetric >= 0 ? weightIndexMetric : 45}
+                      onChange={(i) => setProfile(p => ({ ...p, weightKg: WEIGHTS_KG[i] }))}
+                      className="w-28"
+                    />
+                  ) : (
+                    <ScrollWheelPicker
+                      items={WEIGHTS_LBS}
+                      selectedIndex={weightIndexImperial}
+                      onChange={(i) => setProfile(p => ({ ...p, weightKg: LBS_TO_KG(WEIGHTS_LBS[i]) }))}
+                      className="w-28"
+                    />
+                  )}
                 </motion.div>
-                <span className="text-muted-foreground/40 text-sm mt-3 font-medium">kg</span>
+                <span className="text-muted-foreground/40 text-sm mt-3 font-medium">
+                  {units === "metric" ? "kg" : "lbs"}
+                </span>
               </div>
             )}
 
@@ -326,9 +408,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       <span className="text-xl mb-2 block">{d.emoji}</span>
                       <span className={`text-[13px] font-semibold block mb-0.5 ${
                         profile.diet === d.value ? "text-primary" : "text-foreground/80"
-                      }`}>
-                        {d.label}
-                      </span>
+                      }`}>{d.label}</span>
                       <span className="text-[10px] text-muted-foreground/50 leading-relaxed">{d.desc}</span>
                     </motion.button>
                   ))}
@@ -401,30 +481,68 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                 <p className="text-[10px] text-muted-foreground/40 text-center mt-2">You can also enter data manually.</p>
               </div>
             )}
+
+            {/* ─── NOTIFICATIONS ─── */}
+            {step === "notifications" && (
+              <div className="flex-1 flex flex-col items-center justify-center px-8">
+                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.5 }}
+                  className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center mb-6 shadow-lg shadow-primary/30">
+                  <Bell className="text-primary-foreground" size={36} />
+                </motion.div>
+                <motion.h2 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="font-display text-2xl font-extrabold tracking-tight mb-3 text-center">
+                  Stay on track
+                </motion.h2>
+                <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-muted-foreground text-sm max-w-[280px] leading-relaxed text-center mb-8">
+                  Get gentle reminders to check in, plus weekly insight summaries.
+                </motion.p>
+                <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }} className="flex flex-col gap-3 w-full max-w-xs">
+                  <button
+                    onClick={requestNotifications}
+                    className="w-full h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all"
+                  >
+                    <Bell size={16} /> Enable Notifications
+                  </button>
+                  <button
+                    onClick={next}
+                    className="w-full h-10 rounded-2xl text-[13px] text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                  >
+                    Not now
+                  </button>
+                </motion.div>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Navigation */}
-      <div className="px-6 pb-10 pt-4 flex items-center gap-3 z-10">
-        {stepIdx > 0 && (
-          <button onClick={prev} className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors border border-border">
-            <ChevronLeft size={20} />
+      {step !== "notifications" && (
+        <div className="px-6 pb-10 pt-4 flex items-center gap-3 z-10">
+          {stepIdx > 0 && (
+            <button onClick={prev} className="w-12 h-12 rounded-2xl bg-muted/20 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors border border-border">
+              <ChevronLeft size={20} />
+            </button>
+          )}
+          <button
+            onClick={next}
+            disabled={!canContinue}
+            className={`flex-1 h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 transition-all ${
+              canContinue
+                ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
+                : "bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
+            }`}
+          >
+            {step === "welcome" ? "Get Started" : "Continue"}
+            <ChevronRight size={16} />
           </button>
-        )}
-        <button
-          onClick={next}
-          disabled={!canContinue}
-          className={`flex-1 h-12 rounded-2xl font-display font-extrabold text-[15px] flex items-center justify-center gap-2 transition-all ${
-            canContinue
-              ? "bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98]"
-              : "bg-muted/30 text-muted-foreground/40 cursor-not-allowed"
-          }`}
-        >
-          {step === "welcome" ? "Get Started" : isLast ? "Let's Go" : "Continue"}
-          <ChevronRight size={16} />
-        </button>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
