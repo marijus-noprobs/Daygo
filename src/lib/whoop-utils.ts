@@ -227,7 +227,7 @@ export interface Challenge {
   id: string;
   name: string;
   description: string;
-  metric: "strain" | "recovery" | "sleep" | "steps";
+  metric: "load" | "recovery" | "sleep" | "steps";
   goal: string;
   startDate: string;
   endDate: string;
