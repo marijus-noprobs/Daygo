@@ -249,7 +249,7 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
             <button
               onClick={handleNext}
               className="flex-1 py-4 rounded-full text-sm font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
-              style={{ background: colors.fg, color: colors.bg }}
+              style={{ background: colors.fg, color: '#111' }}
             >
               {isLast ? "Submit" : "Next"} <span>{"→"}</span>
             </button>
