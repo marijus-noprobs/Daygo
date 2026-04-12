@@ -249,22 +249,22 @@ export const generateMockChallenges = (entries: DayEntry[]): Challenge[] => {
 
   return [
     {
-      id: "weekly-strain",
-      name: "Weekly Strain War",
-      description: "Accumulate the highest total strain this week",
-      metric: "strain",
-      goal: "100+ total strain",
+      id: "weekly-load",
+      name: "Weekly Load Challenge",
+      description: "Accumulate the highest total load this week",
+      metric: "load",
+      goal: "100+ total load",
       startDate: weekAgo.toISOString().split("T")[0],
       endDate: now.toISOString().split("T")[0],
       status: "active",
-      userScore: userStrain,
+      userScore: userLoad,
       userRank: 3,
       participants: [
-        { name: "Alex M.", avatar: "AM", score: userStrain + 18.2 },
-        { name: "Sarah K.", avatar: "SK", score: userStrain + 7.5 },
-        { name: "You", avatar: "YO", score: userStrain },
-        { name: "Mike R.", avatar: "MR", score: userStrain - 4.3 },
-        { name: "Jess T.", avatar: "JT", score: userStrain - 11.8 },
+        { name: "Alex M.", avatar: "AM", score: userLoad + 18.2 },
+        { name: "Sarah K.", avatar: "SK", score: userLoad + 7.5 },
+        { name: "You", avatar: "YO", score: userLoad },
+        { name: "Mike R.", avatar: "MR", score: userLoad - 4.3 },
+        { name: "Jess T.", avatar: "JT", score: userLoad - 11.8 },
       ].sort((a, b) => b.score - a.score),
     },
     {
