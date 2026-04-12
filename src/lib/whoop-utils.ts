@@ -50,8 +50,8 @@ export const computeRecovery = (entry: DayEntry, recent: DayEntry[]): RecoveryDa
   return { score: total, level, label, factors, recommendation };
 };
 
-// ─── STRAIN SCORE (0-21) ────────────────────────────────────────────────────
-export interface StrainData {
+// ─── LOAD SCORE (0-21) ─────────────────────────────────────────────────────
+export interface LoadData {
   score: number;
   level: "light" | "moderate" | "high" | "overreaching";
   label: string;
@@ -61,7 +61,7 @@ export interface StrainData {
   avgHR: number;
 }
 
-const strainFromHR = (avgHR: number, durationMin: number, restingHR: number): number => {
+const loadFromHR = (avgHR: number, durationMin: number, restingHR: number): number => {
   const maxHR = 220 - 30; // assume age 30
   const hrReserve = maxHR - restingHR;
   const intensity = (avgHR - restingHR) / hrReserve;
@@ -69,22 +69,22 @@ const strainFromHR = (avgHR: number, durationMin: number, restingHR: number): nu
   return Math.min(21, Math.max(0, Math.log2(1 + intensity * durationMin / 10) * 3.5));
 };
 
-export const computeStrain = (entry: DayEntry): StrainData | null => {
+export const computeLoad = (entry: DayEntry): LoadData | null => {
   if (!entry?.wearable) return null;
   const w = entry.wearable;
   const workouts = w.activity.workouts || [];
   const rhr = w.body.restingHR;
 
-  // Calculate strain from workouts
-  let totalStrain = 0;
+  // Calculate load from workouts
+  let totalLoad = 0;
   workouts.forEach(wo => {
-    totalStrain += strainFromHR(wo.avgHR, wo.durationMin, rhr);
+    totalLoad += loadFromHR(wo.avgHR, wo.durationMin, rhr);
   });
 
-  // Add baseline strain from daily activity (steps)
-  const baseStrain = Math.min(5, (w.activity.steps / 10000) * 3);
-  totalStrain = Math.min(21, totalStrain + baseStrain);
-  totalStrain = Math.round(totalStrain * 10) / 10;
+  // Add baseline load from daily activity (steps)
+  const baseLoad = Math.min(5, (w.activity.steps / 10000) * 3);
+  totalLoad = Math.min(21, totalLoad + baseLoad);
+  totalLoad = Math.round(totalLoad * 10) / 10;
 
   // Simulate HR zones
   const totalMin = workouts.reduce((s, wo) => s + wo.durationMin, 0) + Math.floor(w.activity.steps / 100);
@@ -99,10 +99,10 @@ export const computeStrain = (entry: DayEntry): StrainData | null => {
   const peakHR = workouts.length > 0 ? Math.max(...workouts.map(wo => wo.avgHR + Math.floor(Math.random() * 20))) : Math.floor(rhr + 30);
   const avgHR = workouts.length > 0 ? Math.round(avg(workouts.map(wo => wo.avgHR))) : rhr + 15;
 
-  const level = totalStrain >= 18 ? "overreaching" : totalStrain >= 14 ? "high" : totalStrain >= 8 ? "moderate" : "light";
-  const label = totalStrain >= 18 ? "Overreaching" : totalStrain >= 14 ? "High Strain" : totalStrain >= 8 ? "Moderate" : "Light";
+  const level = totalLoad >= 18 ? "overreaching" : totalLoad >= 14 ? "high" : totalLoad >= 8 ? "moderate" : "light";
+  const label = totalLoad >= 18 ? "Overreaching" : totalLoad >= 14 ? "High Load" : totalLoad >= 8 ? "Moderate" : "Light";
 
-  return { score: totalStrain, level, label, zones, activeKcal: w.activity.activeKcal, peakHR, avgHR };
+  return { score: totalLoad, level, label, zones, activeKcal: w.activity.activeKcal, peakHR, avgHR };
 };
 
 // ─── SLEEP COACH ────────────────────────────────────────────────────────────
@@ -165,7 +165,7 @@ export const computeSleepCoach = (entries: DayEntry[]): SleepCoachData | null =>
 export interface PerformanceReport {
   period: string;
   avgRecovery: number;
-  avgStrain: number;
+  avgLoad: number;
   avgSleep: number;
   sleepConsistency: number;
   moodCorrelation: string;
@@ -179,16 +179,16 @@ export const generatePerformanceReport = (entries: DayEntry[]): PerformanceRepor
   const prev = [...entries].sort((a, b) => b.date.localeCompare(a.date)).slice(7, 14);
 
   const recoveries = recent.map(e => computeRecovery(e, entries)?.score || 50);
-  const strains = recent.map(e => computeStrain(e)?.score || 5);
+  const loads = recent.map(e => computeLoad(e)?.score || 5);
   const sleeps = recent.map(e => e.wearable?.sleep?.totalHours || 7);
   const moods = recent.map(e => e.mood.overallMood);
 
   const avgRec = Math.round(avg(recoveries));
-  const avgStr = Math.round(avg(strains) * 10) / 10;
+  const avgLd = Math.round(avg(loads) * 10) / 10;
   const avgSlp = Math.round(avg(sleeps) * 10) / 10;
 
   const prevRec = prev.length >= 3 ? Math.round(avg(prev.map(e => computeRecovery(e, entries)?.score || 50))) : null;
-  const prevStr = prev.length >= 3 ? Math.round(avg(prev.map(e => computeStrain(e)?.score || 5)) * 10) / 10 : null;
+  const prevLd = prev.length >= 3 ? Math.round(avg(prev.map(e => computeLoad(e)?.score || 5)) * 10) / 10 : null;
   const prevSlp = prev.length >= 3 ? Math.round(avg(prev.map(e => e.wearable?.sleep?.totalHours || 7)) * 10) / 10 : null;
 
   // Mood correlation insight
@@ -200,22 +200,22 @@ export const generatePerformanceReport = (entries: DayEntry[]): PerformanceRepor
     : "Recovery and mood show mixed correlation this week";
 
   const topInsight = avgRec >= 67
-    ? `Strong week — ${avgRec}% avg recovery with ${avgStr} avg strain. Your body is handling the load well.`
+    ? `Strong week — ${avgRec}% avg recovery with ${avgLd} avg load. Your body is handling the load well.`
     : avgRec >= 34
-    ? `Mixed recovery this week (${avgRec}%). Consider reducing strain on low-recovery days.`
+    ? `Mixed recovery this week (${avgRec}%). Consider reducing load on low-recovery days.`
     : `Tough week — recovery averaged ${avgRec}%. Prioritize sleep and reduce intensity next week.`;
 
   return {
     period: `${recent[recent.length - 1].date} → ${recent[0].date}`,
     avgRecovery: avgRec,
-    avgStrain: avgStr,
+    avgLoad: avgLd,
     avgSleep: avgSlp,
     sleepConsistency: computeSleepCoach(entries)?.consistencyScore || 70,
     moodCorrelation,
     topInsight,
     metrics: [
       { label: "Recovery", value: `${avgRec}%`, change: prevRec ? avgRec - prevRec : null },
-      { label: "Strain", value: `${avgStr}`, change: prevStr ? Math.round((avgStr - prevStr) * 10) / 10 : null },
+      { label: "Load", value: `${avgLd}`, change: prevLd ? Math.round((avgLd - prevLd) * 10) / 10 : null },
       { label: "Sleep", value: `${avgSlp}h`, change: prevSlp ? Math.round((avgSlp - prevSlp) * 10) / 10 : null },
       { label: "Mood", value: `${avg(moods).toFixed(1)}/5`, change: prev.length >= 3 ? Math.round((avg(moods) - avg(prev.map(e => e.mood.overallMood))) * 10) / 10 : null },
     ],
