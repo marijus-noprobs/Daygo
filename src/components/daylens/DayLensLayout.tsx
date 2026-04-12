@@ -29,8 +29,6 @@ const DayLensApp = () => {
   const [profile, setProfile] = useState<UserProfile>(() => load("dl_profile", DEFAULT_PROFILE));
   const [plan, setPlan] = useState<string>(() => load("dl_plan", "free"));
   const [screen, setScreen] = useState("checkin");
-  const [healthTab, setHealthTab] = useState<"overview" | "recovery" | "strain" | "sleep">("overview");
-  const [insightTab, setInsightTab] = useState<"trends" | "reports" | "challenges">("trends");
   const [wearable, setWearable] = useState<WearableData | null>(null);
   const [nutrition, setNutrition] = useState<NutritionData>(defaultNutrition());
   const [mood, setMood] = useState<MoodData>(defaultMood());
@@ -154,7 +152,7 @@ const DayLensApp = () => {
       <div className="px-4 pt-14 pb-2">
         <div className="flex justify-between items-center">
           <h1 className="font-display text-[30px] font-extrabold text-foreground" style={{ letterSpacing: '-0.04em' }}>
-            {screen === "checkin" ? "Dashboard" : screen === "health" ? (healthTab === "overview" ? "Health" : healthTab === "recovery" ? "Recovery" : healthTab === "strain" ? "Strain" : "Sleep Coach") : screen === "insights" ? (insightTab === "trends" ? "Insights" : insightTab === "reports" ? "Reports" : "Challenges") : screen === "goals" ? "Goals" : "Profile"}
+            {screen === "checkin" ? "Dashboard" : screen === "health" ? "Health" : screen === "insights" ? "Insights" : screen === "goals" ? "Goals" : "Profile"}
           </h1>
           <button className="flex items-center justify-center" onClick={() => setShowQuickAdd(true)}>
             <Plus className="w-[28px] h-[28px] text-white" strokeWidth={3} />
@@ -178,53 +176,18 @@ const DayLensApp = () => {
           />
         )}
         {screen === "health" && (
-          <div className="space-y-4">
-            {/* Health sub-tabs */}
-            <div className="flex p-1 card-dark !rounded-[18px] overflow-x-auto">
-              {([
-                { key: "overview", label: "Overview" },
-                { key: "recovery", label: "Recovery" },
-                { key: "strain", label: "Strain" },
-                { key: "sleep", label: "Sleep Coach" },
-              ] as const).map(t => (
-                <button key={t.key} onClick={() => setHealthTab(t.key)}
-                  className={`flex-1 py-[7px] text-[10px] font-bold rounded-[13px] capitalize whitespace-nowrap transition-all px-1 uppercase tracking-[0.04em] ${
-                    healthTab === t.key
-                      ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
-                      : "text-muted-foreground"
-                  }`}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            {healthTab === "overview" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
-            {healthTab === "recovery" && <RecoveryScreen entries={entries} recent={recent} />}
-            {healthTab === "strain" && <StrainScreen entries={entries} recent={recent} />}
-            {healthTab === "sleep" && <SleepCoachScreen entries={entries} />}
+          <div className="space-y-6">
+            <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />
+            <RecoveryScreen entries={entries} recent={recent} />
+            <StrainScreen entries={entries} recent={recent} />
+            <SleepCoachScreen entries={entries} />
           </div>
         )}
         {screen === "insights" && (
-          <div className="space-y-4">
-            {/* Insights sub-tabs */}
-            <div className="flex p-1 card-dark !rounded-[18px] overflow-x-auto">
-              {([
-                { key: "trends", label: "Trends" },
-                { key: "reports", label: "Reports" },
-                { key: "challenges", label: "Challenges" },
-              ] as const).map(t => (
-                <button key={t.key} onClick={() => setInsightTab(t.key)}
-                  className={`flex-1 py-[7px] text-[10px] font-bold rounded-[13px] capitalize whitespace-nowrap transition-all px-1 uppercase tracking-[0.04em] ${
-                    insightTab === t.key
-                      ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
-                      : "text-muted-foreground"
-                  }`}>
-                  {t.label}
-                </button>
-              ))}
-            </div>
-            {insightTab === "trends" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
-            {insightTab === "reports" && <ReportsScreen entries={entries} />}
-            {insightTab === "challenges" && <ChallengesScreen entries={entries} />}
+          <div className="space-y-6">
+            <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />
+            <ReportsScreen entries={entries} />
+            <ChallengesScreen entries={entries} />
           </div>
         )}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
@@ -323,6 +286,26 @@ const DayLensApp = () => {
   );
 };
 
+/* ─── Plan Item with checkbox ──────────────────────────────── */
+const PlanItem = ({ rec }: { rec: any }) => {
+  const [done, setDone] = useState(false);
+  return (
+    <button onClick={() => setDone(!done)} className="flex items-start gap-3 py-3.5 w-full text-left transition-opacity" style={{ borderTop: '1px solid rgba(255,255,255,0.04)', opacity: done ? 0.4 : 1 }}>
+      <div className="w-5 h-5 rounded-full border flex-shrink-0 mt-0.5 flex items-center justify-center transition-all" style={{
+        borderColor: done ? 'hsl(var(--color-lime))' : 'rgba(255,255,255,0.15)',
+        background: done ? 'hsl(var(--color-lime))' : 'transparent',
+      }}>
+        {done && <span className="text-[10px] text-black font-bold">✓</span>}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className={`text-[13px] font-bold text-foreground ${done ? 'line-through' : ''}`}>{rec.label}</div>
+        <div className="text-[12px] text-foreground/80 mt-0.5 leading-relaxed">{rec.action}</div>
+        <div className="text-[10px] text-muted-foreground mt-1">{rec.reason}</div>
+      </div>
+    </button>
+  );
+};
+
 /* ─── Home Screen ──────────────────────────────────────────── */
 
 const HomeScreen = ({
@@ -418,8 +401,12 @@ const HomeScreen = ({
               color="#ffffff"
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em' }}>{score.toFixed(0)}</span>
-              <span className="text-[8px] uppercase tracking-[0.15em] text-muted-foreground font-bold mt-0.5">score</span>
+              <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em' }}>{score.toFixed(1)}</span>
+              <span className="text-[9px] uppercase tracking-[0.12em] font-bold mt-1" style={{
+                color: score >= 4 ? 'hsl(var(--color-lime))' : score >= 3 ? 'rgba(255,255,255,0.6)' : 'hsl(var(--color-red))'
+              }}>
+                {scoreLabel(score)} · out of 5
+              </span>
             </div>
           </div>
           <div className="flex-1 min-w-0">
@@ -441,23 +428,10 @@ const HomeScreen = ({
           </div>
         </div>
 
-        {/* Coaching Recommendations */}
+        {/* Coaching Recommendations with checkboxes */}
         <div className="space-y-0">
           {dailyPlan.map((rec, i) => (
-            <div key={rec.category + i} className="flex items-start gap-3 py-3.5" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-              <div className="w-[3px] rounded-full flex-shrink-0 mt-1" style={{
-                height: 32,
-                background: rec.category === 'recovery' ? 'hsl(var(--color-red))' :
-                           rec.category === 'activity' ? 'hsl(var(--color-lime))' :
-                           rec.category === 'sleep' ? 'rgba(255,255,255,0.3)' :
-                           rec.category === 'social' ? 'hsl(var(--primary))' : 'rgba(255,255,255,0.15)',
-              }} />
-              <div className="flex-1 min-w-0">
-                <div className="text-[13px] font-bold text-foreground">{rec.label}</div>
-                <div className="text-[12px] text-foreground/80 mt-0.5 leading-relaxed">{rec.action}</div>
-                <div className="text-[10px] text-muted-foreground mt-1">{rec.reason}</div>
-              </div>
-            </div>
+            <PlanItem key={rec.category + i} rec={rec} />
           ))}
         </div>
       </div>

@@ -160,15 +160,22 @@ export const HealthMetricsScreen = ({ entries, recent, suggestions, detectedLeve
       {/* ── VITALS GRID (2x2) ──────────────────────────── */}
       <div className="grid grid-cols-2 gap-3 fade-up d2">
         {[
-          { label: "HRV", value: body.hrv, unit: "ms", metric: "hrv", data: hrvData, trend: `${body.hrv >= avgHRV ? "↑" : "↓"} ${Math.abs(body.hrv - avgHRV)}ms vs avg` },
-          { label: "Resting HR", value: body.restingHR, unit: "bpm", metric: "hr", data: hrData, trend: `${body.restingHR <= avgHR ? "↓" : "↑"} ${Math.abs(body.restingHR - avgHR)} vs avg` },
-          { label: "SpO₂", value: body.spo2, unit: "%", metric: "spo2", data: spo2Data, trend: body.spo2 >= 96 ? "Optimal" : "Below normal" },
-          { label: "Stress", value: body.stressLevel, unit: "%", metric: "stress", data: stressData, trend: body.stressLevel <= 30 ? "Low" : body.stressLevel <= 55 ? "Moderate" : "High" },
+          { label: "HRV", value: body.hrv, unit: "ms", metric: "hrv", data: hrvData, trend: `${body.hrv >= avgHRV ? "↑" : "↓"} ${Math.abs(body.hrv - avgHRV)}ms vs avg`,
+            status: body.hrv >= 50 ? "Good" : body.hrv >= 35 ? "Average" : "Below Average" },
+          { label: "Resting HR", value: body.restingHR, unit: "bpm", metric: "hr", data: hrData, trend: `${body.restingHR <= avgHR ? "↓" : "↑"} ${Math.abs(body.restingHR - avgHR)} vs avg`,
+            status: body.restingHR <= 60 ? "Excellent" : body.restingHR <= 72 ? "Normal" : "Elevated" },
+          { label: "SpO₂", value: body.spo2, unit: "%", metric: "spo2", data: spo2Data, trend: body.spo2 >= 96 ? "Optimal" : "Below normal",
+            status: body.spo2 >= 96 ? "Normal" : body.spo2 >= 94 ? "Low-Normal" : "Low" },
+          { label: "Stress", value: body.stressLevel, unit: "%", metric: "stress", data: stressData, trend: body.stressLevel <= 30 ? "Low" : body.stressLevel <= 55 ? "Moderate" : "High",
+            status: body.stressLevel <= 30 ? "Low" : body.stressLevel <= 55 ? "Moderate" : "High" },
         ].map(tile => {
           const color = vitalColor(tile.metric, tile.value);
           return (
             <div key={tile.label} className="card-dark rounded-[18px] p-4">
-              <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.08em] mb-1.5">{tile.label}</div>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.08em]">{tile.label}</div>
+                <div className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ color, background: `${color}15` }}>{tile.status}</div>
+              </div>
               <div className="font-mono text-[24px] font-bold leading-none" style={{ color, letterSpacing: '-0.03em' }}>
                 {tile.value}<span className="text-[10px] font-normal text-muted-foreground ml-0.5">{tile.unit}</span>
               </div>
