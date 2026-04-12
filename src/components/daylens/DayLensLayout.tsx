@@ -286,8 +286,10 @@ const DayLensApp = () => {
       {quickAddModal === "activity" && (
         <ActivityModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
       )}
+      {quickAddModal === "social" && (
+        <SocialModal activities={todayActivities} setActivities={setTodayActivities} onClose={() => setQuickAddModal(null)} onSave={handleQuickAddSave} />
+      )}
 
-      {/* Pricing Sheet */}
       <BottomSheet open={showPricing} onClose={() => setShowPricing(false)} title="Unlock DayLens">
         <p className="text-[11px] text-muted-foreground mb-5 -mt-1">Discover how your activities, sleep and habits connect.</p>
         <div className="space-y-3 mb-5">
