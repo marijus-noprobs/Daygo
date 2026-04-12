@@ -29,6 +29,8 @@ const DayLensApp = () => {
   const [profile, setProfile] = useState<UserProfile>(() => load("dl_profile", DEFAULT_PROFILE));
   const [plan, setPlan] = useState<string>(() => load("dl_plan", "free"));
   const [screen, setScreen] = useState("checkin");
+  const [healthTab, setHealthTab] = useState<"overview" | "recovery" | "strain" | "sleep">("overview");
+  const [insightTab, setInsightTab] = useState<"trends" | "reports" | "challenges">("trends");
   const [wearable, setWearable] = useState<WearableData | null>(null);
   const [nutrition, setNutrition] = useState<NutritionData>(defaultNutrition());
   const [mood, setMood] = useState<MoodData>(defaultMood());
