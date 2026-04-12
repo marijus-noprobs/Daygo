@@ -321,11 +321,65 @@
 .shimmer { animation: shimmer 1.6s ease infinite; }
 .spin-slow { animation: spin-slow 0.9s linear infinite; }
 
-@keyframes coach-pulse {
-  0%, 100% { box-shadow: 0 0 8px 1px rgba(128,255,0,0.08), 0 0 20px 3px rgba(128,255,0,0.04); }
-  50% { box-shadow: 0 0 12px 3px rgba(128,255,0,0.14), 0 0 30px 6px rgba(128,255,0,0.06); }
+@keyframes coach-border-spin {
+  0% { --coach-angle: 0deg; }
+  100% { --coach-angle: 360deg; }
 }
-.coach-glow-bar { animation: coach-pulse 3s ease-in-out infinite; }
+
+@property --coach-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.coach-glow-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.coach-glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--coach-angle),
+    hsl(210 80% 55% / 0.6),
+    hsl(280 70% 55% / 0.5),
+    hsl(340 70% 55% / 0.4),
+    hsl(30 80% 55% / 0.5),
+    hsl(140 60% 50% / 0.5),
+    hsl(210 80% 55% / 0.6)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: coach-border-spin 4s linear infinite;
+  pointer-events: none;
+}
+
+.coach-glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 19px;
+  background: conic-gradient(
+    from var(--coach-angle),
+    hsl(210 80% 55% / 0.12),
+    hsl(280 70% 55% / 0.08),
+    hsl(340 70% 55% / 0.06),
+    hsl(30 80% 55% / 0.08),
+    hsl(140 60% 50% / 0.1),
+    hsl(210 80% 55% / 0.12)
+  );
+  filter: blur(8px);
+  animation: coach-border-spin 4s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
 
 .d1 { animation-delay: .04s; }
 .d2 { animation-delay: .09s; }
