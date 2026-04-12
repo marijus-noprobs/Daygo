@@ -91,7 +91,7 @@ const FACE_PATTERNS = {
 
 const getFacePattern = (value: number) => {
   if (value <= 25) return FACE_PATTERNS.sad;
-  if (value <= 65) return FACE_PATTERNS.neutral;
+  if (value <= 50) return FACE_PATTERNS.neutral;
   return FACE_PATTERNS.happy;
 };
 
