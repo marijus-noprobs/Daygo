@@ -14,7 +14,7 @@ import { OnboardingScreen } from "./OnboardingScreen";
 import { SentimentScreen } from "./SentimentScreen";
 import { HealthMetricsScreen } from "./HealthMetricsScreen";
 import { RecoveryScreen } from "./RecoveryScreen";
-import { StrainScreen } from "./StrainScreen";
+import { LoadScreen } from "./LoadScreen";
 import { SleepCoachScreen } from "./SleepCoachScreen";
 import { ReportsScreen } from "./ReportsScreen";
 
@@ -29,7 +29,7 @@ const DayLensApp = () => {
   const [profile, setProfile] = useState<UserProfile>(() => load("dl_profile", DEFAULT_PROFILE));
   const [plan, setPlan] = useState<string>(() => load("dl_plan", "free"));
   const [screen, setScreen] = useState("checkin");
-  const [healthTab, setHealthTab] = useState<"overview" | "recovery" | "strain" | "sleep">("overview");
+  const [healthTab, setHealthTab] = useState<"overview" | "recovery" | "load" | "sleep">("overview");
   const [insightTab, setInsightTab] = useState<"trends" | "reports">("trends");
   const [wearable, setWearable] = useState<WearableData | null>(null);
   const [nutrition, setNutrition] = useState<NutritionData>(defaultNutrition());
@@ -183,7 +183,7 @@ const DayLensApp = () => {
               {([
                 { key: "overview", label: "Overview" },
                 { key: "recovery", label: "Recovery" },
-                { key: "strain", label: "Strain" },
+                { key: "load", label: "Load" },
                 { key: "sleep", label: "Sleep Coach" },
               ] as const).map(t => (
                 <button key={t.key} onClick={() => setHealthTab(t.key)}
@@ -198,7 +198,7 @@ const DayLensApp = () => {
             </div>
             {healthTab === "overview" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
             {healthTab === "recovery" && <RecoveryScreen entries={entries} recent={recent} />}
-            {healthTab === "strain" && <StrainScreen entries={entries} recent={recent} />}
+            {healthTab === "load" && <LoadScreen entries={entries} recent={recent} />}
             {healthTab === "sleep" && <SleepCoachScreen entries={entries} />}
           </div>
         )}
