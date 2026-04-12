@@ -178,18 +178,49 @@ const DayLensApp = () => {
           />
         )}
         {screen === "health" && (
-          <div className="space-y-6">
-            <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />
-            <RecoveryScreen entries={entries} recent={recent} />
-            <StrainScreen entries={entries} recent={recent} />
-            <SleepCoachScreen entries={entries} />
+          <div className="space-y-4">
+            <div className="flex p-1 card-dark !rounded-[18px] overflow-x-auto">
+              {([
+                { key: "overview", label: "Overview" },
+                { key: "recovery", label: "Recovery" },
+                { key: "strain", label: "Strain" },
+                { key: "sleep", label: "Sleep Coach" },
+              ] as const).map(t => (
+                <button key={t.key} onClick={() => setHealthTab(t.key)}
+                  className={`flex-1 py-[7px] text-[10px] font-bold rounded-[13px] whitespace-nowrap transition-all px-1 uppercase tracking-[0.04em] ${
+                    healthTab === t.key
+                      ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
+                      : "text-muted-foreground"
+                  }`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {healthTab === "overview" && <HealthMetricsScreen entries={entries} recent={recent} suggestions={healthSuggestions} detectedLevel={detectedLevel} detectedLevelLabel={detectedLevelLabel} />}
+            {healthTab === "recovery" && <RecoveryScreen entries={entries} recent={recent} />}
+            {healthTab === "strain" && <StrainScreen entries={entries} recent={recent} />}
+            {healthTab === "sleep" && <SleepCoachScreen entries={entries} />}
           </div>
         )}
         {screen === "insights" && (
-          <div className="space-y-6">
-            <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />
-            <ReportsScreen entries={entries} />
-            
+          <div className="space-y-4">
+            <div className="flex p-1 card-dark !rounded-[18px] overflow-x-auto">
+              {([
+                { key: "trends", label: "Trends" },
+                { key: "reports", label: "Reports" },
+              ] as const).map(t => (
+                <button key={t.key} onClick={() => setInsightTab(t.key)}
+                  className={`flex-1 py-[7px] text-[10px] font-bold rounded-[13px] whitespace-nowrap transition-all px-1 uppercase tracking-[0.04em] ${
+                    insightTab === t.key
+                      ? "bg-primary/[0.12] text-primary border border-primary/[0.2]"
+                      : "text-muted-foreground"
+                  }`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {insightTab === "trends" && <InsightScreen entries={entries} recent={recent} isPro={isPro} onShowPricing={() => setShowPricing(true)} />}
+            {insightTab === "reports" && <ReportsScreen entries={entries} />}
           </div>
         )}
         {screen === "goals" && <GoalsScreen goals={goals} setGoals={setGoals} entries={entries} recent={recent} isPremium={isPremium} onShowPricing={() => setShowPricing(true)} />}
