@@ -434,11 +434,12 @@ const HomeScreen = ({
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="font-mono text-[30px] font-bold text-foreground" style={{ letterSpacing: '-0.05em' }}>{score.toFixed(1)}</span>
-              <span className="text-[9px] uppercase tracking-[0.12em] font-bold mt-1" style={{
+              <span className="text-[8px] uppercase tracking-[0.08em] font-bold mt-0.5" style={{
                 color: score >= 4 ? 'hsl(var(--color-lime))' : score >= 3 ? 'rgba(255,255,255,0.6)' : 'hsl(var(--color-red))'
               }}>
-                {scoreLabel(score)} · out of 5
+                {scoreLabel(score)}
               </span>
+              <span className="text-[8px] text-muted-foreground uppercase tracking-[0.06em] font-bold">out of 5</span>
             </div>
           </div>
           <div className="flex-1 min-w-0">
