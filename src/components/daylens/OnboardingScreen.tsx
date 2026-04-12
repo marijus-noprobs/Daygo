@@ -264,7 +264,7 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setUnits(u.value)}
                       className={`flex-1 py-5 rounded-2xl text-base font-bold transition-all ${
                         units === u.value
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
                           : "bg-muted/20 text-muted-foreground border-2 border-transparent"
                       }`}
                     >
@@ -363,14 +363,14 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, goal: key as UserProfile["goal"] }))}
                       className={`w-full py-4 rounded-2xl text-[15px] font-bold transition-all flex items-center justify-between px-6 ${
                         profile.goal === key
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/30"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/30"
                           : "bg-muted/20 text-muted-foreground border-2 border-transparent"
                       }`}
                     >
                       {label}
                       {profile.goal === key && (
-                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                          <Check size={12} className="text-primary-foreground" />
+                        <div className="w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                          <Check size={12} className="text-background" />
                         </div>
                       )}
                     </motion.button>
@@ -396,18 +396,18 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, diet: d.value }))}
                       className={`relative rounded-2xl p-4 text-left transition-all ${
                         profile.diet === d.value
-                          ? "bg-primary/[0.12] border-2 border-primary/25"
+                          ? "bg-muted border-2 border-muted-foreground/25"
                           : "bg-muted/10 border-2 border-transparent hover:border-muted/20"
                       }`}
                     >
                       {profile.diet === d.value && (
-                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                          <Check size={12} className="text-primary-foreground" />
+                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                          <Check size={12} className="text-background" />
                         </div>
                       )}
                       <span className="text-xl mb-2 block">{d.emoji}</span>
                       <span className={`text-[13px] font-semibold block mb-0.5 ${
-                        profile.diet === d.value ? "text-primary" : "text-foreground/80"
+                        profile.diet === d.value ? "text-foreground" : "text-foreground/80"
                       }`}>{d.label}</span>
                       <span className="text-[10px] text-muted-foreground/50 leading-relaxed">{d.desc}</span>
                     </motion.button>
@@ -447,8 +447,8 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                 <div className="flex flex-col items-center text-center mb-6">
                   <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary flex items-center justify-center mb-5 shadow-lg shadow-primary/30">
-                    <Watch size={36} className="text-foreground" />
+                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-muted to-muted-foreground flex items-center justify-center mb-5">
+                    <Watch size={36} className="text-background" />
                   </motion.div>
                   <h2 className="font-display text-2xl font-extrabold tracking-tight mb-2">Your wearable</h2>
                   <p className="text-[11px] text-muted-foreground/50 max-w-[280px] leading-relaxed">
@@ -465,14 +465,14 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                       onClick={() => setProfile(p => ({ ...p, wearableType: w.value }))}
                       className={`w-full py-3.5 rounded-2xl text-[13px] font-semibold transition-all flex items-center justify-between px-5 ${
                         profile.wearableType === w.value
-                          ? "bg-primary/[0.12] text-primary border-2 border-primary/25"
+                          ? "bg-muted text-foreground border-2 border-muted-foreground/25"
                           : "bg-muted/10 text-muted-foreground/60 border-2 border-transparent hover:border-muted/20"
                       }`}
                     >
                       {w.label}
                       {profile.wearableType === w.value && (
-                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                          <Check size={12} className="text-primary-foreground" />
+                        <div className="w-5 h-5 rounded-full bg-muted-foreground flex items-center justify-center">
+                          <Check size={12} className="text-background" />
                         </div>
                       )}
                     </motion.button>
