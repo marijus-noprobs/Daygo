@@ -29,9 +29,9 @@ function buildSystemPrompt(ctx: CoachContext): string {
   return `You are DayLens AI Coach — a concise, empathetic wellness coach inside a health tracking app.
 
 USER PROFILE:
-- Name: ${ctx.profile.name || "User"}
-- Height: ${ctx.profile.height || "unknown"}
-- Weight: ${ctx.profile.weight || "unknown"}
+- Name: ${(ctx.profile as any).name || "User"}
+- Height: ${ctx.profile.heightCm || "unknown"} cm
+- Weight: ${ctx.profile.weightKg || "unknown"} kg
 - Goal: ${ctx.profile.goal || "general wellness"}
 
 TODAY'S DATA:
