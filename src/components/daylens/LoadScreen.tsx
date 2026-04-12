@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Flame } from "lucide-react";
 import ParticleRing from "./ParticleRing";
-import { computeStrain, type StrainData } from "@/lib/whoop-utils";
+import { computeLoad, type LoadData } from "@/lib/whoop-utils";
 import { avg } from "@/lib/daylens-utils";
 import type { DayEntry } from "@/lib/daylens-constants";
 
@@ -10,24 +10,24 @@ interface Props {
   recent: DayEntry[];
 }
 
-const strainColor = (score: number) =>
+const loadColor = (score: number) =>
   score >= 18 ? "hsl(var(--color-red))" : score >= 14 ? "hsl(var(--primary))" : score >= 8 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.25)";
 
-export const StrainScreen = ({ entries, recent }: Props) => {
-  const strain = useMemo(() => recent[0] ? computeStrain(recent[0]) : null, [recent]);
+export const LoadScreen = ({ entries, recent }: Props) => {
+  const load = useMemo(() => recent[0] ? computeLoad(recent[0]) : null, [recent]);
   const history = useMemo(() =>
-    recent.slice(0, 7).map(e => computeStrain(e)?.score || 0).reverse(),
+    recent.slice(0, 7).map(e => computeLoad(e)?.score || 0).reverse(),
     [recent]
   );
   const weekTotal = useMemo(() => Math.round(history.reduce((s, v) => s + v, 0) * 10) / 10, [history]);
 
-  if (!strain) {
+  if (!load) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 fade-up">
         <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center">
           <Flame className="w-8 h-8 text-muted-foreground" />
         </div>
-        <p className="text-muted-foreground text-[11px] text-center">No strain data yet.<br />Log a workout to begin tracking.</p>
+        <p className="text-muted-foreground text-[11px] text-center">No load data yet.<br />Log a workout to begin tracking.</p>
       </div>
     );
   }
