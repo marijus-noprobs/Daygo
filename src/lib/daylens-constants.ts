@@ -132,6 +132,8 @@ export interface DayEntry {
 export type DietType = "standard" | "keto" | "paleo" | "vegan" | "vegetarian" | "mediterranean" | "carnivore" | "intermittent_fasting";
 
 export interface UserProfile {
+  name?: string;
+  birthday?: string; // ISO date string e.g. "1995-02-18"
   heightCm: number;
   weightKg: number;
   age: number;
