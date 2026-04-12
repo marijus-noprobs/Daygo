@@ -11,7 +11,6 @@ interface SentimentScreenProps {
 const STEPS = [
   { key: "overallMood", question: "How's your overall mood?", options: ["Bad", "Okay", "Great"] },
   { key: "anxiety", question: "How's your anxiety level?", options: ["High", "Moderate", "Calm"] },
-  { key: "focus", question: "How's your focus & clarity?", options: ["Foggy", "Okay", "Sharp"] },
   { key: "energy", question: "How's your mental energy?", options: ["Drained", "Okay", "Energized"] },
 ] as const;
 
