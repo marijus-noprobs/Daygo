@@ -363,6 +363,7 @@ const HomeScreen = ({
   const activityCorrelations = useMemo(() => computeActivityCorrelations(recent), [recent]);
 
   const [showCoach, setShowCoach] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [coachQuestion, setCoachQuestion] = useState<string | null>(null);
   const [expandedInsight, setExpandedInsight] = useState<string | null>(null);
 
