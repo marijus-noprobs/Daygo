@@ -126,7 +126,7 @@ const SentimentFace = ({ value, dotColor }: { value: number; dotColor: string })
 
 export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => {
   const [stepIndex, setStepIndex] = useState(0);
-  const [values, setValues] = useState([1, 1, 1, 1]); // 0-2 index into options
+  const [values, setValues] = useState([1, 1, 1]); // 0-2 index into options
   const [noteText, setNoteText] = useState("");
   const [showNote, setShowNote] = useState(false);
 
