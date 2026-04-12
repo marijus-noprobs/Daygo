@@ -9,10 +9,10 @@ interface SentimentScreenProps {
 }
 
 const STEPS = [
-  { key: "overallMood", question: "How's your overall mood?", options: ["Awful", "Bad", "Okay", "Good", "Great"] },
-  { key: "anxiety", question: "How's your anxiety level?", options: ["Very High", "High", "Moderate", "Low", "Calm"] },
-  { key: "focus", question: "How's your focus & clarity?", options: ["Foggy", "Distracted", "Okay", "Focused", "Sharp"] },
-  { key: "energy", question: "How's your mental energy?", options: ["Drained", "Low", "Okay", "Good", "Energized"] },
+  { key: "overallMood", question: "How's your overall mood?", options: ["Bad", "Okay", "Great"] },
+  { key: "anxiety", question: "How's your anxiety level?", options: ["High", "Moderate", "Calm"] },
+  { key: "focus", question: "How's your focus & clarity?", options: ["Foggy", "Okay", "Sharp"] },
+  { key: "energy", question: "How's your mental energy?", options: ["Drained", "Okay", "Energized"] },
 ] as const;
 
 const getColors = (value: number) => {
@@ -127,14 +127,14 @@ const SentimentFace = ({ value, dotColor }: { value: number; dotColor: string })
 
 export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => {
   const [stepIndex, setStepIndex] = useState(0);
-  const [values, setValues] = useState([2, 2, 2, 2]); // 0-4 index into options
+  const [values, setValues] = useState([1, 1, 1, 1]); // 0-2 index into options
   const [noteText, setNoteText] = useState("");
   const [showNote, setShowNote] = useState(false);
 
   const step = STEPS[stepIndex];
   const selectedIdx = values[stepIndex];
-  // Map 0-4 to 0-100 for colors
-  const value = selectedIdx * 25;
+  // Map 0-2 to 0-100 for colors
+  const value = selectedIdx * 50;
   const colors = getColors(value);
   const label = step.options[selectedIdx].toUpperCase();
   const isLast = stepIndex === STEPS.length - 1;
@@ -145,11 +145,11 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
 
   const handleNext = () => {
     if (isLast) {
-      // Map 0-4 index to 1-5 mood scale
-      const toMood = (idx: number) => idx + 1;
+      // Map 0-2 index to 1,3,5 mood scale
+      const toMood = (idx: number) => idx * 2 + 1;
       onSubmit({
         overallMood: toMood(values[0]),
-        anxiety: 5 - values[1], // invert: 0=very high anxiety(5), 4=calm(1)
+        anxiety: 5 - values[1] * 2, // invert
         focus: toMood(values[2]),
         energy: toMood(values[3]),
         stressEvents: "",
@@ -214,7 +214,7 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
               value={[selectedIdx]}
               onValueChange={([v]) => updateValue(v)}
               min={0}
-              max={4}
+              max={2}
               step={1}
               className="w-full [&_[role=slider]]:h-6 [&_[role=slider]]:w-6 [&_[role=slider]]:border-0"
               style={{
