@@ -279,9 +279,26 @@ export const calcCalorieRecommendation = (profile: UserProfile, wearable: Wearab
   const baseTarget = calcDailyTarget(profile);
   const exerciseBonus = calcExerciseBonus(wearable);
   const adjustedTarget = baseTarget + exerciseBonus;
-  const proteinG = Math.round(profile.weightKg * (profile.goal === "gain" ? 2.0 : profile.goal === "lose" ? 1.8 : 1.6));
+  // Adjust protein based on diet type
+  let proteinMultiplier = profile.goal === "gain" ? 2.0 : profile.goal === "lose" ? 1.8 : 1.6;
+  if (profile.diet === "keto" || profile.diet === "carnivore") proteinMultiplier = Math.max(proteinMultiplier, 2.0);
+  if (profile.diet === "vegan") proteinMultiplier = Math.max(proteinMultiplier, 1.8); // higher target since plant protein is less bioavailable
+  const proteinG = Math.round(profile.weightKg * proteinMultiplier);
 
-  return { bmr: Math.round(bmr), tdee, baseTarget, exerciseBonus, adjustedTarget, proteinG };
+  // Macro split based on diet
+  let carbPct = 45, fatPct = 30, proteinPct = 25;
+  switch (profile.diet) {
+    case "keto": carbPct = 5; fatPct = 70; proteinPct = 25; break;
+    case "carnivore": carbPct = 5; fatPct = 55; proteinPct = 40; break;
+    case "paleo": carbPct = 25; fatPct = 40; proteinPct = 35; break;
+    case "mediterranean": carbPct = 45; fatPct = 35; proteinPct = 20; break;
+    case "vegan": case "vegetarian": carbPct = 50; fatPct = 25; proteinPct = 25; break;
+  }
+
+  const carbsG = Math.round((adjustedTarget * carbPct / 100) / 4);
+  const fatG = Math.round((adjustedTarget * fatPct / 100) / 9);
+
+  return { bmr: Math.round(bmr), tdee, baseTarget, exerciseBonus, adjustedTarget, proteinG, carbsG, fatG, carbPct, fatPct, proteinPct };
 };
 
 // ─── STREAKS & BADGES ────────────────────────────────────────────────────────

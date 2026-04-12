@@ -129,6 +129,8 @@ export interface DayEntry {
   note: string;
 }
 
+export type DietType = "standard" | "keto" | "paleo" | "vegan" | "vegetarian" | "mediterranean" | "carnivore" | "intermittent_fasting";
+
 export interface UserProfile {
   heightCm: number;
   weightKg: number;
@@ -136,6 +138,8 @@ export interface UserProfile {
   sex: "male" | "female";
   activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
   goal: "lose" | "maintain" | "gain";
+  diet: DietType;
+  wearableType?: string;
 }
 
 export const DEFAULT_PROFILE: UserProfile = {
@@ -145,7 +149,31 @@ export const DEFAULT_PROFILE: UserProfile = {
   sex: "male",
   activityLevel: "moderate",
   goal: "maintain",
+  diet: "standard",
 };
+
+export const DIET_OPTIONS: { value: DietType; label: string; desc: string; emoji: string }[] = [
+  { value: "standard", label: "Standard", desc: "Balanced macros, no restrictions", emoji: "🍽️" },
+  { value: "keto", label: "Keto", desc: "High fat, very low carb", emoji: "🥑" },
+  { value: "paleo", label: "Paleo", desc: "Whole foods, no processed", emoji: "🥩" },
+  { value: "vegan", label: "Vegan", desc: "100% plant-based", emoji: "🌱" },
+  { value: "vegetarian", label: "Vegetarian", desc: "No meat, dairy ok", emoji: "🥗" },
+  { value: "mediterranean", label: "Mediterranean", desc: "Olive oil, fish, whole grains", emoji: "🫒" },
+  { value: "carnivore", label: "Carnivore", desc: "Animal products only", emoji: "🥓" },
+  { value: "intermittent_fasting", label: "IF", desc: "Time-restricted eating", emoji: "⏰" },
+];
+
+export const WEARABLE_OPTIONS: { value: string; label: string }[] = [
+  { value: "apple_watch", label: "Apple Watch" },
+  { value: "garmin", label: "Garmin" },
+  { value: "fitbit", label: "Fitbit" },
+  { value: "whoop", label: "WHOOP" },
+  { value: "samsung", label: "Samsung Galaxy Watch" },
+  { value: "oura", label: "Oura Ring" },
+  { value: "polar", label: "Polar" },
+  { value: "coros", label: "COROS" },
+  { value: "none", label: "No wearable" },
+];
 
 export const ACTIVITY_LEVEL_LABELS: Record<string, string> = {
   sedentary: "Sedentary (desk job)",
