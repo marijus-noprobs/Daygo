@@ -147,11 +147,14 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
     else onClose();
   };
 
+  const initialColors = getColors(1 * 50); // ensure initial bg matches default value
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: initialColors.bg }}>
       <div
-        className="relative w-full max-w-md h-full max-h-[900px] flex flex-col transition-all duration-500 rounded-none sm:rounded-[40px] overflow-hidden"
+        className="relative w-full max-w-md h-full max-h-[900px] flex flex-col rounded-none sm:rounded-[40px] overflow-hidden"
         style={{
+          transition: 'background 500ms ease',
           background: colors.bg || undefined,
           backgroundImage: colors.bgImage ? `url(${colors.bgImage})` : undefined,
           backgroundSize: 'cover',
