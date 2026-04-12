@@ -8,10 +8,10 @@ interface SentimentScreenProps {
 }
 
 const STEPS = [
-  { key: "overallMood", question: "How's your overall mood?", lowLabel: "Bad", midLabel: "Not bad", highLabel: "Good" },
-  { key: "anxiety", question: "How's your anxiety level?", lowLabel: "High", midLabel: "Moderate", highLabel: "Calm" },
-  { key: "focus", question: "How's your focus & clarity?", lowLabel: "Foggy", midLabel: "Okay", highLabel: "Sharp" },
-  { key: "energy", question: "How's your mental energy?", lowLabel: "Drained", midLabel: "Okay", highLabel: "Energized" },
+  { key: "overallMood", question: "How's your overall mood?", options: ["Awful", "Bad", "Okay", "Good", "Great"] },
+  { key: "anxiety", question: "How's your anxiety level?", options: ["Very High", "High", "Moderate", "Low", "Calm"] },
+  { key: "focus", question: "How's your focus & clarity?", options: ["Foggy", "Distracted", "Okay", "Focused", "Sharp"] },
+  { key: "energy", question: "How's your mental energy?", options: ["Drained", "Low", "Okay", "Good", "Energized"] },
 ] as const;
 
 const getColors = (value: number) => {
@@ -126,26 +126,29 @@ const SentimentFace = ({ value, dotColor }: { value: number; dotColor: string })
 
 export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => {
   const [stepIndex, setStepIndex] = useState(0);
-  const [values, setValues] = useState([50, 50, 50, 50]);
+  const [values, setValues] = useState([2, 2, 2, 2]); // 0-4 index into options
   const [noteText, setNoteText] = useState("");
   const [showNote, setShowNote] = useState(false);
 
   const step = STEPS[stepIndex];
-  const value = values[stepIndex];
+  const selectedIdx = values[stepIndex];
+  // Map 0-4 to 0-100 for colors
+  const value = selectedIdx * 25;
   const colors = getColors(value);
-  const label = value <= 25 ? step.lowLabel.toUpperCase() : value <= 65 ? step.midLabel.toUpperCase() : step.highLabel.toUpperCase();
+  const label = step.options[selectedIdx].toUpperCase();
   const isLast = stepIndex === STEPS.length - 1;
 
-  const updateValue = (v: number) => {
-    setValues(prev => { const next = [...prev]; next[stepIndex] = v; return next; });
+  const updateValue = (idx: number) => {
+    setValues(prev => { const next = [...prev]; next[stepIndex] = idx; return next; });
   };
 
   const handleNext = () => {
     if (isLast) {
-      const toMood = (v: number) => Math.round(1 + (v / 100) * 4);
+      // Map 0-4 index to 1-5 mood scale
+      const toMood = (idx: number) => idx + 1;
       onSubmit({
         overallMood: toMood(values[0]),
-        anxiety: 5 - toMood(values[1]) + 1,
+        anxiety: 5 - values[1], // invert: 0=very high anxiety(5), 4=calm(1)
         focus: toMood(values[2]),
         energy: toMood(values[3]),
         stressEvents: "",
@@ -198,26 +201,31 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
         {/* Face */}
         <div className="flex-1 flex flex-col items-center justify-center -mt-8">
           <SentimentFace value={value} dotColor={colors.dotColor} />
-          <h2 className="text-5xl font-black tracking-tight mt-4 transition-colors duration-500" style={{ color: colors.fgLight }}>
+          <h2 className="text-4xl font-black tracking-tight mt-4 transition-colors duration-500" style={{ color: colors.fgLight }}>
             {label}
           </h2>
         </div>
 
-        {/* Slider section */}
-        <div className="px-8 pb-4">
-          <div className="relative mb-3">
-            <input
-              type="range" min="0" max="100" value={value}
-              onChange={e => updateValue(Number(e.target.value))}
-              className="w-full h-1 rounded-full appearance-none outline-none cursor-pointer"
-              style={{ background: `${colors.fg}40`, accentColor: colors.fg }}
-            />
-          </div>
-
-          <div className="flex justify-between text-xs font-semibold mb-6 transition-colors duration-500" style={{ color: colors.fg }}>
-            <span style={{ opacity: value <= 25 ? 1 : 0.4 }}>{step.lowLabel}</span>
-            <span style={{ opacity: value > 25 && value <= 65 ? 1 : 0.4 }}>{step.midLabel}</span>
-            <span style={{ opacity: value > 65 ? 1 : 0.4 }}>{step.highLabel}</span>
+        {/* Discrete mood options */}
+        <div className="px-6 pb-4">
+          <div className="flex gap-2 mb-6">
+            {step.options.map((opt, i) => {
+              const isSelected = selectedIdx === i;
+              return (
+                <button
+                  key={opt}
+                  onClick={() => updateValue(i)}
+                  className="flex-1 py-3 rounded-2xl text-[11px] font-bold transition-all active:scale-95"
+                  style={{
+                    background: isSelected ? colors.fg : `${colors.fg}12`,
+                    color: isSelected ? (value > 50 ? '#111' : '#000') : `${colors.fg}80`,
+                    border: isSelected ? 'none' : `1px solid ${colors.fg}20`,
+                  }}
+                >
+                  {opt}
+                </button>
+              );
+            })}
           </div>
 
           {showNote && (
