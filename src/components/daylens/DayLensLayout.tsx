@@ -137,6 +137,10 @@ const DayLensApp = () => {
     setShowSentiment(true);
   };
 
+  if (!loggedIn) {
+    return <LoginScreen onLogin={() => setLoggedIn(true)} />;
+  }
+
   if (!onboarded) {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
   }
