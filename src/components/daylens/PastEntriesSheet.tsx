@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, ChevronRight, ChevronDown, Dumbbell } from "lucide-react";
+import { X, ChevronRight, Dumbbell } from "lucide-react";
 import type { DayEntry } from "@/lib/daylens-constants";
 import { computeDayScore, scoreLabel } from "@/lib/daylens-utils";
 
@@ -138,59 +138,13 @@ const EntryDetail = ({ entry, onBack }: { entry: DayEntry; onBack: () => void })
   );
 };
 
-const getWeekLabel = (dateStr: string): string => {
-  const now = new Date();
-  const todayStr = now.toISOString().split("T")[0];
-  const d = new Date(dateStr + "T12:00:00");
-  const dayOfWeek = d.getDay();
-  const weekStart = new Date(d);
-  weekStart.setDate(d.getDate() - dayOfWeek);
-
-  const nowDayOfWeek = now.getDay();
-  const thisWeekStart = new Date(now);
-  thisWeekStart.setDate(now.getDate() - nowDayOfWeek);
-  const lastWeekStart = new Date(thisWeekStart);
-  lastWeekStart.setDate(thisWeekStart.getDate() - 7);
-
-  if (weekStart.toISOString().split("T")[0] === thisWeekStart.toISOString().split("T")[0]) return "This Week";
-  if (weekStart.toISOString().split("T")[0] === lastWeekStart.toISOString().split("T")[0]) return "Last Week";
-  
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  return `${weekStart.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${weekEnd.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
-};
-
 export const PastEntriesSheet = ({ open, onClose, entries }: PastEntriesSheetProps) => {
   const [selectedEntry, setSelectedEntry] = useState<DayEntry | null>(null);
-  const [collapsedWeeks, setCollapsedWeeks] = useState<Set<string>>(new Set());
 
-  const grouped = useMemo(() => {
-    const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
-    const groups: { label: string; entries: DayEntry[]; avgScore: number }[] = [];
-    const map = new Map<string, DayEntry[]>();
-
-    sorted.forEach((entry) => {
-      const label = getWeekLabel(entry.date);
-      if (!map.has(label)) map.set(label, []);
-      map.get(label)!.push(entry);
-    });
-
-    map.forEach((weekEntries, label) => {
-      const avg = weekEntries.reduce((s, e) => s + computeDayScore(e), 0) / weekEntries.length;
-      groups.push({ label, entries: weekEntries, avgScore: avg });
-    });
-
-    return groups;
-  }, [entries]);
-
-  const toggleWeek = (label: string) => {
-    setCollapsedWeeks((prev) => {
-      const next = new Set(prev);
-      if (next.has(label)) next.delete(label);
-      else next.add(label);
-      return next;
-    });
-  };
+  const sorted = useMemo(
+    () => [...entries].sort((a, b) => b.date.localeCompare(a.date)),
+    [entries],
+  );
 
   if (!open) return null;
 
@@ -228,91 +182,58 @@ export const PastEntriesSheet = ({ open, onClose, entries }: PastEntriesSheetPro
         {selectedEntry ? (
           <EntryDetail entry={selectedEntry} onBack={() => setSelectedEntry(null)} />
         ) : (
-          <div className="space-y-3">
-            {grouped.length === 0 && (
+          <div className="space-y-1.5">
+            {sorted.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-muted-foreground text-[12px]">No entries yet. Start logging!</p>
               </div>
             )}
-            {grouped.map((week) => {
-              const isCollapsed = collapsedWeeks.has(week.label);
+            {sorted.map((entry) => {
+              const score = computeDayScore(entry);
+              const d = new Date(entry.date + "T12:00:00");
+              const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
+              const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+              const isToday = entry.date === new Date().toISOString().split("T")[0];
 
               return (
-                <div key={week.label}>
-                  {/* Week header */}
-                  <button
-                    onClick={() => toggleWeek(week.label)}
-                    className="w-full flex items-center justify-between px-2 py-2 rounded-xl transition-colors hover:bg-white/[0.03]"
+                <button
+                  key={entry.date}
+                  onClick={() => setSelectedEntry(entry)}
+                  className="w-full flex items-center gap-3 p-3.5 rounded-[16px] text-left transition-all active:scale-[0.98] hover:bg-white/[0.02]"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}
+                >
+                  <div
+                    className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: score >= 4 ? "rgba(132,204,22,0.1)" : score >= 3 ? "rgba(255,255,255,0.05)" : "rgba(224,80,80,0.08)",
+                      border: `1.5px solid ${score >= 4 ? "rgba(132,204,22,0.25)" : score >= 3 ? "rgba(255,255,255,0.1)" : "rgba(224,80,80,0.2)"}`,
+                    }}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <ChevronDown
-                        size={14}
-                        className="text-muted-foreground/50 transition-transform"
-                        style={{ transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)" }}
-                      />
-                      <span className="text-[12px] font-bold text-foreground/80">{week.label}</span>
-                      <span className="text-[10px] text-muted-foreground">{week.entries.length} days</span>
+                    <span
+                      className="font-mono text-[13px] font-bold"
+                      style={{
+                        color: score >= 4 ? "hsl(var(--primary))" : score >= 3 ? "rgba(255,255,255,0.7)" : "rgba(224,80,80,0.8)",
+                      }}
+                    >
+                      {score.toFixed(1)}
+                    </span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-bold text-foreground">{isToday ? "Today" : dayName}</span>
+                      <span className="text-[11px] text-muted-foreground">{dateStr}</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div
-                        className="w-2 h-2 rounded-full"
-                        style={{
-                          background: week.avgScore >= 4 ? "hsl(var(--primary))" : week.avgScore >= 3 ? "rgba(255,255,255,0.3)" : "rgba(224,80,80,0.6)",
-                        }}
-                      />
-                      <span className="text-[11px] font-mono font-bold text-muted-foreground">
-                        {week.avgScore.toFixed(1)}
-                      </span>
+                    <div className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-2">
+                      {entry.wearable && <span>{entry.wearable.sleep.totalHours.toFixed(1)}h sleep</span>}
+                      {entry.wearable && <span>·</span>}
+                      <span>Mood {entry.mood.overallMood}/5</span>
+                      {entry.activities.length > 0 && <span>· {entry.activities.length} activities</span>}
                     </div>
-                  </button>
+                  </div>
 
-                  {/* Week entries */}
-                  {!isCollapsed && (
-                    <div className="ml-2 mt-1 space-y-0.5">
-                      {week.entries.map((entry) => {
-                        const score = computeDayScore(entry);
-                        const d = new Date(entry.date + "T12:00:00");
-                        const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
-                        const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-                        const isToday = entry.date === new Date().toISOString().split("T")[0];
-
-                        return (
-                          <button
-                            key={entry.date}
-                            onClick={() => setSelectedEntry(entry)}
-                            className="w-full flex items-center gap-3 p-2.5 rounded-[14px] text-left transition-all active:scale-[0.98] hover:bg-white/[0.02]"
-                          >
-                            <div
-                              className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{
-                                background: score >= 4 ? "rgba(132,204,22,0.1)" : score >= 3 ? "rgba(255,255,255,0.05)" : "rgba(224,80,80,0.08)",
-                                border: `1.5px solid ${score >= 4 ? "rgba(132,204,22,0.25)" : score >= 3 ? "rgba(255,255,255,0.1)" : "rgba(224,80,80,0.2)"}`,
-                              }}
-                            >
-                              <span
-                                className="font-mono text-[11px] font-bold"
-                                style={{
-                                  color: score >= 4 ? "hsl(var(--primary))" : score >= 3 ? "rgba(255,255,255,0.7)" : "rgba(224,80,80,0.8)",
-                                }}
-                              >
-                                {score.toFixed(1)}
-                              </span>
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[12px] font-bold text-foreground">{isToday ? "Today" : dayName}</span>
-                                <span className="text-[10px] text-muted-foreground">{dateStr}</span>
-                              </div>
-                            </div>
-
-                            <ChevronRight size={14} className="text-muted-foreground/30 flex-shrink-0" />
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                  <ChevronRight size={16} className="text-muted-foreground/40 flex-shrink-0" />
+                </button>
               );
             })}
           </div>
