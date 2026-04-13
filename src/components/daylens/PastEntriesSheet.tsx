@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, ChevronRight, Dumbbell } from "lucide-react";
+import { X, ChevronRight, Dumbbell, CalendarIcon } from "lucide-react";
 import type { DayEntry } from "@/lib/daylens-constants";
 import { computeDayScore, scoreLabel } from "@/lib/daylens-utils";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 interface PastEntriesSheetProps {
   open: boolean;
