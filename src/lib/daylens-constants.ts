@@ -157,15 +157,15 @@ export const DEFAULT_PROFILE: UserProfile = {
   diet: "standard",
 };
 
-export const DIET_OPTIONS: { value: DietType; label: string; desc: string; emoji: string }[] = [
-  { value: "standard", label: "Standard", desc: "Balanced macros, no restrictions", emoji: "🍽️" },
-  { value: "keto", label: "Keto", desc: "High fat, very low carb", emoji: "🥑" },
-  { value: "paleo", label: "Paleo", desc: "Whole foods, no processed", emoji: "🥩" },
-  { value: "vegan", label: "Vegan", desc: "100% plant-based", emoji: "🌱" },
-  { value: "vegetarian", label: "Vegetarian", desc: "No meat, dairy ok", emoji: "🥗" },
-  { value: "mediterranean", label: "Mediterranean", desc: "Olive oil, fish, whole grains", emoji: "🫒" },
-  { value: "carnivore", label: "Carnivore", desc: "Animal products only", emoji: "🥓" },
-  { value: "intermittent_fasting", label: "IF", desc: "Time-restricted eating", emoji: "⏰" },
+export const DIET_OPTIONS: { value: DietType; label: string; desc: string; emoji: string; image?: string }[] = [
+  { value: "standard", label: "Standard", desc: "Balanced macros, no restrictions", emoji: "🍽️", image: "diet-standard" },
+  { value: "keto", label: "Keto", desc: "High fat, very low carb", emoji: "🥑", image: "diet-keto" },
+  { value: "paleo", label: "Paleo", desc: "Whole foods, no processed", emoji: "🥩", image: "diet-paleo" },
+  { value: "vegan", label: "Vegan", desc: "100% plant-based", emoji: "🌱", image: "diet-vegan" },
+  { value: "vegetarian", label: "Vegetarian", desc: "No meat, dairy ok", emoji: "🥗", image: "diet-vegetarian" },
+  { value: "mediterranean", label: "Mediterranean", desc: "Olive oil, fish, whole grains", emoji: "🫒", image: "diet-mediterranean" },
+  { value: "carnivore", label: "Carnivore", desc: "Animal products only", emoji: "🥓", image: "diet-carnivore" },
+  { value: "intermittent_fasting", label: "IF", desc: "Time-restricted eating", emoji: "⏰", image: "diet-if" },
 ];
 
 export const WEARABLE_OPTIONS: { value: string; label: string }[] = [
