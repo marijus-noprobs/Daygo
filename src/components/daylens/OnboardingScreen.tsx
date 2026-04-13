@@ -453,14 +453,9 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                   {FEATURES.map((f, i) => (
                     <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + i * 0.1 }}
-                      className="glass rounded-2xl p-4 flex items-start gap-4">
-                      <div className={`w-10 h-10 rounded-xl bg-muted/20 flex items-center justify-center shrink-0 ${f.color}`}>
-                        <f.icon size={20} />
-                      </div>
-                      <div>
-                        <h3 className="text-[12px] font-semibold text-foreground mb-0.5">{f.title}</h3>
-                        <p className="text-[10px] text-muted-foreground/50 leading-relaxed">{f.desc}</p>
-                      </div>
+                      className="rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <h3 className="text-[13px] font-semibold text-foreground mb-0.5">{f.title}</h3>
+                      <p className="text-[10px] text-muted-foreground/50 leading-relaxed">{f.desc}</p>
                     </motion.div>
                   ))}
                 </div>
