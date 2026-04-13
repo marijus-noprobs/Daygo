@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, ChevronRight, Dumbbell } from "lucide-react";
+import { X, ChevronRight, ChevronDown, Dumbbell } from "lucide-react";
 import type { DayEntry } from "@/lib/daylens-constants";
 import { computeDayScore, scoreLabel } from "@/lib/daylens-utils";
 
