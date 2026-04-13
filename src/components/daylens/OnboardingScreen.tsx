@@ -5,6 +5,26 @@ import { type UserProfile, type UnitSystem, GOAL_LABELS, DIET_OPTIONS, WEARABLE_
 import { MultiWheelPicker, ScrollWheelPicker } from "./ScrollWheelPicker";
 import { PaywallScreen } from "./PaywallScreen";
 
+import dietStandard from "@/assets/diet-standard.jpg";
+import dietKeto from "@/assets/diet-keto.jpg";
+import dietPaleo from "@/assets/diet-paleo.jpg";
+import dietVegan from "@/assets/diet-vegan.jpg";
+import dietVegetarian from "@/assets/diet-vegetarian.jpg";
+import dietMediterranean from "@/assets/diet-mediterranean.jpg";
+import dietCarnivore from "@/assets/diet-carnivore.jpg";
+import dietIf from "@/assets/diet-if.jpg";
+
+const DIET_IMAGES: Record<string, string> = {
+  "diet-standard": dietStandard,
+  "diet-keto": dietKeto,
+  "diet-paleo": dietPaleo,
+  "diet-vegan": dietVegan,
+  "diet-vegetarian": dietVegetarian,
+  "diet-mediterranean": dietMediterranean,
+  "diet-carnivore": dietCarnivore,
+  "diet-if": dietIf,
+};
+
 interface OnboardingProps {
   onComplete: (profile: UserProfile) => void;
 }
