@@ -18,11 +18,11 @@ const STEPS = [
 const getColors = (value: number) => {
   const baseBg = `linear-gradient(135deg, hsl(0,0%,14%) 0%, hsl(0,0%,18%) 50%, hsl(220,3%,16%) 100%)`;
   if (value <= 35) {
-    return { bg: baseBg, bgImage: undefined, fg: "rgba(255,255,255,0.5)", fgLight: "rgba(255,255,255,0.3)", dotColor: "rgba(255,255,255,0.45)" };
+    return { bg: baseBg, bgImage: undefined, fg: "rgba(255,255,255,0.4)", fgLight: "rgba(255,255,255,0.25)", dotColor: "rgba(255,255,255,0.35)" };
   } else if (value <= 65) {
-    return { bg: baseBg, bgImage: undefined, fg: "rgba(255,255,255,0.75)", fgLight: "rgba(255,255,255,0.5)", dotColor: "rgba(255,255,255,0.55)" };
+    return { bg: baseBg, bgImage: undefined, fg: "rgba(255,255,255,0.65)", fgLight: "rgba(255,255,255,0.4)", dotColor: "rgba(255,255,255,0.5)" };
   } else {
-    return { bg: `linear-gradient(135deg, hsl(90,30%,18%) 0%, hsl(84,35%,22%) 50%, hsl(78,25%,16%) 100%)`, bgImage: undefined, fg: "rgba(255,255,255,0.95)", fgLight: "rgba(255,255,255,0.7)", dotColor: "hsla(84,100%,55%,0.8)" };
+    return { bg: `linear-gradient(135deg, hsl(0,0%,16%) 0%, hsl(0,0%,22%) 50%, hsl(0,0%,18%) 100%)`, bgImage: undefined, fg: "rgba(255,255,255,0.95)", fgLight: "rgba(255,255,255,0.7)", dotColor: "rgba(255,255,255,0.85)" };
   }
 };
 
@@ -205,9 +205,9 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
               min={0}
               max={2}
               step={1}
-              className="w-full [&_[role=slider]]:h-6 [&_[role=slider]]:w-6 [&_[role=slider]]:border-0"
+              className="w-full [&_[role=slider]]:h-6 [&_[role=slider]]:w-6 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-foreground [&_[role=slider]]:border-foreground [&_.range]:bg-foreground/80 [&_[data-orientation=horizontal]>.range]:bg-foreground/80"
               style={{
-                '--slider-track': `${colors.fg}20`,
+                '--slider-track': `rgba(255,255,255,0.1)`,
                 '--slider-range': colors.fg,
                 '--slider-thumb': colors.fg,
               } as React.CSSProperties}
