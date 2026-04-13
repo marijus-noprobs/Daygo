@@ -50,7 +50,7 @@ export const MealLogSection = ({ nutrition, setNutrition }: MealLogSectionProps)
   return (
     <div className="space-y-3 slide-in">
       {/* Summary bar */}
-      <div className="card-dark rounded-[22px] p-[18px]">
+      <div className="rounded-[22px] p-[18px]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="font-display text-[14px] font-extrabold text-foreground mb-3">Today's Totals</div>
         <div className="grid grid-cols-3 gap-3">
           <div className="text-center">
@@ -69,13 +69,13 @@ export const MealLogSection = ({ nutrition, setNutrition }: MealLogSectionProps)
       </div>
 
       {/* Food items */}
-      <div className="card-dark rounded-[22px] p-[18px]">
+      <div className="rounded-[22px] p-[18px]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="font-display text-[14px] font-extrabold text-foreground mb-3">What did you eat?</div>
 
         {allItems.length > 0 && (
           <div className="space-y-1.5 mb-3">
             {allItems.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between bg-secondary/30 rounded-xl px-3 py-2.5">
+              <div key={idx} className="flex items-center justify-between rounded-xl px-3 py-2.5" style={{ background: 'rgba(255,255,255,0.04)' }}>
                 <div>
                   <div className="text-[12px] font-semibold text-foreground">{item.name}</div>
                   <div className="text-[10px] text-muted-foreground">{item.kcal} kcal · {item.proteinG}g protein</div>
@@ -94,14 +94,14 @@ export const MealLogSection = ({ nutrition, setNutrition }: MealLogSectionProps)
 
         {/* AI Feedback */}
         {feedback && (
-          <div className="flex items-start gap-2.5 bg-primary/[0.06] border border-primary/[0.12] rounded-xl px-3 py-2.5 mb-3">
-            <Sparkles size={14} className="text-primary mt-0.5 flex-shrink-0" />
+          <div className="flex items-start gap-2.5 rounded-xl px-3 py-2.5 mb-3" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <Sparkles size={14} className="text-foreground mt-0.5 flex-shrink-0" />
             <p className="text-[11px] text-foreground/80 leading-relaxed">{feedback}</p>
           </div>
         )}
 
         {/* Photo upload placeholder */}
-        <button className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-muted rounded-xl text-[11px] text-muted-foreground hover:text-foreground/70 hover:border-foreground/30 transition-colors mb-3">
+        <button className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-foreground/20 rounded-xl text-[11px] text-muted-foreground hover:text-foreground/70 hover:border-foreground/30 transition-colors mb-3">
           <Camera size={14} />
           <span>Snap a photo for AI analysis</span>
         </button>
@@ -111,9 +111,9 @@ export const MealLogSection = ({ nutrition, setNutrition }: MealLogSectionProps)
       </div>
 
       {/* Water slider */}
-      <div className="card-dark rounded-[22px] p-[18px]">
+      <div className="rounded-[22px] p-[18px]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
         <div className="flex items-center gap-2 mb-3">
-          <Droplets size={14} className="text-primary" />
+          <Droplets size={14} className="text-foreground" />
           <span className="font-display text-[14px] font-extrabold text-foreground">Water</span>
         </div>
         <div className="flex items-center gap-2.5">

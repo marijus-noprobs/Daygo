@@ -11,11 +11,11 @@ const ModalOverlay = ({ title, onClose, children }: { title: string; onClose: ()
     style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
     <div className="w-[92%] max-w-md max-h-[85vh] rounded-[22px] flex flex-col scale-in"
       onClick={e => e.stopPropagation()}
-      style={{ background: '#1c1c1d', border: '1px solid rgba(255,255,255,0.06)' }}>
+      style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.08)' }}>
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-3">
         <h3 className="font-display text-lg font-extrabold text-foreground">{title}</h3>
-        <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/[0.06] transition-colors">
+        <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/[0.08] transition-colors">
           <X size={18} className="text-muted-foreground" />
         </button>
       </div>
@@ -37,7 +37,7 @@ export const FoodModal = ({ nutrition, setNutrition, onClose, onSave }: {
   <ModalOverlay title="Log Food" onClose={onClose}>
     <MealLogSection nutrition={nutrition} setNutrition={setNutrition} />
     <button onClick={onSave}
-      className="w-full mt-4 py-[15px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">
+      className="w-full mt-4 py-[15px] rounded-[18px] bg-foreground text-background font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">
       Save
     </button>
   </ModalOverlay>
@@ -65,7 +65,7 @@ export const ActivityModal = ({ activities, setActivities, onClose, onSave }: {
         ))}
 
         {showPicker ? (
-          <div className="card-dark rounded-[22px] p-[18px]">
+          <div className="rounded-[22px] p-[18px]" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <div className="font-display text-[13px] font-extrabold text-foreground mb-3">Choose type</div>
             <ActivityTypePicker onSelect={type => {
               const blank = newActivityBlank();
@@ -78,13 +78,13 @@ export const ActivityModal = ({ activities, setActivities, onClose, onSave }: {
           </div>
         ) : (
           <button onClick={() => setShowPicker(true)}
-            className="w-full py-2.5 border border-dashed border-muted rounded-xl text-xs text-muted-foreground hover:text-foreground/70 hover:border-foreground/30 transition-colors flex items-center justify-center gap-1.5">
+            className="w-full py-2.5 border border-dashed border-foreground/20 rounded-xl text-xs text-muted-foreground hover:text-foreground/70 hover:border-foreground/30 transition-colors flex items-center justify-center gap-1.5">
             <Plus size={14} /> Add activity
           </button>
         )}
       </div>
       <button onClick={onSave}
-        className="w-full mt-4 py-[15px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">
+        className="w-full mt-4 py-[15px] rounded-[18px] bg-foreground text-background font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">
         Save
       </button>
     </ModalOverlay>
@@ -116,7 +116,7 @@ export const SocialModal = ({ activities, setActivities, onClose, onSave }: {
         <div className="flex flex-wrap gap-2">
           {presets.map(p => (
             <button key={p} onClick={() => addSocial(p)}
-              className="px-3 py-2 rounded-2xl text-[11px] font-medium transition-all hover:scale-105 active:scale-95 bg-primary/10 border border-primary/20 text-primary">
+              className="px-3 py-2 rounded-2xl text-[11px] font-medium transition-all hover:scale-105 active:scale-95 bg-foreground/[0.08] border border-foreground/15 text-foreground hover:bg-foreground/[0.12]">
               {p}
             </button>
           ))}
@@ -137,7 +137,7 @@ export const SocialModal = ({ activities, setActivities, onClose, onSave }: {
         )}
       </div>
       <button onClick={onSave}
-        className="w-full mt-4 py-[15px] rounded-[18px] bg-primary text-primary-foreground font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">
+        className="w-full mt-4 py-[15px] rounded-[18px] bg-foreground text-background font-display text-[15px] font-extrabold active:scale-[0.98] transition-transform">
         Save
       </button>
     </ModalOverlay>
