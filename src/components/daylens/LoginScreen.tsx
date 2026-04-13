@@ -87,6 +87,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
             By continuing, you agree to the Terms of Service & Privacy Policy
           </p>
         </div>
+        </div>
       </div>
     );
   }
