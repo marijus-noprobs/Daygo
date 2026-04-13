@@ -162,6 +162,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
           </button>
         </div>
       </div>
+      </div>
     </div>
   );
 };
