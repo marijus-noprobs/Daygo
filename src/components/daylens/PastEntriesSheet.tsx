@@ -190,13 +190,52 @@ export const PastEntriesSheet = ({ open, onClose, entries }: PastEntriesSheetPro
         {selectedEntry ? (
           <EntryDetail entry={selectedEntry} onBack={() => setSelectedEntry(null)} />
         ) : (
-          <div className="space-y-1.5">
-            {sorted.length === 0 && (
+          <div className="space-y-3">
+            {/* Calendar toggle + filter */}
+            <div className="flex items-center gap-2 mb-2">
+              <button
+                onClick={() => setShowCalendar(v => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+                style={{ background: showCalendar ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.04)" }}
+              >
+                <CalendarIcon size={12} className="text-foreground/60" />
+                Calendar
+              </button>
+              {selectedDate && (
+                <button
+                  onClick={() => setSelectedDate(undefined)}
+                  className="text-[11px] text-foreground/50 hover:text-foreground transition-colors"
+                >
+                  Clear filter
+                </button>
+              )}
+            </div>
+
+            {showCalendar && (
+              <div className="flex justify-center rounded-[16px] p-2" style={{ background: "rgba(255,255,255,0.03)" }}>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => setSelectedDate(date)}
+                  className="p-2 pointer-events-auto"
+                  modifiers={{ hasEntry: (date: Date) => entryDates.has(format(date, "yyyy-MM-dd")) }}
+                  modifiersClassNames={{ hasEntry: "font-bold text-foreground" }}
+                  disabled={(date: Date) => date > new Date()}
+                />
+              </div>
+            )}
+
+            {selectedDate && filtered.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground text-[12px]">No entry for {format(selectedDate, "MMM d, yyyy")}</p>
+              </div>
+            )}
+            {!selectedDate && filtered.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-muted-foreground text-[12px]">No entries yet. Start logging!</p>
               </div>
             )}
-            {sorted.map((entry) => {
+            {filtered.map((entry) => {
               const score = computeDayScore(entry);
               const d = new Date(entry.date + "T12:00:00");
               const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
