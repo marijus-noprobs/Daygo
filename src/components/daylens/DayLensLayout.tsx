@@ -18,12 +18,14 @@ import { LoadScreen } from "./LoadScreen";
 import { SleepCoachScreen } from "./SleepCoachScreen";
 import { ReportsScreen } from "./ReportsScreen";
 import { PastEntriesSheet } from "./PastEntriesSheet";
+import { LoginScreen } from "./LoginScreen";
 
 import { PLAN_OPTIONS, DEFAULT_GOALS, DEFAULT_PROFILE, type Goal, type UserProfile, type WearableData, type NutritionData, type MoodData, type Activity, type DayEntry } from "@/lib/daylens-constants";
 import { save, load, buildSampleData, computeDayScore, defaultNutrition, defaultMood, getGreeting, calcCalorieRecommendation, detectActivityLevel, generateHealthSuggestions, scoreLabel, computeActivityCorrelations, avg, formatDuration, generateDailyPlan, getReadinessLevel, getStreakMessage } from "@/lib/daylens-utils";
 import { ACTIVITY_LEVEL_LABELS } from "@/lib/daylens-constants";
 
 const DayLensApp = () => {
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [onboarded, setOnboarded] = useState<boolean>(false);
   const [entries, setEntries] = useState<DayEntry[]>(() => load("dl_entries", buildSampleData()));
   const [goals, setGoals] = useState<Goal[]>(() => load("dl_goals", DEFAULT_GOALS));
@@ -134,6 +136,10 @@ const DayLensApp = () => {
     // Always show sentiment after onboarding, even if previously completed today
     setShowSentiment(true);
   };
+
+  if (!loggedIn) {
+    return <LoginScreen onLogin={() => setLoggedIn(true)} />;
+  }
 
   if (!onboarded) {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
