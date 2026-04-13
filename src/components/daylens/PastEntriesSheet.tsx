@@ -142,11 +142,17 @@ const EntryDetail = ({ entry, onBack }: { entry: DayEntry; onBack: () => void })
 
 export const PastEntriesSheet = ({ open, onClose, entries }: PastEntriesSheetProps) => {
   const [selectedEntry, setSelectedEntry] = useState<DayEntry | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [showCalendar, setShowCalendar] = useState(true);
 
-  const sorted = useMemo(
-    () => [...entries].sort((a, b) => b.date.localeCompare(a.date)),
-    [entries],
-  );
+  const entryDates = useMemo(() => new Set(entries.map(e => e.date)), [entries]);
+
+  const filtered = useMemo(() => {
+    const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
+    if (!selectedDate) return sorted;
+    const dateStr = format(selectedDate, "yyyy-MM-dd");
+    return sorted.filter(e => e.date === dateStr);
+  }, [entries, selectedDate]);
 
   if (!open) return null;
 
