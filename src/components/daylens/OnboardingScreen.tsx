@@ -425,7 +425,13 @@ export const OnboardingScreen = ({ onComplete }: OnboardingProps) => {
                           <Check size={12} className="text-background" />
                         </div>
                       )}
-                      <span className="text-xl mb-2 block">{d.emoji}</span>
+                      {d.image && DIET_IMAGES[d.image] ? (
+                        <div className="w-10 h-10 rounded-xl overflow-hidden mb-2">
+                          <img src={DIET_IMAGES[d.image]} alt={d.label} className="w-full h-full object-cover" loading="lazy" width={40} height={40} />
+                        </div>
+                      ) : (
+                        <span className="text-xl mb-2 block">{d.emoji}</span>
+                      )}
                       <span className={`text-[13px] font-semibold block mb-0.5 ${
                         profile.diet === d.value ? "text-foreground" : "text-foreground/80"
                       }`}>{d.label}</span>
