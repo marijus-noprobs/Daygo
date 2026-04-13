@@ -14,7 +14,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
   if (mode === "hero") {
     return (
-      <div className="fixed inset-0 bg-background flex flex-col">
+      <div className="fixed inset-0 bg-background flex items-center justify-center">
+        <div className="relative w-full max-w-[448px] h-full flex flex-col mx-auto">
         {/* Hero image */}
         <div className="flex-1 relative overflow-hidden">
           <img src={heroImg} alt="DayLens" className="absolute inset-0 w-full h-full object-cover" />
@@ -86,6 +87,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
             By continuing, you agree to the Terms of Service & Privacy Policy
           </p>
         </div>
+        </div>
       </div>
     );
   }
@@ -93,7 +95,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   // Login / Signup form
   const isSignup = mode === "signup";
   return (
-    <div className="fixed inset-0 bg-background flex flex-col">
+    <div className="fixed inset-0 bg-background flex items-center justify-center">
+      <div className="relative w-full max-w-[448px] h-full flex flex-col mx-auto">
       <div className="flex-1 flex flex-col px-6 pt-14 pb-8">
         {/* Back */}
         <button onClick={() => setMode("hero")} className="text-muted-foreground text-sm mb-8 self-start">
@@ -158,6 +161,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
             <span className="text-foreground font-semibold">{isSignup ? "Log in" : "Sign up"}</span>
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
