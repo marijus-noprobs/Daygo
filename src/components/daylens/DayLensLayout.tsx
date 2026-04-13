@@ -25,6 +25,7 @@ import { save, load, buildSampleData, computeDayScore, defaultNutrition, default
 import { ACTIVITY_LEVEL_LABELS } from "@/lib/daylens-constants";
 
 const DayLensApp = () => {
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [onboarded, setOnboarded] = useState<boolean>(false);
   const [entries, setEntries] = useState<DayEntry[]>(() => load("dl_entries", buildSampleData()));
   const [goals, setGoals] = useState<Goal[]>(() => load("dl_goals", DEFAULT_GOALS));
