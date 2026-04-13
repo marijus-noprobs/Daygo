@@ -205,9 +205,9 @@ export const SentimentScreen = ({ onSubmit, onClose }: SentimentScreenProps) => 
               min={0}
               max={2}
               step={1}
-              className="w-full [&_[role=slider]]:h-6 [&_[role=slider]]:w-6 [&_[role=slider]]:border-0"
+              className="w-full [&_[role=slider]]:h-6 [&_[role=slider]]:w-6 [&_[role=slider]]:border-0 [&_[role=slider]]:bg-foreground [&_[role=slider]]:border-foreground [&_.range]:bg-foreground/80 [&_[data-orientation=horizontal]>.range]:bg-foreground/80"
               style={{
-                '--slider-track': `${colors.fg}20`,
+                '--slider-track': `rgba(255,255,255,0.1)`,
                 '--slider-range': colors.fg,
                 '--slider-thumb': colors.fg,
               } as React.CSSProperties}
